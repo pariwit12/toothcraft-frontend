@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmModal from '../components/confirm_modal';
+import { fromZonedTime } from 'date-fns-tz';
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function RegisterPatient() {
@@ -65,7 +66,10 @@ export default function RegisterPatient() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          birth_day: form.birth_day ? fromZonedTime(`${form.birth_day}T00:00:00Z`, 'Asia/Bangkok') : null,
+        }),
       });
       const data = await res.json();
 
