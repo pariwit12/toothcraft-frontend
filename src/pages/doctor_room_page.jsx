@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReferModal from '../components/refer_modal';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function DoctorRoomPage() {
   const [waitingPatients, setWaitingPatients] = useState([]);
@@ -31,7 +32,7 @@ export default function DoctorRoomPage() {
   const fetchVisitHistory = async (patientId) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/visits/history/${patientId}`, {
+      const res = await fetch(`${API_URL}/visits/history/${patientId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -48,7 +49,7 @@ export default function DoctorRoomPage() {
     setWaitingPatients([]);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/clinic-queue?room=0`, {
+      const res = await fetch(`${API_URL}/clinic-queue?room=0`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -64,7 +65,7 @@ export default function DoctorRoomPage() {
     setRoomPatients([]);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/clinic-queue?room=${selectedRoom}`, {
+      const res = await fetch(`${API_URL}/clinic-queue?room=${selectedRoom}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -80,7 +81,7 @@ export default function DoctorRoomPage() {
   const sendToRoom = async (queueId) => {
     try {
       const token = localStorage.getItem('token');
-      await fetch(`http://localhost:3000/clinic-queue/${queueId}`, {
+      await fetch(`${API_URL}/clinic-queue/${queueId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ room: selectedRoom }),
@@ -117,7 +118,7 @@ export default function DoctorRoomPage() {
         ? `${previousNote.trim()}\n\n${formattedNote}`  // ต่อบรรทัดใหม่
         : formattedNote;
 
-      await fetch(`http://localhost:3000/clinic-queue/${referQueueId}/refer`, {
+      await fetch(`${API_URL}/clinic-queue/${referQueueId}/refer`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ room: targetRoom, note: combinedNote.trim()  }),

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function PaymentModal({
   isOpen,
@@ -35,7 +36,7 @@ export default function PaymentModal({
 
   const refreshModalData = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/visit-procedures/unpaid/patient/${patient.id}`, {
+      const res = await fetch(`${API_URL}/visit-procedures/unpaid/patient/${patient.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -56,10 +57,10 @@ export default function PaymentModal({
       try {
         // 👉 รัน 2 fetch พร้อมกัน
         const [proceduresRes, methodsRes] = await Promise.all([
-          fetch(`http://localhost:3000/visit-procedures/unpaid/patient/${patient.id}`, {
+          fetch(`${API_URL}/visit-procedures/unpaid/patient/${patient.id}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch('http://localhost:3000/payment-methods', {
+          fetch(`${API_URL}/payment-methods`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -197,7 +198,7 @@ export default function PaymentModal({
     // ✅ ถ้ามีรายการ selected → ส่ง paid
     if (hasSelectedProcedures) {
       try {
-        const res = await fetch('http://localhost:3000/visit-procedures/mark-paid', {
+        const res = await fetch(`${API_URL}/visit-procedures/mark-paid`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

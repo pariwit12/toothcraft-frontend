@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ReferModal from '../components/refer_modal';
-import PaymentModal from '../components/payment_modal'; // ✅ เพิ่ม import
+import PaymentModal from '../components/payment_modal';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function DashboardStaff() {
   const [newPatients, setNewPatients] = useState([]);
@@ -33,10 +34,10 @@ export default function DashboardStaff() {
     const fetchAll = async () => {
       try {
         const [newRes, payRes] = await Promise.all([
-          fetch('http://localhost:3000/clinic-queue?room=0', {
+          fetch(`${API_URL}/clinic-queue?room=0`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch('http://localhost:3000/clinic-queue?room=cashier', {
+          fetch(`${API_URL}/clinic-queue?room=cashier`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -110,7 +111,7 @@ export default function DashboardStaff() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/clinic-queue/${id}`, {
+      const response = await fetch(`${API_URL}/clinic-queue/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -297,7 +298,7 @@ export default function DashboardStaff() {
         }}
         onConfirmAndDelete={async () => {
           try {
-            const response = await fetch(`http://localhost:3000/clinic-queue/${selectedQueue?.id}`, {
+            const response = await fetch(`${API_URL}/clinic-queue/${selectedQueue?.id}`, {
               method: 'DELETE',
               headers: {
                 Authorization: `Bearer ${token}`,

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReferModal from '../components/refer_modal';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function DoctorTreatmentForm() {
   const { queueId, patientId } = useParams();
@@ -28,7 +29,7 @@ export default function DoctorTreatmentForm() {
 
   const fetchProcedures = async () => {
     try {
-      const res = await fetch('http://localhost:3000/procedures', {
+      const res = await fetch(`${API_URL}/procedures`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -40,7 +41,7 @@ export default function DoctorTreatmentForm() {
 
   const fetchPatientInfo = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/patients/${patientId}`, {
+      const res = await fetch(`${API_URL}/patients/${patientId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -52,7 +53,7 @@ export default function DoctorTreatmentForm() {
 
   const fetchQueueDetail = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/clinic-queue/${queueId}`, {
+      const res = await fetch(`${API_URL}/clinic-queue/${queueId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -64,7 +65,7 @@ export default function DoctorTreatmentForm() {
 
   const fetchVisitHistory = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/visits/history/${patientId}`, {
+      const res = await fetch(`${API_URL}/visits/history/${patientId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -130,7 +131,7 @@ export default function DoctorTreatmentForm() {
       procedures,
     };
 
-    const res = await fetch(`http://localhost:3000/visits/with-procedures`, {
+    const res = await fetch(`${API_URL}/visits/with-procedures`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -149,7 +150,7 @@ export default function DoctorTreatmentForm() {
   const handleReferConfirm = async (room, note) => {
     try {
       // ตรวจสอบสถานะคิวก่อน
-      const checkRes = await fetch(`http://localhost:3000/clinic-queue/${queueId}`, {
+      const checkRes = await fetch(`${API_URL}/clinic-queue/${queueId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const checkData = await checkRes.json();
@@ -184,7 +185,7 @@ export default function DoctorTreatmentForm() {
         : formattedNote;
 
       // PUT ส่งต่อ
-      const res = await fetch(`http://localhost:3000/clinic-queue/${queueId}/refer`, {
+      const res = await fetch(`${API_URL}/clinic-queue/${queueId}/refer`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

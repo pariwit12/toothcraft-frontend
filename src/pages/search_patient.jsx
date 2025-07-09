@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function SearchPatient() {
   const [hn, setHn] = useState('');
@@ -33,7 +34,7 @@ export default function SearchPatient() {
       if (telephone) queryParams.append('telephone', telephone);
       if (idNumber) queryParams.append('id_number', idNumber);
 
-      const response = await fetch(`http://localhost:3000/patients/search-by-field?${queryParams.toString()}`, {
+      const response = await fetch(`${API_URL}/patients/search-by-field?${queryParams.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -63,7 +64,7 @@ export default function SearchPatient() {
     if (!confirmAdd) return;
 
     try {
-      const response = await fetch('http://localhost:3000/clinic-queue', {
+      const response = await fetch(`${API_URL}/clinic-queue`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

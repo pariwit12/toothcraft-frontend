@@ -1,6 +1,7 @@
 // 📁 frontend/src/pages/login_staff.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function LoginStaff() {
   const [username, setUsername] = useState('');
@@ -15,7 +16,7 @@ export default function LoginStaff() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3000/auth/login/staff', {
+      const res = await fetch(`${API_URL}/auth/login/staff`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),

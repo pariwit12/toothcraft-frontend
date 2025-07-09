@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddDoctorModal from '../components/add_doctor_modal'; // ✅ เพิ่ม import modal
 import { fromZonedTime } from 'date-fns-tz';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function AppointmentCalendar() {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ export default function AppointmentCalendar() {
 
   const refreshSchedules = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/doctor-schedules/in-month?month=${currentMonth}&year=${currentYear}`, {
+      const res = await fetch(`${API_URL}/doctor-schedules/in-month?month=${currentMonth}&year=${currentYear}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

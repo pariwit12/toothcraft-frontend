@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { format, toZonedTime } from 'date-fns-tz';
+const API_URL = process.env.REACT_APP_API_URL;
 
 // ฟังก์ชันช่วยแปลงเวลา "HH:mm" เป็นจำนวน นาที (0-1439)
 const timeStrToMinutes = (timeStr) => {
@@ -57,7 +58,7 @@ export default function EditAppointmentModal({ appointment, workingTimes, onClos
     const datetimeStr = `${dateStr}T${selectedTime}:00+07:00`;
     const datetime = new Date(datetimeStr);
 
-    const res = await fetch(`http://localhost:3000/appointments/${appointment.id}`, {
+    const res = await fetch(`${API_URL}/appointments/${appointment.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

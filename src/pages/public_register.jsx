@@ -1,5 +1,6 @@
 import { fromZonedTime } from 'date-fns-tz';
 import React, { useState } from 'react';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function PublicRegister() {
   const [form, setForm] = useState({
@@ -50,7 +51,7 @@ export default function PublicRegister() {
           : 'ลงทะเบียนด้วยตนเอง',
       };
 
-      const res = await fetch('http://localhost:3000/public/register', {
+      const res = await fetch(`${API_URL}/public/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formToSend),

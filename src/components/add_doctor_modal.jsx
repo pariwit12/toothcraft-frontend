@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { fromZonedTime } from 'date-fns-tz';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const generateTimeOptions = () => {
   const options = [];
@@ -24,7 +25,7 @@ export default function AddDoctorModal({ isOpen, onClose, selectedDate, onDoctor
 
   useEffect(() => {
     if (isOpen) {
-      fetch('http://localhost:3000/doctors', {
+      fetch(`${API_URL}/doctors`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then(res => res.json())
@@ -71,7 +72,7 @@ export default function AddDoctorModal({ isOpen, onClose, selectedDate, onDoctor
     };
 
     try {
-      const res = await fetch('http://localhost:3000/doctor-schedules', {
+      const res = await fetch(`${API_URL}/doctor-schedules`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { fromZonedTime } from 'date-fns-tz';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const generate_time_options = () => {
   const options = [];
@@ -50,7 +51,7 @@ export default function EditDoctorScheduleModal({ is_open, on_close, schedule, o
     const new_end = fromZonedTime(`${date_str}T${end_time}:00.000`, 'Asia/Bangkok');
 
     try {
-      const res = await fetch(`http://localhost:3000/doctor-schedules/safe-update/${schedule.id}`, {
+      const res = await fetch(`${API_URL}/doctor-schedules/safe-update/${schedule.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +82,7 @@ export default function EditDoctorScheduleModal({ is_open, on_close, schedule, o
     if (!confirm_delete) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/doctor-schedules/safe-delete/${schedule.id}`, {
+      const res = await fetch(`${API_URL}/doctor-schedules/safe-delete/${schedule.id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

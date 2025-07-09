@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function AppointmentModal({ doctor, date, onClose, onSaved }) {
   const [searchFields, setSearchFields] = useState({
@@ -97,7 +98,7 @@ export default function AppointmentModal({ doctor, date, onClose, onSaved }) {
 
       if (Object.values(searchFields).some(val => String(val).trim() !== '')) {
         setIsSearching(true);
-        fetch(`http://localhost:3000/patients/search-by-field?${queryParams.toString()}`, {
+        fetch(`${API_URL}/patients/search-by-field?${queryParams.toString()}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         })
           .then((res) => res.json())
@@ -168,7 +169,7 @@ export default function AppointmentModal({ doctor, date, onClose, onSaved }) {
     const appointmentDateTime = new Date(`${dateStr}T${appointmentTime}:00+07:00`);
 
     try {
-      const res = await fetch('http://localhost:3000/appointments', {
+      const res = await fetch(`${API_URL}/appointments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

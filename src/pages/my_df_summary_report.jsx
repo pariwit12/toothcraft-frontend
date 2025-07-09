@@ -1,6 +1,7 @@
 // 📁 frontend/src/pages/my_df_summary_report.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function MyDfSummaryReport() {
   const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok'});
@@ -22,7 +23,7 @@ export default function MyDfSummaryReport() {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/money-received/my-df-summary?start=${startDate}&end=${endDate}`,
+        `${API_URL}/money-received/my-df-summary?start=${startDate}&end=${endDate}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ConfirmModal from '../components/confirm_modal';  // ✅ import modal
+import ConfirmModal from '../components/confirm_modal';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function RegisterPatient() {
   const [form, setForm] = useState({
@@ -48,7 +49,7 @@ export default function RegisterPatient() {
       const token = localStorage.getItem('token');
 
       if (form.id_number) {
-        const checkRes = await fetch(`http://localhost:3000/patients/check-id/${form.id_number}`, {
+        const checkRes = await fetch(`${API_URL}/patients/check-id/${form.id_number}`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         const checkData = await checkRes.json();
@@ -58,7 +59,7 @@ export default function RegisterPatient() {
         }
       }
 
-      const res = await fetch('http://localhost:3000/patients', {
+      const res = await fetch(`${API_URL}/patients`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,7 +70,7 @@ export default function RegisterPatient() {
       const data = await res.json();
 
       if (res.ok) {
-        const queueRes = await fetch('http://localhost:3000/clinic-queue', {
+        const queueRes = await fetch(`${API_URL}/clinic-queue`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

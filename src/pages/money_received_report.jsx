@@ -1,6 +1,7 @@
 // 📁 frontend/src/pages/money_received_report.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL;
 
 function SummaryModal({ isOpen, onClose, summaryData, startDate, endDate }) {
   if (!isOpen) return null;
@@ -110,7 +111,7 @@ export default function MoneyReceivedReport() {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/money-received/by-date-range?start=${startDate}&end=${endDate}`,
+        `${API_URL}/money-received/by-date-range?start=${startDate}&end=${endDate}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

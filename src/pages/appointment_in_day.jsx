@@ -4,6 +4,7 @@ import AppointmentModal from '../components/appointment_modal';
 import EditAppointmentModal from '../components/edit_appointment_modal';
 import AddDoctorModal from '../components/add_doctor_modal';
 import EditDoctorScheduleModal from '../components/edit_doctor_schedule_modal';
+const API_URL = process.env.REACT_APP_API_URL;
 
 
 export default function AppointmentInDay() {
@@ -47,7 +48,7 @@ export default function AppointmentInDay() {
     setLoading(true);
     setError('');
     try {
-      const url = new URL('http://localhost:3000/appointments/in-day');
+      const url = new URL(`${API_URL}/appointments/in-day`);
       url.searchParams.append('date', dateParam);
       if (doctorIdParam) url.searchParams.append('doctor_id', doctorIdParam);
 
@@ -74,7 +75,7 @@ export default function AppointmentInDay() {
     if (!confirm) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/appointments/${id}`, {
+      const res = await fetch(`${API_URL}/appointments/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });

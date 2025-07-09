@@ -1,6 +1,7 @@
 // 📁 src/pages/patient_detail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function PatientDetail() {
   const { id } = useParams();
@@ -12,7 +13,7 @@ export default function PatientDetail() {
     // 🔧 เพิ่ม: ดึง token จาก localStorage และส่งใน header Authorization
     const token = localStorage.getItem('token'); // ถ้าใช้ชื่ออื่น ให้แก้ตรงนี้ด้วย
 
-    fetch(`http://localhost:3000/patients/${id}`, {
+    fetch(`${API_URL}/patients/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`, // 🔧 ส่ง token ใน header
       },

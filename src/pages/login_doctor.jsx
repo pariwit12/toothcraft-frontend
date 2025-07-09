@@ -1,6 +1,7 @@
 // 📁 frontend/src/pages/login_doctor.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function LoginDoctor() {
   const [username, setUsername] = useState('');
@@ -15,7 +16,7 @@ export default function LoginDoctor() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3000/auth/login/doctor', {
+      const res = await fetch(`${API_URL}/auth/login/doctor`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
