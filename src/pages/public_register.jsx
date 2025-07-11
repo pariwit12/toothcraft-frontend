@@ -102,11 +102,14 @@ export default function PublicRegister() {
 
   const inputStyle = {
     width: '100%',
-    padding: '12px', // 🔧 เพิ่ม padding ให้รองรับนิ้วมือบนมือถือ
+    padding: '12px',
+    paddingRight: '12px',           // ✅ 🔧 เพิ่ม padding ด้านขวาให้เสมอ
     borderRadius: '4px',
     border: '1px solid #ccc',
     fontSize: '1rem',
     boxSizing: 'border-box',
+    appearance: 'none',             // ✅ 🔧 ปิด default appearance (icon calendar)
+    WebkitAppearance: 'none',       // ✅ 🔧 รองรับ Chrome/Safari
   };
 
   const textareaStyle = {
