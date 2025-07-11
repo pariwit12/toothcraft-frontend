@@ -83,26 +83,65 @@ export default function PublicRegister() {
 
     setSubmitting(false);
   };
+  
+  // 🔧 เพิ่ม Media Query ผ่าน CSS-in-JS
+  const containerStyle = {
+    margin: '0 auto',
+    padding: '1rem',
+    fontFamily: 'sans-serif',
+    boxSizing: 'border-box',
+    width: '100%',
+    maxWidth: '600px', // 🔧 จำกัดความกว้างบนจอใหญ่
+  };
 
+  const headingStyle = {
+    textAlign: 'center',
+    marginBottom: '1.5rem',
+    fontSize: '1.5rem', // 🔧 ขยาย heading สำหรับ desktop
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: '12px', // 🔧 เพิ่ม padding ให้รองรับนิ้วมือบนมือถือ
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    fontSize: '1rem',
+    boxSizing: 'border-box',
+  };
+
+  const textareaStyle = {
+    ...inputStyle,
+    resize: 'vertical',
+  };
+
+  const buttonStyle = (submitting) => ({
+    padding: '14px',
+    borderRadius: '6px',
+    backgroundColor: submitting ? '#ccc' : '#4CAF50',
+    color: 'white',
+    border: 'none',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    cursor: submitting ? 'not-allowed' : 'pointer',
+    transition: 'background-color 0.3s ease',
+  });
+
+  const summaryBoxStyle = {
+    border: '1px solid #ccc',
+    padding: '1.5rem',
+    borderRadius: '8px',
+    background: '#f9fff9',
+    fontSize: '1rem',
+    lineHeight: '1.6', // 🔧 ปรับให้อ่านง่ายขึ้นทั้งในมือถือ/PC
+  };
+
+  // 🔧 ส่วน JSX ที่ปรับแล้ว
   return (
-    <div style={{
-      maxWidth: '100%',
-      padding: '1rem',
-      fontFamily: 'sans-serif',
-      boxSizing: 'border-box',
-    }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', fontSize: '1.2rem' }}>
-        📝 ลงทะเบียนคนไข้ด้วยตนเอง
-      </h2>
+    <div style={containerStyle}>
+      <h2 style={headingStyle}>📝 ลงทะเบียนคนไข้ด้วยตนเอง</h2>
 
       {patientSummary ? (
-        <div style={{
-          border: '1px solid #ccc',
-          padding: '1rem',
-          borderRadius: '8px',
-          background: '#f9fff9',
-          fontSize: '0.95rem'
-        }}>
+        <div style={summaryBoxStyle}>
           <h3 style={{ color: 'green' }}>✅ ลงทะเบียนสำเร็จ! กรุณารอเรียกคิว</h3>
           <p><strong>ชื่อ:</strong> {patientSummary.first_name}</p>
           <p><strong>นามสกุล:</strong> {patientSummary.last_name}</p>
@@ -127,13 +166,7 @@ export default function PublicRegister() {
                   value={form[name]}
                   onChange={handleChange}
                   required
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '4px',
-                    border: '1px solid #ccc',
-                    fontSize: '1rem',
-                  }}
+                  style={inputStyle} // 🔧 ใช้ input style เดียวกันทุก input
                 />
               </div>
             ))}
@@ -146,13 +179,7 @@ export default function PublicRegister() {
                 value={form.birth_day}
                 onChange={handleChange}
                 required
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                  fontSize: '1rem',
-                }}
+                style={inputStyle}
               />
             </div>
 
@@ -163,30 +190,14 @@ export default function PublicRegister() {
                 value={form.detail_to_room}
                 onChange={handleChange}
                 rows={3}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                  fontSize: '1rem',
-                  resize: 'vertical',
-                }}
+                style={textareaStyle}
               />
             </div>
 
             <button
               type="submit"
               disabled={submitting}
-              style={{
-                padding: '12px',
-                borderRadius: '6px',
-                backgroundColor: submitting ? '#ccc' : '#4CAF50',
-                color: 'white',
-                border: 'none',
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                cursor: submitting ? 'not-allowed' : 'pointer',
-              }}
+              style={buttonStyle(submitting)}
             >
               {submitting ? 'กำลังลงทะเบียน...' : '✅ ยืนยันลงทะเบียน'}
             </button>
@@ -206,4 +217,5 @@ export default function PublicRegister() {
       )}
     </div>
   );
+
 }
