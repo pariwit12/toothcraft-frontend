@@ -44,8 +44,9 @@ export default function PublicRegister() {
     try {
       const formToSend = {
         ...form,
-        // 👇 แปลง birth_day ให้เป็น DateTime ISO string
-        birth_day: form.birth_day ? fromZonedTime(`${form.birth_day}T00:00:00.000Z`, 'Asia/Bangkok') : null,
+        birth_day: form.birth_day     // 👇 แปลง birth_day ให้เป็น DateTime ISO string
+          ? fromZonedTime(`${form.birth_day}T00:00:00.000Z`, 'Asia/Bangkok')
+          : null,
         detail_to_room: form.detail_to_room
           ? `ลงทะเบียนด้วยตนเอง\n\n-- Patient --\n${form.detail_to_room.trim()}`
           : 'ลงทะเบียนด้วยตนเอง',
@@ -65,7 +66,7 @@ export default function PublicRegister() {
         return;
       }
 
-      setPatientSummary(data.patient); // แสดงผลจาก backend ที่ตอบกลับ
+      setPatientSummary(data.patient);
       setForm({
         first_name: '',
         last_name: '',
@@ -84,11 +85,24 @@ export default function PublicRegister() {
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '2rem auto', fontFamily: 'sans-serif' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>📝 ลงทะเบียนคนไข้ด้วยตนเอง</h2>
+    <div style={{
+      maxWidth: '100%',
+      padding: '1rem',
+      fontFamily: 'sans-serif',
+      boxSizing: 'border-box',
+    }}>
+      <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', fontSize: '1.2rem' }}>
+        📝 ลงทะเบียนคนไข้ด้วยตนเอง
+      </h2>
 
       {patientSummary ? (
-        <div style={{ border: '1px solid #ccc', padding: '1.5rem', borderRadius: '8px', background: '#f9fff9' }}>
+        <div style={{
+          border: '1px solid #ccc',
+          padding: '1rem',
+          borderRadius: '8px',
+          background: '#f9fff9',
+          fontSize: '0.95rem'
+        }}>
           <h3 style={{ color: 'green' }}>✅ ลงทะเบียนสำเร็จ! กรุณารอเรียกคิว</h3>
           <p><strong>ชื่อ:</strong> {patientSummary.first_name}</p>
           <p><strong>นามสกุล:</strong> {patientSummary.last_name}</p>
@@ -100,46 +114,30 @@ export default function PublicRegister() {
       ) : (
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div>
-              <label>ชื่อจริง</label><br />
-              <input
-                name="first_name"
-                value={form.first_name}
-                onChange={handleChange}
-                required
-                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-              />
-            </div>
-            <div>
-              <label>นามสกุล</label><br />
-              <input
-                name="last_name"
-                value={form.last_name}
-                onChange={handleChange}
-                required
-                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-              />
-            </div>
-            <div>
-              <label>เบอร์โทรศัพท์</label><br />
-              <input
-                name="telephone"
-                value={form.telephone}
-                onChange={handleChange}
-                required
-                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-              />
-            </div>
-            <div>
-              <label>เลขบัตรประชาชน</label><br />
-              <input
-                name="id_number"
-                value={form.id_number}
-                onChange={handleChange}
-                required
-                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-              />
-            </div>
+            {[
+              { label: 'ชื่อจริง', name: 'first_name' },
+              { label: 'นามสกุล', name: 'last_name' },
+              { label: 'เบอร์โทรศัพท์', name: 'telephone' },
+              { label: 'เลขบัตรประชาชน', name: 'id_number' },
+            ].map(({ label, name }) => (
+              <div key={name}>
+                <label>{label}</label><br />
+                <input
+                  name={name}
+                  value={form[name]}
+                  onChange={handleChange}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    borderRadius: '4px',
+                    border: '1px solid #ccc',
+                    fontSize: '1rem',
+                  }}
+                />
+              </div>
+            ))}
+
             <div>
               <label>วันเดือนปีเกิด</label><br />
               <input
@@ -148,9 +146,16 @@ export default function PublicRegister() {
                 value={form.birth_day}
                 onChange={handleChange}
                 required
-                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  borderRadius: '4px',
+                  border: '1px solid #ccc',
+                  fontSize: '1rem',
+                }}
               />
             </div>
+
             <div>
               <label>ข้อมูลเพิ่มเติม (อาการเบื้องต้น หรือเหตุผลที่มาพบแพทย์)</label><br />
               <textarea
@@ -158,18 +163,28 @@ export default function PublicRegister() {
                 value={form.detail_to_room}
                 onChange={handleChange}
                 rows={3}
-                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', resize: 'vertical' }}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  borderRadius: '4px',
+                  border: '1px solid #ccc',
+                  fontSize: '1rem',
+                  resize: 'vertical',
+                }}
               />
             </div>
+
             <button
               type="submit"
               disabled={submitting}
               style={{
-                padding: '10px',
-                borderRadius: '5px',
+                padding: '12px',
+                borderRadius: '6px',
                 backgroundColor: submitting ? '#ccc' : '#4CAF50',
                 color: 'white',
                 border: 'none',
+                fontSize: '1rem',
+                fontWeight: 'bold',
                 cursor: submitting ? 'not-allowed' : 'pointer',
               }}
             >
@@ -180,7 +195,12 @@ export default function PublicRegister() {
       )}
 
       {message && (
-        <p style={{ marginTop: '1rem', color: message.includes('✅') ? 'green' : 'red' }}>
+        <p style={{
+          marginTop: '1rem',
+          color: message.includes('✅') ? 'green' : 'red',
+          fontWeight: 'bold',
+          fontSize: '1rem'
+        }}>
           {message}
         </p>
       )}
