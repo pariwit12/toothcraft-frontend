@@ -130,6 +130,25 @@ export default function RegisterPatient() {
     return age;
   };
 
+  const fetchFromCardReader = async () => {
+    try {
+      const res = await fetch('http://localhost:5001/read-card');
+      if (!res.ok) throw new Error('ไม่พบข้อมูลจากบัตร');
+
+      const data = await res.json();
+      setForm((prev) => ({
+        ...prev,
+        first_name: data.first_name || '',
+        last_name: data.last_name || '',
+        id_number: data.id_number || '',
+        birth_day: data.birth_day || '',
+      }));
+      setMessage('✅ ดึงข้อมูลจากบัตรสำเร็จ');
+    } catch (err) {
+      setMessage('❌ ไม่สามารถดึงข้อมูลจากบัตรได้');
+    }
+  };
+
   const handleBackToDashboard = () => {
     navigate('/dashboard/staff');
   };
@@ -138,6 +157,9 @@ export default function RegisterPatient() {
     <div>
       <h2>ลงทะเบียนคนไข้ใหม่</h2>
 
+      <button onClick={fetchFromCardReader} style={{ marginBottom: '1rem' }}>
+        📥 ดึงจากบัตรประชาชน
+      </button>
       <button onClick={handleBackToDashboard} style={{ marginBottom: '1rem' }}>
         🔙 กลับไปแดชบอร์ด
       </button>
