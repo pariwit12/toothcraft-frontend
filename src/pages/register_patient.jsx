@@ -184,18 +184,21 @@ export default function RegisterPatient() {
           placeholder="เบอร์โทร"
           value={form.telephone}
           onChange={handleChange}
+          required
         /><br />
         <input
           name="id_number"
           placeholder="เลขบัตรประชาชน"
           value={form.id_number}
           onChange={handleChange}
+          required
         /><br />
         <input
           name="birth_day"
           type="date"
           value={form.birth_day}
           onChange={handleChange}
+          required
         /><br />
         <button type="submit">ลงทะเบียน</button>
       </form>
