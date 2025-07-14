@@ -33,7 +33,12 @@ export default function DoctorTreatmentForm() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      setAvailableProcedures(Array.isArray(data) ? data : []);
+        // 🔧 เรียงตาม id น้อยไปมาก
+      const sorted = Array.isArray(data)
+        ? data.sort((a, b) => a.id - b.id)
+        : [];
+
+      setAvailableProcedures(sorted);
     } catch {
       console.error('ไม่สามารถโหลด procedures');
     }
