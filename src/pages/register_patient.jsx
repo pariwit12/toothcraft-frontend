@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmModal from '../components/confirm_modal';
 import { fromZonedTime } from 'date-fns-tz';
+
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function RegisterPatient() {
@@ -14,18 +15,15 @@ export default function RegisterPatient() {
   });
   const [message, setMessage] = useState('');
   const [newPatient, setNewPatient] = useState(null);
-  const [showConfirm, setShowConfirm] = useState(false);  // ✅ state modal show/hide
+  const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ฟังก์ชันตรวจสอบเลขบัตรประชาชน (รูปแบบ 13 หลัก, เลขจริง)
   const validateIdNumber = (id) => {
-    if (!id || id.length !== 13) return false;
-    if (!/^\d{13}$/.test(id)) return false;
-
+    if (!id || id.length !== 13 || !/^\d{13}$/.test(id)) return false;
     const digits = id.split('').map(Number);
     let sum = 0;
     for (let i = 0; i < 12; i++) {
@@ -35,12 +33,11 @@ export default function RegisterPatient() {
     return checkDigit === digits[12];
   };
 
-  // ฟังก์ชันเปิด modal แทน handleSubmit เดิม
   const handleFormSubmit = (e) => {
     e.preventDefault();
     setMessage('');
     setNewPatient(null);
-    setShowConfirm(true); // เปิด modal
+    setShowConfirm(true);
   };
 
   // ฟังก์ชันส่งข้อมูลจริงไป backend
@@ -74,7 +71,7 @@ export default function RegisterPatient() {
       const data = await res.json();
 
       if (res.ok) {
-        const queueRes = await fetch(`${API_URL}/clinic-queue`, {
+        await fetch(`${API_URL}/clinic-queue`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -83,8 +80,8 @@ export default function RegisterPatient() {
           body: JSON.stringify({
             patient_id: data.id,
             time_coming: new Date().toISOString(),
-            room: "0", // ✅ ห้องเริ่มต้น
-            detail_to_room: "ลงทะเบียนโดย staff", // หรือ "self-register" ก็ได้
+            room: "0",
+            detail_to_room: "ลงทะเบียนโดย staff",
           }),
         });
 
@@ -154,60 +151,54 @@ export default function RegisterPatient() {
   };
 
   return (
-    <div>
-      <h2>ลงทะเบียนคนไข้ใหม่</h2>
+    <div style={{ maxWidth: 500, margin: '2rem auto', padding: '1.5rem', border: '1px solid #ccc', borderRadius: '8px' }}>
+      <h2 style={{ marginBottom: '1rem' }}>ลงทะเบียนคนไข้ใหม่</h2>
 
-      <button onClick={fetchFromCardReader} style={{ marginBottom: '1rem' }}>
-        📥 ดึงจากบัตรประชาชน
-      </button>
-      <button onClick={handleBackToDashboard} style={{ marginBottom: '1rem' }}>
-        🔙 กลับไปแดชบอร์ด
-      </button>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+        <button onClick={fetchFromCardReader}>📥 ดึงจากบัตรประชาชน</button>
+        <button onClick={handleBackToDashboard}>🔙 กลับไปแดชบอร์ด</button>
+      </div>
 
-      <form onSubmit={handleFormSubmit}>
-        <input
-          name="first_name"
-          placeholder="ชื่อจริง"
-          value={form.first_name}
-          onChange={handleChange}
-          required
-        /><br />
-        <input
-          name="last_name"
-          placeholder="นามสกุล"
-          value={form.last_name}
-          onChange={handleChange}
-          required
-        /><br />
-        <input
-          name="telephone"
-          placeholder="เบอร์โทร"
-          value={form.telephone}
-          onChange={handleChange}
-          required
-        /><br />
-        <input
-          name="id_number"
-          placeholder="เลขบัตรประชาชน"
-          value={form.id_number}
-          onChange={handleChange}
-          required
-        /><br />
-        <input
-          name="birth_day"
-          type="date"
-          value={form.birth_day}
-          onChange={handleChange}
-          required
-        /><br />
-        <button type="submit">ลงทะเบียน</button>
+      <form onSubmit={handleFormSubmit} style={{ paddingRight: '1rem' }}>
+        {[
+          { label: 'ชื่อจริง', name: 'first_name' },
+          { label: 'นามสกุล', name: 'last_name' },
+          { label: 'เบอร์โทร', name: 'telephone' },
+          { label: 'เลขบัตรประชาชน', name: 'id_number' },
+          { label: 'วันเกิด', name: 'birth_day', type: 'date' },
+        ].map((field) => (
+          <div key={field.name} style={{ marginBottom: '0.75rem' }}>
+            <label>{field.label}</label><br />
+            <input
+              name={field.name}
+              type={field.type || 'text'}
+              value={form[field.name]}
+              onChange={handleChange}
+              required
+              style={{ 
+                width: '100%',
+                padding: '0.5rem',
+                marginTop: '0.25rem',
+                fontSize: '1.25rem'
+              }}
+            />
+          </div>
+        ))}
+        <button type="submit" style={{ padding: '0.5rem 1rem' }}>✅ ลงทะเบียน</button>
       </form>
 
-      {message && <p>{message}</p>}
+      {message && (
+        <p style={{
+          marginTop: '1rem',
+          color: message.startsWith('✅') ? 'green' : 'red',
+        }}>
+          {message}
+        </p>
+      )}
 
       {newPatient && (
-        <div style={{ marginTop: '1rem', border: '1px solid #ccc', padding: '1rem' }}>
-          <h3>ข้อมูลคนไข้ที่เพิ่งลงทะเบียน</h3>
+        <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#f9f9f9', border: '1px solid #ddd' }}>
+          <h3 style={{ marginBottom: '0.5rem' }}>ข้อมูลคนไข้ที่เพิ่งลงทะเบียน</h3>
           <p><strong>HN:</strong> {newPatient.id}</p>
           <p><strong>ชื่อ:</strong> {newPatient.first_name} {newPatient.last_name}</p>
           <p><strong>เบอร์โทร:</strong> {newPatient.telephone || '-'}</p>
@@ -217,7 +208,6 @@ export default function RegisterPatient() {
         </div>
       )}
 
-      {/* เรียกใช้งาน ConfirmModal */}
       <ConfirmModal
         visible={showConfirm}
         onClose={() => setShowConfirm(false)}
