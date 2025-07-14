@@ -265,7 +265,9 @@ export default function DoctorTreatmentForm() {
               {allCategories.map((cat) => (
                 <button
                   key={cat}
-                  onClick={() => setSelectedCategory(cat)}
+                  onClick={() =>
+                    setSelectedCategory((prev) => (prev === cat ? '' : cat))
+                  }
                   style={{
                     padding: '0.5rem 1rem',
                     background: selectedCategory === cat ? '#007bff' : '#eee',
@@ -281,7 +283,6 @@ export default function DoctorTreatmentForm() {
 
             {selectedCategory && (
               <div style={{ marginTop: '1rem' }}>
-                <h4>หัตถการในหมวด “{selectedCategory}”</h4>
                 {availableProcedures
                   .filter((p) => p.category?.trim() === selectedCategory)
                   .map((p) => (
@@ -321,31 +322,57 @@ export default function DoctorTreatmentForm() {
                         alignItems: 'center',
                         gap: '1rem',
                         padding: '0.5rem 0',
+                        flexWrap: 'wrap',
                       }}
                     >
                       <div style={{ flex: 3 }}>
                         <b>{name}</b>
                       </div>
-                      <div style={{ flex: 1 }}>
-                        ซี่ฟัน:{' '}
+
+                      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <label htmlFor={`tooth-${index}`}>ซี่ฟัน:</label>
                         <input
+                          id={`tooth-${index}`}
                           type="text"
                           value={proc.tooth}
                           onChange={(e) => handleChangeProcedure(index, 'tooth', e.target.value)}
-                          style={{ width: '50px' }}
+                          style={{
+                            width: '60px',
+                            padding: '4px 6px',
+                            borderRadius: '5px',
+                            border: '1px solid #ccc',
+                          }}
                         />
                       </div>
-                      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                        <span>ราคา:</span>
+
+                      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <label htmlFor={`price-${index}`}>ราคา:</label>
                         <input
+                          id={`price-${index}`}
                           type="number"
                           value={proc.price}
                           onChange={(e) => handleChangeProcedure(index, 'price', e.target.value)}
-                          style={{ width: '80px' }}
+                          style={{
+                            width: '80px',
+                            padding: '4px 6px',
+                            borderRadius: '5px',
+                            border: '1px solid #ccc',
+                          }}
                         />
                       </div>
+
                       <div>
-                        <button onClick={() => handleRemoveProcedure(index)} style={{ color: 'red' }}>❌ ลบ</button>
+                        <button
+                          onClick={() => handleRemoveProcedure(index)}
+                          style={{
+                            color: 'red',
+                            border: 'none',
+                            background: 'transparent',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          ❌ ลบ
+                        </button>
                       </div>
                     </div>
                   );

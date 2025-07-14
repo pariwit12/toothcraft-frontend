@@ -21,34 +21,43 @@ export default function DashboardDoctor() {
 
   return (
     <div style={{ padding: '2rem' }}>
+      {/* Header */}
       <h1>แดชบอร์ดของ Doctor</h1>
       <p>ยินดีต้อนรับสู่ระบบ ToothCraft สำหรับคุณหมอ</p>
 
-      <div style={{ margin: '1rem 0' }}>
+      {/* Action Buttons */}
+      <div style={{ margin: '1.5rem 0', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
         <span>
-          ห้องที่คุณหมออยู่: <strong>{currentRoom || 'ยังไม่เลือกห้อง'}</strong>{' '}
+          ห้องที่คุณหมออยู่: <strong>{currentRoom || 'ยังไม่เลือกห้อง'}</strong>
         </span>
-        <button onClick={() => setIsModalOpen(true)} style={{ marginLeft: '1rem' }}>
-          {currentRoom ? 'เปลี่ยนห้อง' : 'เลือกห้อง'}
-        </button>
+        <button onClick={() => setIsModalOpen(true)}>🏥 ห้องตรวจ</button>
         <Link to="/my-df-summary-report">
-          <button style={{ marginLeft: '1rem' }}>📄 ดูรายงาน DF ของฉัน</button>
+          <button>📄 ดูรายงาน DF ของฉัน</button>
         </Link>
         <Link to="/logout">
-          <button style={{ marginLeft: '1rem' }}>ออกจากระบบ</button>
+          <button>🚪 ออกจากระบบ</button>
         </Link>
       </div>
 
       <hr style={{ margin: '2rem 0' }} />
 
-      <div style={{ backgroundColor: '#f0f8ff', padding: '1.5rem', borderRadius: '10px' }}>
+      {/* Info Box */}
+      <div style={{
+        backgroundColor: '#f0f8ff',
+        padding: '1.5rem',
+        borderRadius: '10px',
+        lineHeight: 1.6
+      }}>
         <p>
           👉 หลังจากเลือกห้องแล้ว ระบบจะพาคุณไปยังหน้าที่ใช้จัดการคนไข้ในห้องนั้น เช่น{' '}
           <strong>เรียกเข้าห้อง</strong> และ <strong>นำออกจากห้อง</strong>
         </p>
-        <p>💡 คุณสามารถกลับมาเปลี่ยนห้องได้ทุกเมื่อผ่านปุ่มด้านบน</p>
+        <p>
+          💡 คุณสามารถกลับมาเปลี่ยนห้องได้ทุกเมื่อผ่านปุ่มด้านบน
+        </p>
       </div>
 
+      {/* Modal เลือกห้อง */}
       <EnterRoomModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
