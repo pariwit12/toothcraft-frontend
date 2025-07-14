@@ -274,6 +274,7 @@ export default function DoctorTreatmentForm() {
                     color: selectedCategory === cat ? 'white' : 'black',
                     border: 'none',
                     borderRadius: '5px',
+                    cursor: 'pointer',
                   }}
                 >
                   {cat}
@@ -300,7 +301,7 @@ export default function DoctorTreatmentForm() {
                       <span style={{ textAlign: 'right' }}>{p.min_price}</span>
                       <span style={{ textAlign: 'center' }}>-</span>
                       <span style={{ textAlign: 'left' }}>{p.max_price}</span>
-                      <button onClick={() => handleAddProcedure(p)}>➕ เพิ่ม</button>
+                      <button onClick={() => handleAddProcedure(p)} style={{ cursor: 'pointer' }}>➕ เพิ่ม</button>
                     </div>
                   ))}
               </div>
