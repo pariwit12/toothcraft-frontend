@@ -1,6 +1,7 @@
 // 📁 src/pages/patient_detail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import AppointmentPatientModal from '../components/appointment_patient_modal';
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function PatientDetail() {
@@ -8,6 +9,8 @@ export default function PatientDetail() {
   const navigate = useNavigate();
   const [patient, setPatient] = useState(null);
   const [error, setError] = useState('');
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+
 
   // เก็บประวัติการรักษา
   const [visitHistory, setVisitHistory] = useState([]);
@@ -72,54 +75,64 @@ export default function PatientDetail() {
   };
 
   return (
-    <div style={{ padding: '1rem' }}>
-      <h2>รายละเอียดผู้ป่วย</h2>
+    <>
+      <div style={{ padding: '1rem' }}>
+        <h2>รายละเอียดผู้ป่วย</h2>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {!error && !patient && <p>กำลังโหลดข้อมูล...</p>}
+        {!error && !patient && <p>กำลังโหลดข้อมูล...</p>}
 
-      {patient && (
-        <div style={{ border: '1px solid #ccc', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
-          <p><strong>HN:</strong> {patient.id}</p>
-          <p><strong>ชื่อ:</strong> {patient.first_name} {patient.last_name}</p>
-          <p><strong>เบอร์โทร:</strong> {patient.telephone}</p>
-          <p><strong>เลขบัตรประชาชน:</strong> {patient.id_number}</p>
-          <p><strong>วันเกิด:</strong> {patient.birth_day ? new Date(patient.birth_day).toLocaleDateString() : '-'}</p>
+        {patient && (
+          <div style={{ border: '1px solid #ccc', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
+            <p><strong>HN:</strong> {patient.id}</p>
+            <p><strong>ชื่อ:</strong> {patient.first_name} {patient.last_name}</p>
+            <p><strong>เบอร์โทร:</strong> {patient.telephone}</p>
+            <p><strong>เลขบัตรประชาชน:</strong> {patient.id_number}</p>
+            <p><strong>วันเกิด:</strong> {patient.birth_day ? new Date(patient.birth_day).toLocaleDateString() : '-'}</p>
 
-          <button style={{ marginTop: '1rem' }} onClick={() => navigate(-1)}>
-            🔙 ย้อนกลับ
-          </button>
-        </div>
-      )}
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+              <button onClick={() => navigate(-1)}>🔙 ย้อนกลับ</button>
+              <button onClick={() => setShowAppointmentModal(true)}>📅 ดูรายการนัด</button>
+            </div>
+          </div>
+        )}
 
-      <h3>ประวัติการรักษา</h3>
-      {visitHistory.length === 0 ? (
-        <p>ไม่มีประวัติการรักษา</p>
-      ) : (
-        <table border="1" width="100%" style={{ borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              <th>วันที่</th>
-              <th>หมอ</th>
-              <th>บันทึก</th>
-              <th>หัตถการ</th>
-              <th>นัดครั้งหน้า</th>
-            </tr>
-          </thead>
-          <tbody>
-            {visitHistory.map((v) => (
-              <tr key={v.id}>
-                <td>{formatDate(v.visit_time)}</td>
-                <td>{v.doctors?.first_name} {v.doctors?.last_name}</td>
-                <td style={{ whiteSpace: 'pre-wrap' }}>{v.treatment_note || '-'}</td>
-                <td style={{ whiteSpace: 'pre-wrap' }}>{formatProcedures(v)}</td>
-                <td style={{ whiteSpace: 'pre-wrap' }}>{v.next_visit || '-'}</td>
+        <h3>ประวัติการรักษา</h3>
+        {visitHistory.length === 0 ? (
+          <p>ไม่มีประวัติการรักษา</p>
+        ) : (
+          <table border="1" width="100%" style={{ borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th>วันที่</th>
+                <th>หมอ</th>
+                <th>บันทึก</th>
+                <th>หัตถการ</th>
+                <th>นัดครั้งหน้า</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {visitHistory.map((v) => (
+                <tr key={v.id}>
+                  <td>{formatDate(v.visit_time)}</td>
+                  <td>{v.doctors?.first_name} {v.doctors?.last_name}</td>
+                  <td style={{ whiteSpace: 'pre-wrap' }}>{v.treatment_note || '-'}</td>
+                  <td style={{ whiteSpace: 'pre-wrap' }}>{formatProcedures(v)}</td>
+                  <td style={{ whiteSpace: 'pre-wrap' }}>{v.next_visit || '-'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {showAppointmentModal && (
+        <AppointmentPatientModal
+          patientId={id}
+          onClose={() => setShowAppointmentModal(false)}
+        />
       )}
-    </div>
+    </>
   );
 }
