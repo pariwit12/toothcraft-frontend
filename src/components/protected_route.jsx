@@ -30,8 +30,6 @@ export default function ProtectedRoute({ children }) {
     (
       path.startsWith('/dashboard/staff') ||
       path.startsWith('/register') ||
-      path.startsWith('/search') ||
-      path.startsWith('/patient_detail') ||
       path.startsWith('/daily-report-fixed') ||
       path.startsWith('/appointments-calendar') ||
       path.startsWith('/appointments/in-day')
@@ -60,6 +58,17 @@ export default function ProtectedRoute({ children }) {
       path.startsWith('/my-df-summary-report')
     ) 
     && role !== 'doctor'
+  ) {
+    return <Navigate to="/" replace />;
+  }
+
+  // ✅ เฉพาะ staff || admin || doctor
+  const allowStaffOrAdminOrDoctor = role === 'staff' || role === 'admin' || role === 'doctor';
+  if (
+    (
+      path.startsWith('/search') ||
+      path.startsWith('/patient_detail')
+    ) && !allowStaffOrAdminOrDoctor
   ) {
     return <Navigate to="/" replace />;
   }

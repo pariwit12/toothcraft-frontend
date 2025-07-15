@@ -17,17 +17,6 @@ export default function AppointmentModal({ doctor, date, onClose, onSaved }) {
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const timeStrToMinutes = (timeStr) => {
-    const [hh, mm] = timeStr.split(':').map(Number);
-    return hh * 60 + mm;
-  };
-
-  const minutesToTimeStr = (min) => {
-    const hh = Math.floor(min / 60);
-    const mm = min % 60;
-    return `${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}`;
-  };
-
   const availableTimes = (() => {
     const workingPeriods = doctor.working_times || [
       { start: doctor.working_start, end: doctor.working_end }

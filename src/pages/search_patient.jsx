@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function SearchPatient() {
@@ -12,6 +13,20 @@ export default function SearchPatient() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  const [userRole, setUserRole] = useState('');
+
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserRole(decoded.role || '');
+      } catch (err) {
+        console.error('ไม่สามารถถอดรหัส token ได้:', err);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -95,19 +110,37 @@ export default function SearchPatient() {
     <div style={{ padding: '1rem' }}>
       <h2>ค้นหาผู้ป่วยเก่า</h2>
 
-      <button
-        onClick={() => navigate('/dashboard/staff')}
-        style={{
-          backgroundColor: '#f0f0f0',
-          padding: '0.5rem 1rem',
-          marginBottom: '1rem',
-          borderRadius: '6px',
-          border: '1px solid #ccc',
-          cursor: 'pointer',
-        }}
-      >
-        🔙 กลับหน้าหลัก Staff
-      </button>
+      {userRole === 'staff' || userRole === 'admin' ? (
+        <button
+          onClick={() => navigate('/dashboard/staff')}
+          style={{
+            backgroundColor: '#f0f0f0',
+            padding: '0.5rem 1rem',
+            marginBottom: '1rem',
+            borderRadius: '6px',
+            border: '1px solid #ccc',
+            cursor: 'pointer',
+          }}
+        >
+          🔙 กลับหน้าหลัก Staff
+        </button>
+      ) : null}
+
+      {userRole === 'doctor' && (
+        <button
+          onClick={() => navigate('/dashboard/doctor')}
+          style={{
+            backgroundColor: '#f0f0f0',
+            padding: '0.5rem 1rem',
+            marginBottom: '1rem',
+            borderRadius: '6px',
+            border: '1px solid #ccc',
+            cursor: 'pointer',
+          }}
+        >
+          🔙 กลับหน้าหลัก Doctor
+        </button>
+      )}
 
       <input type="text" placeholder="ค้นหา HN" value={hn} onChange={(e) => setHn(e.target.value)} style={{ padding: '0.5rem', width: '100%', marginBottom: '0.5rem' }} />
       <input type="text" placeholder="ค้นหา ชื่อ-นามสกุล" value={name} onChange={(e) => setName(e.target.value)} style={{ padding: '0.5rem', width: '100%', marginBottom: '0.5rem' }} />
@@ -128,12 +161,14 @@ export default function SearchPatient() {
               เบอร์โทร: {patient.telephone}<br />
               <div style={{ marginTop: '0.5rem' }}>
                 <button onClick={() => handleDetailClick(patient.id)}>ดูรายละเอียด</button>
-                <button
-                  style={{ marginLeft: '0.5rem', backgroundColor: '#d0f5d0' }}
-                  onClick={() => handleAddToQueue(patient.id)}
-                >
-                  ➕ เพิ่มเข้าคิว
-                </button>
+                {(userRole === 'staff' || userRole === 'admin') && (
+                  <button
+                    style={{ marginLeft: '0.5rem', backgroundColor: '#d0f5d0' }}
+                    onClick={() => handleAddToQueue(patient.id)}
+                  >
+                    ➕ เพิ่มเข้าคิว
+                  </button>
+                )}
               </div>
             </li>
           ))}

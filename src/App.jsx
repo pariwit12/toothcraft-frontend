@@ -36,6 +36,7 @@ export default function App() {
         <Route path="/public" element={<DashboardPublic />} />
         <Route path="/register-public" element={<PublicRegister />} />
 
+
         {/* Doctor */}
         <Route
           path="/dashboard/doctor"
@@ -70,6 +71,7 @@ export default function App() {
           }
         />
 
+
         {/* Staff || Admin */}
         <Route
           path="/dashboard/staff"
@@ -84,14 +86,6 @@ export default function App() {
           element={
             <ProtectedRoute>
               <RegisterPatient />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/search"
-          element={
-            <ProtectedRoute>
-              <SearchPatient />
             </ProtectedRoute>
           }
         />
@@ -128,6 +122,7 @@ export default function App() {
           }
         />
 
+
         {/* Admin */}
         <Route
           path="/money-report"
@@ -145,6 +140,18 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        
+        {/* Staff || Admin || Doctor */}
+        <Route
+          path="/search"
+          element={
+            <ProtectedRoute>
+              <SearchPatient />
+            </ProtectedRoute>
+          }
+        />
+
 
         <Route path="/logout" element={<Logout />} />
       </Routes>

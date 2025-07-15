@@ -31,6 +31,9 @@ export default function DashboardDoctor() {
           ห้องที่คุณหมออยู่: <strong>{currentRoom || 'ยังไม่เลือกห้อง'}</strong>
         </span>
         <button onClick={() => setIsModalOpen(true)}>🏥 ห้องตรวจ</button>
+        <Link to="/search">
+          <button>🔎 ค้นหาผู้ป่วย</button>
+        </Link>
         <Link to="/my-df-summary-report">
           <button>📄 ดูรายงาน DF ของฉัน</button>
         </Link>
