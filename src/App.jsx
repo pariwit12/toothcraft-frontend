@@ -7,21 +7,29 @@ import LoginDoctor from './pages/login_doctor';
 import DashboardPublic from './pages/dashboard_public';
 import PublicRegister from './pages/public_register';
 
+/* Doctor */
 import DashboardDoctor from './pages/dashboard_doctor';
 import DoctorRoomPage from './pages/doctor_room_page';
 import DoctorTreatmentForm from './pages/doctor_treatment_form';
 import MyDfSummaryReport from './pages/my_df_summary_report';
 
+/* Staff || Admin */
 import DashboardStaff from './pages/dashboard_staff';
 import RegisterPatient from './pages/register_patient';
-import SearchPatient from './pages/search_patient';
 import PatientDetail from './pages/patient_detail';
 import MoneyReceivedReportFixed from './pages/money_received_report_fixed';
 import AppointmentCalendar from './pages/appointment_calendar';
 import AppointmentInDay from './pages/appointment_in_day';
+import ReminderList from './pages/reminder_list';
+import FeedbackList from './pages/feedback_list';
 
+/* Admin */
 import MoneyReceivedReport from './pages/money_received_report';
 import DfSummaryReport from './pages/df_summary_report';
+
+/* Staff || Admin || Doctor */
+import SearchPatient from './pages/search_patient';
+
 
 import ProtectedRoute from './components/protected_route';
 import Logout from './pages/logout';
@@ -118,6 +126,22 @@ export default function App() {
           element={
             <ProtectedRoute>
               <AppointmentInDay />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reminder-list"
+          element={
+            <ProtectedRoute>
+              <ReminderList />
+            </ProtectedRoute>
+          } 
+        />
+        <Route
+          path="/feedback-list"
+          element={
+            <ProtectedRoute>
+              <FeedbackList />
             </ProtectedRoute>
           }
         />

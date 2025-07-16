@@ -158,6 +158,12 @@ export default function DashboardStaff() {
       <Link to="/appointments-calendar">
         <button style={{ marginLeft: '1rem' }}>📆 ตารางนัด</button>
       </Link>
+      <Link to="/reminder-list">
+        <button style={{ marginLeft: '1rem' }}>🔔 เตือนนัด</button>
+      </Link>
+      <Link to="/feedback-list">
+        <button style={{ marginLeft: '1rem' }}>📨 ประเมินความพึงพอใจ</button>
+      </Link>
       <Link to="/daily-report-fixed">
         <button style={{ marginLeft: '1rem' }}>📋 รายงานประจำวัน</button>
       </Link>
@@ -298,6 +304,26 @@ export default function DashboardStaff() {
         }}
         onConfirmAndDelete={async () => {
           try {
+            // 📌 1. บันทึก feedback ก่อนลบ
+            const feedbackRes = await fetch(`${API_URL}/feedback-surveys`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                patient_id: selectedPatient?.id,
+                time_sent: new Date().toISOString(),
+              }),
+            });
+
+            if (!feedbackRes.ok) {
+              const errorData = await feedbackRes.json();
+              alert('เกิดข้อผิดพลาดในการสร้าง feedback: ' + errorData.error);
+              return;
+            }
+
+            // 📌 2. ลบ clinic_queue หลังจากบันทึก feedback
             const response = await fetch(`${API_URL}/clinic-queue/${selectedQueue?.id}`, {
               method: 'DELETE',
               headers: {
