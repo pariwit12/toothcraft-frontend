@@ -16,6 +16,7 @@ export default function AppointmentModal({ doctor, date, onClose, onSaved }) {
   const [note, setNote] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [contactChannel, setContactChannel] = useState('');
 
   const availableTimes = (() => {
     const workingPeriods = doctor.working_times || [
@@ -140,6 +141,10 @@ export default function AppointmentModal({ doctor, date, onClose, onSaved }) {
         alert('กรุณากรอกเบอร์โทรศัพท์ของคนไข้ใหม่');
         return;
       }
+      if (!contactChannel) {
+        alert('กรุณาเลือกช่องทางการติดต่อของคนไข้ใหม่');
+        return;
+      }
     }
 
     const token = localStorage.getItem('token');
@@ -150,7 +155,7 @@ export default function AppointmentModal({ doctor, date, onClose, onSaved }) {
     if (!patientId && isNewPatient) {
       const fullName = searchFields.name?.trim() || '';
       const tel = searchFields.telephone?.trim() || '';
-      const extraNote = `| คนไข้ใหม่ | ชื่อ: ${fullName} | โทร: ${tel}`;
+      const extraNote = `| คนไข้ใหม่ | ชื่อ: ${fullName} | โทร: ${tel} | ช่องทาง: ${contactChannel}`;
       finalNote = `${note ? note + '\n' : ''}${extraNote}`;
     }
 
@@ -312,6 +317,22 @@ export default function AppointmentModal({ doctor, date, onClose, onSaved }) {
                   marginBottom: 10,
                 }}
               />
+              <select
+                value={contactChannel}
+                onChange={(e) => setContactChannel(e.target.value)}
+                style={{
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  marginBottom: 10,
+                }}
+              >
+                <option value="">-- ช่องทางการติดต่อ --</option>
+                <option value="LineOA">LineOA</option>
+                <option value="Facebook Chat">Facebook Chat</option>
+                <option value="โทรติดต่อ">โทรติดต่อ</option>
+                <option value="ติดต่อที่คลินิก">ติดต่อที่คลินิก</option>
+                <option value="อื่นๆ">อื่นๆ</option>
+              </select>
             </div>
           </>
         ) : (
