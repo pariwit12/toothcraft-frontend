@@ -28,7 +28,12 @@ export default function ClinicOverview() {
     const fetchAllRooms = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_URL}/clinic-queue`);
+        const res = await fetch(`${API_URL}/clinic-queue`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await res.json();
 
         const grouped = data.reduce((acc, item) => {
@@ -72,7 +77,7 @@ export default function ClinicOverview() {
         timeZone: 'Asia/Bangkok',
       });
 
-      updatedNote += (existingDetail ? '\n\n' : '') + `-- Refer -- (${timestamp})\n${trimmedNote}`;
+      updatedNote += (existingDetail ? '\n\n' : '') + `-- Counter -- (${timestamp})\n${trimmedNote}`;
     }
 
     try {
@@ -155,7 +160,7 @@ export default function ClinicOverview() {
                             minute: '2-digit',
                           })}
                         </td>
-                        <td style={{ border: '1px solid #ccc', padding: '6px' }}>
+                        <td style={{ border: '1px solid #ccc', padding: '6px', whiteSpace: 'pre-wrap' }}>
                           {q.detail_to_room || '-'}
                         </td>
                         <td style={{ border: '1px solid #ccc', padding: '6px' }}>
