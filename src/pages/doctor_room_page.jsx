@@ -165,10 +165,14 @@ export default function DoctorRoomPage() {
       const procName = vp.procedures?.name || 'ไม่มีชื่อหัตถการ';
       const tooth = vp.tooth ? `#${vp.tooth}` : '';
       const price = vp.price ? `(${vp.price})` : '';
-      const paidStatus = vp.paid ? 'ชำระแล้ว' : 'ยังไม่ชำระ';
+      const paidStatus = vp.paid ? '' : 'ยังไม่ชำระ';
+
+      const displayText = [procName, tooth, price].filter(Boolean).join(' ');
+      const statusText = paidStatus ? ` - ${paidStatus}` : '';
+
       return (
         <React.Fragment key={idx}>
-          {`${procName} ${tooth} ${price} - ${paidStatus}`}
+          {displayText + statusText}
           {idx !== visit.visit_procedures.length - 1 && <br />}
         </React.Fragment>
       );
@@ -285,11 +289,33 @@ export default function DoctorRoomPage() {
           overflowY: 'auto', padding: '1rem',
         }}>
           <div style={{
-            background: '#fff', padding: '2rem', borderRadius: '10px', width: '90%',
-            maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto',
+            position: 'relative',
+            background: '#fff',
+            padding: '2rem',
+            borderRadius: '10px',
+            width: '90%',
+            maxWidth: '600px',
+            maxHeight: '90vh',
+            overflowY: 'auto',
           }}>
-            <h2>ประวัติผู้ป่วย</h2>
-            <p><b>HN:</b> {selectedPatient.patient_id}</p>
+
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <h2>ประวัติผู้ป่วย</h2>
+              <button
+                onClick={handleCloseModal}
+                style={{
+                  position: 'absolute',
+                  right: '2rem',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                }}
+              >
+                  ❌ ปิด
+              </button>
+            </div>
+            <p style={{marginTop: '-0.5rem'}}><b>HN:</b> {selectedPatient.patient_id}</p>
             <p><b>ชื่อ:</b> {selectedPatient.patients?.first_name} {selectedPatient.patients?.last_name}</p>
             <p><b>อายุ:</b> {formatAge(selectedPatient.patients?.birth_day)}</p>
             <p><b>เบอร์โทร:</b> {selectedPatient.patients?.telephone || '-'}</p>
@@ -322,9 +348,9 @@ export default function DoctorRoomPage() {
               </table>
             )}
 
-            <div style={{ marginTop: '1rem', textAlign: 'right' }}>
+            {/* <div style={{ marginTop: '1rem', textAlign: 'right' }}>
               <button onClick={handleCloseModal}>ปิด</button>
-            </div>
+            </div> */}
           </div>
         </div>
       )}

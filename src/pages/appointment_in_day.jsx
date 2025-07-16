@@ -94,7 +94,14 @@ export default function AppointmentInDay() {
     <div>
       <h2>ตารางนัดหมายในวัน {dateParam}</h2>
 
-      <button onClick={() => navigate('/appointments-calendar')} style={{ marginBottom: '1rem', cursor: 'pointer' }}>
+      <button
+        onClick={() => {
+          const [year, month] = dateParam.split('-');
+          const monthIndex = parseInt(month) - 1;
+          navigate(`/appointments-calendar?month=${monthIndex}&year=${year}`);
+        }}
+        style={{ marginBottom: '1rem', cursor: 'pointer' }}
+      >
         🔙 กลับหน้าปฏิทินนัดหมาย
       </button>
 

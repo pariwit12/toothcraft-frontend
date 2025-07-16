@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AddDoctorModal from '../components/add_doctor_modal'; // ✅ เพิ่ม import modal
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fromZonedTime } from 'date-fns-tz';
+import AddDoctorModal from '../components/add_doctor_modal';
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function AppointmentCalendar() {
   const navigate = useNavigate();
   const today = new Date();
+  const [searchParams] = useSearchParams();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [showMonthPicker, setShowMonthPicker] = useState(false);
@@ -27,6 +28,14 @@ export default function AppointmentCalendar() {
   }, [token]);
 
   const [doctorSchedules, setDoctorSchedules] = useState([]);
+
+  useEffect(() => {
+    const monthFromQuery = parseInt(searchParams.get('month'));
+    const yearFromQuery = parseInt(searchParams.get('year'));
+
+    if (!isNaN(monthFromQuery)) setCurrentMonth(monthFromQuery);
+    if (!isNaN(yearFromQuery)) setCurrentYear(yearFromQuery);
+  }, []);
 
   const refreshSchedules = async () => {
     try {

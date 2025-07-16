@@ -64,10 +64,14 @@ export default function PatientDetail() {
       const procName = vp.procedures?.name || 'ไม่มีชื่อหัตถการ';
       const tooth = vp.tooth ? `#${vp.tooth}` : '';
       const price = vp.price ? `(${vp.price})` : '';
-      const paidStatus = vp.paid ? 'ชำระแล้ว' : 'ยังไม่ชำระ';
+      const paidStatus = vp.paid ? '' : 'ยังไม่ชำระ';
+
+      const displayText = [procName, tooth, price].filter(Boolean).join(' ');
+      const statusText = paidStatus ? ` - ${paidStatus}` : '';
+
       return (
         <React.Fragment key={idx}>
-          {`${procName} ${tooth} ${price} - ${paidStatus}`}
+          {displayText + statusText}
           {idx !== visit.visit_procedures.length - 1 && <br />}
         </React.Fragment>
       );
