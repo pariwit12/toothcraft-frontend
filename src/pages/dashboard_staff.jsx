@@ -155,6 +155,9 @@ export default function DashboardStaff() {
       <Link to="/search">
         <button style={{ marginLeft: '1rem' }}>ค้นหาผู้ป่วยเก่า</button>
       </Link>
+      <Link to="/clinic-overview">
+        <button style={{ marginLeft: '1rem' }}>🧍‍♂️ ภาพรวมคนไข้</button>
+      </Link>
       <Link to="/appointments-calendar">
         <button style={{ marginLeft: '1rem' }}>📆 ตารางนัด</button>
       </Link>
