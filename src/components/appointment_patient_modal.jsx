@@ -85,8 +85,10 @@ export default function AppointmentPatientModal({ patientId, onClose }) {
         maxHeight: '90vh',
         overflowY: 'auto',
       }}>
-        <h2>📅 รายการนัดของ {patientName}</h2>
-        <button onClick={onClose}>❌ ปิด</button>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <h2>📅 รายการนัดของ {patientName}</h2>
+          <button onClick={onClose}>❌ ปิด</button>
+        </div>
 
         {patientAppointments.length === 0 ? (
           <p>ไม่มีรายการนัด</p>

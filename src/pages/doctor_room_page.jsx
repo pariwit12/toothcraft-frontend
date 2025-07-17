@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { formatAge, formatTime } from '../utils/format';
 import ReferModal from '../components/refer_modal';
+import PatientHistoryModal from '../components/patient_history_modal';
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function DoctorRoomPage() {
@@ -8,7 +10,6 @@ export default function DoctorRoomPage() {
   const [roomPatients, setRoomPatients] = useState([]);
   const [errorMsg, setErrorMsg] = useState('');
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [visitHistory, setVisitHistory] = useState([]);
   const [isReferModalOpen, setIsReferModalOpen] = useState(false);
   const [referQueueId, setReferQueueId] = useState(null);
   const navigate = useNavigate();
@@ -28,22 +29,6 @@ export default function DoctorRoomPage() {
     const interval = setInterval(fetchAllData, 10000);
     return () => clearInterval(interval);
   }, [selectedRoom, navigate]);
-
-  const fetchVisitHistory = async (patientId) => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${API_URL}/visits/history/${patientId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!Array.isArray(data)) throw new Error('ข้อมูลไม่ถูกต้อง');
-      setVisitHistory(data);
-    } catch (err) {
-      console.error(err);
-      setErrorMsg('ไม่สามารถโหลดประวัติการรักษาได้');
-      setVisitHistory([]);
-    }
-  };
 
   const fetchWaitingPatients = async () => {
     setWaitingPatients([]);
@@ -75,21 +60,6 @@ export default function DoctorRoomPage() {
     } catch (err) {
       console.error(err);
       setErrorMsg('ไม่สามารถโหลดข้อมูลคนไข้ในห้องได้');
-    }
-  };
-
-  const sendToRoom = async (queueId) => {
-    try {
-      const token = localStorage.getItem('token');
-      await fetch(`${API_URL}/clinic-queue/${queueId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ room: selectedRoom }),
-      });
-      fetchWaitingPatients();
-      fetchRoomPatients();
-    } catch (err) {
-      console.error('ส่งเข้าห้องไม่ได้', err);
     }
   };
 
@@ -130,63 +100,6 @@ export default function DoctorRoomPage() {
       console.error('ส่งต่อไม่สำเร็จ', err);
       alert('เกิดข้อผิดพลาดในการส่งต่อ');
     }
-  };
-
-  const formatAge = (birthDateStr) => {
-    if (!birthDateStr) return '-';
-    const birthDate = new Date(birthDateStr);
-    const now = new Date();
-    let years = now.getFullYear() - birthDate.getFullYear();
-    let months = now.getMonth() - birthDate.getMonth();
-    if (months < 0) {
-      years -= 1;
-      months += 12;
-    }
-    return `${years} ปี ${months} เดือน`;
-  };
-
-  const formatTime = (dateStr) => {
-    if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleTimeString('th-TH', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
-  };
-
-  const formatDate = (dateStr) => {
-    if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('th-TH');
-  };
-
-  const formatProcedures = (visit) => {
-    if (!visit.visit_procedures || visit.visit_procedures.length === 0) return '-';
-    return visit.visit_procedures.map((vp, idx) => {
-      const procName = vp.procedures?.name || 'ไม่มีชื่อหัตถการ';
-      const tooth = vp.tooth ? `#${vp.tooth}` : '';
-      const price = vp.price ? `(${vp.price})` : '';
-      const paidStatus = vp.paid ? '' : 'ยังไม่ชำระ';
-
-      const displayText = [procName, tooth, price].filter(Boolean).join(' ');
-      const statusText = paidStatus ? ` - ${paidStatus}` : '';
-
-      return (
-        <React.Fragment key={idx}>
-          {displayText + statusText}
-          {idx !== visit.visit_procedures.length - 1 && <br />}
-        </React.Fragment>
-      );
-    });
-  };
-
-  const handleViewHistory = (patientObj) => {
-    setSelectedPatient(patientObj);
-    fetchVisitHistory(patientObj.patient_id);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedPatient(null);
-    setVisitHistory([]);
   };
 
   return (
@@ -272,7 +185,7 @@ export default function DoctorRoomPage() {
                   <td>{formatTime(p.time_coming)}</td>
                   <td style={{ whiteSpace: 'pre-wrap' }}>{p.detail_to_room || '-'}</td>
                   <td>
-                    <button onClick={() => handleViewHistory(p)}>ดูประวัติ</button>
+                    <button onClick={() => setSelectedPatient(p)}>ดูประวัติ</button>
                   </td>
                 </tr>
               ))}
@@ -281,86 +194,18 @@ export default function DoctorRoomPage() {
         </div>
       </div>
 
-      {/* MODAL ประวัติ */}
-      {selectedPatient && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-          background: '#000000aa', display: 'flex', justifyContent: 'center', alignItems: 'center',
-          overflowY: 'auto', padding: '1rem',
-        }}>
-          <div style={{
-            position: 'relative',
-            background: '#fff',
-            padding: '2rem',
-            borderRadius: '10px',
-            width: '90%',
-            maxWidth: '600px',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-          }}>
-
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <h2>ประวัติผู้ป่วย</h2>
-              <button
-                onClick={handleCloseModal}
-                style={{
-                  position: 'absolute',
-                  right: '2rem',
-                  border: 'none',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                }}
-              >
-                  ❌ ปิด
-              </button>
-            </div>
-            <p style={{marginTop: '-0.5rem'}}><b>HN:</b> {selectedPatient.patient_id}</p>
-            <p><b>ชื่อ:</b> {selectedPatient.patients?.first_name} {selectedPatient.patients?.last_name}</p>
-            <p><b>อายุ:</b> {formatAge(selectedPatient.patients?.birth_day)}</p>
-            <p><b>เบอร์โทร:</b> {selectedPatient.patients?.telephone || '-'}</p>
-
-            <h3 style={{ marginTop: '1rem' }}>ประวัติการรักษาเก่า</h3>
-            {visitHistory.length === 0 ? (
-              <p>ไม่มีประวัติการรักษา</p>
-            ) : (
-              <table border="1" width="100%" style={{ borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    <th>วันที่</th>
-                    <th>หมอ</th>
-                    <th>บันทึก</th>
-                    <th>หัตถการ</th>
-                    <th>นัดครั้งหน้า</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {visitHistory.map((v) => (
-                    <tr key={v.id}>
-                      <td>{formatDate(v.visit_time)}</td>
-                      <td>{v.doctors?.first_name} {v.doctors?.last_name}</td>
-                      <td style={{ whiteSpace: 'pre-wrap' }}>{v.treatment_note || '-'}</td>
-                      <td style={{ whiteSpace: 'pre-wrap' }}>{formatProcedures(v)}</td>
-                      <td style={{ whiteSpace: 'pre-wrap' }}>{v.next_visit || '-'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-
-            {/* <div style={{ marginTop: '1rem', textAlign: 'right' }}>
-              <button onClick={handleCloseModal}>ปิด</button>
-            </div> */}
-          </div>
-        </div>
-      )}
-
       {/* MODAL ส่งต่อ */}
       <ReferModal
         isOpen={isReferModalOpen}
         onClose={() => setIsReferModalOpen(false)}
         queueId={referQueueId}
         onConfirm={handleReferConfirm}
+      />
+      {/* MODAL ประวัติ */}
+      <PatientHistoryModal
+        isOpen={!!selectedPatient}
+        patientObj={selectedPatient}
+        onClose={() => setSelectedPatient(null)}
       />
     </div>
   );

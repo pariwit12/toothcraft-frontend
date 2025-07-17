@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ReferModal from '../components/refer_modal';
 import PaymentModal from '../components/payment_modal';
+import AppointmentPatientModal from '../components/appointment_patient_modal';
+import PatientHistoryModal from '../components/patient_history_modal';
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function DashboardStaff() {
@@ -12,6 +14,10 @@ export default function DashboardStaff() {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false); // ✅ สำหรับ Payment Modal
   const [selectedQueue, setSelectedQueue] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState(null); // ✅ สำหรับ Payment Modal
+  const [appointmentModalOpen, setAppointmentModalOpen] = useState(false);
+  const [appointmentPatientId, setAppointmentPatientId] = useState(null);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [historyPatientObj, setHistoryPatientObj] = useState(null);
   const [role, setRole] = useState(null); // ✅ เพิ่ม state เก็บ role
   const token = localStorage.getItem('token');
 
@@ -220,7 +226,6 @@ export default function DashboardStaff() {
               <tr>
                 <th>HN</th>
                 <th>ชื่อ</th>
-                <th>นามสกุล</th>
                 <th>อายุ</th>
                 <th>เวลามาถึง</th>
                 <th>รายละเอียด</th>
@@ -233,8 +238,7 @@ export default function DashboardStaff() {
                 return (
                   <tr key={item.id}>
                     <td>{p?.id}</td>
-                    <td>{p?.first_name}</td>
-                    <td>{p?.last_name}</td>
+                    <td>{p?.first_name} {p?.last_name}</td>
                     <td>{formatAge(p?.birth_day)}</td>
                     <td>{formatTime(item.time_coming)}</td>
                     <td style={{ whiteSpace: 'pre-wrap' }}>{item.detail_to_room || '-'}</td>
@@ -256,10 +260,11 @@ export default function DashboardStaff() {
               <tr>
                 <th>HN</th>
                 <th>ชื่อ</th>
-                <th>นามสกุล</th>
                 <th>อายุ</th>
                 <th>เวลามาถึง</th>
                 <th>รายละเอียด</th>
+                <th>ประวัติ</th>
+                <th>ดูวันนัด</th>
                 <th>ส่งต่อ</th>
                 <th>ชำระเงิน</th>
               </tr>
@@ -270,11 +275,26 @@ export default function DashboardStaff() {
                 return (
                   <tr key={item.id}>
                     <td>{p?.id}</td>
-                    <td>{p?.first_name}</td>
-                    <td>{p?.last_name}</td>
+                    <td>{p?.first_name} {p?.last_name}</td>
                     <td>{formatAge(p?.birth_day)}</td>
                     <td>{formatTime(item.time_coming)}</td>
                     <td style={{ whiteSpace: 'pre-wrap' }}>{item.detail_to_room || '-'}</td>
+                    <td>
+                      <button onClick={() => {
+                        setHistoryPatientObj(item);
+                        setHistoryModalOpen(true);
+                      }}>
+                        🧾 ดูประวัติ
+                      </button>
+                    </td>
+                    <td>
+                      <button onClick={() => {
+                        setAppointmentPatientId(p?.id);
+                        setAppointmentModalOpen(true);
+                      }}>
+                        📅 ดูวันนัด
+                      </button>
+                    </td>
                     <td>
                       <button onClick={() => handleRefer(item)}>ส่งต่อ</button>
                     </td>
@@ -348,6 +368,17 @@ export default function DashboardStaff() {
             alert('เกิดข้อผิดพลาดในการลบ clinic_queue');
           }
         }}
+      />
+      {appointmentModalOpen && (
+        <AppointmentPatientModal
+          patientId={appointmentPatientId}
+          onClose={() => setAppointmentModalOpen(false)}
+        />
+      )}
+      <PatientHistoryModal
+        isOpen={historyModalOpen}
+        patientObj={historyPatientObj}
+        onClose={() => setHistoryModalOpen(false)}
       />
     </div>
   );
