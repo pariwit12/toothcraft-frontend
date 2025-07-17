@@ -263,10 +263,7 @@ export default function DashboardStaff() {
                 <th>อายุ</th>
                 <th>เวลามาถึง</th>
                 <th>รายละเอียด</th>
-                <th>ประวัติ</th>
-                <th>ดูวันนัด</th>
-                <th>ส่งต่อ</th>
-                <th>ชำระเงิน</th>
+                <th>เลือก</th>
               </tr>
             </thead>
             <tbody>
@@ -280,26 +277,28 @@ export default function DashboardStaff() {
                     <td>{formatTime(item.time_coming)}</td>
                     <td style={{ whiteSpace: 'pre-wrap' }}>{item.detail_to_room || '-'}</td>
                     <td>
-                      <button onClick={() => {
-                        setHistoryPatientObj(item);
-                        setHistoryModalOpen(true);
-                      }}>
-                        🧾 ดูประวัติ
-                      </button>
-                    </td>
-                    <td>
-                      <button onClick={() => {
-                        setAppointmentPatientId(p?.id);
-                        setAppointmentModalOpen(true);
-                      }}>
-                        📅 ดูวันนัด
-                      </button>
-                    </td>
-                    <td>
-                      <button onClick={() => handleRefer(item)}>ส่งต่อ</button>
-                    </td>
-                    <td>
-                      <button onClick={() => handlePayment(item)}>ชำระเงิน</button>
+                      <div>
+                        <button onClick={() => {
+                          setHistoryPatientObj(item);
+                          setHistoryModalOpen(true);
+                        }}>
+                          🧾 ประวัติ
+                        </button>
+                      </div>
+                      <div>
+                        <button onClick={() => {
+                          setAppointmentPatientId(p?.id);
+                          setAppointmentModalOpen(true);
+                        }}>
+                          📅 วันนัด
+                        </button>
+                      </div>
+                      <div>
+                        <button onClick={() => handleRefer(item)}>ส่งต่อ</button>
+                      </div>
+                      <div>
+                        <button onClick={() => handlePayment(item)}>ชำระเงิน</button>
+                      </div>
                     </td>
                   </tr>
                 );
