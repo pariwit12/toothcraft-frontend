@@ -167,6 +167,9 @@ export default function DashboardStaff() {
       <Link to="/appointments-calendar">
         <button style={{ marginLeft: '1rem' }}>📆 ตารางนัด</button>
       </Link>
+      <Link to="/confirm-create-list">
+        <button style={{ marginLeft: '1rem' }}>📨 แจ้งลงนัด</button>
+      </Link>
       <Link to="/reminder-list">
         <button style={{ marginLeft: '1rem' }}>🔔 เตือนนัด</button>
       </Link>

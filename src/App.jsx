@@ -23,6 +23,7 @@ import AppointmentInDay from './pages/appointment_in_day';
 import ReminderList from './pages/reminder_list';
 import FeedbackList from './pages/feedback_list';
 import ClinicOverview from './pages/clinic_overview';
+import ConfirmCreateSentList from './pages/confirm_create_sent_list';
 
 /* Admin */
 import MoneyReceivedReport from './pages/money_received_report';
@@ -147,6 +148,7 @@ export default function App() {
           }
         />
         <Route path="/clinic-overview" element={<ClinicOverview />} />
+        <Route path="/confirm-create-list" element={<ConfirmCreateSentList />} />
 
 
         {/* Admin */}

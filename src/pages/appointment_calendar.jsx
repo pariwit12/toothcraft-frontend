@@ -73,9 +73,9 @@ export default function AppointmentCalendar() {
       .filter((n, i, self) => n && self.indexOf(n) === i); // ลบชื่อซ้ำ
 
     return (
-      <ul style={{ margin: '0.25rem 0 0 0', padding: '0', listStyle: 'none', fontSize: '0.75rem', color: '#1976d2' }}>
+      <ul style={{ margin: '0.25rem 0 0 0', padding: '0', listStyle: 'none', fontSize: '0.95rem', color: '#1976d2' }}>
         {names.map((name, idx) => (
-          <li key={idx}>👨‍⚕ {name} {dateStr}</li>
+          <li key={idx}>👨‍⚕ {name}</li>
         ))}
       </ul>
     );
@@ -249,7 +249,19 @@ export default function AppointmentCalendar() {
                   }}>
                     {dateNum && (
                       <>
-                        <strong>{dateNum}</strong>
+                        <strong>
+                          {dateNum}
+                          {/* {today.getHours()} -- สำหรับเช็ค timezone ของ today */}
+                          {(() => {
+                            const isToday =
+                              today.getDate() === dateNum &&
+                              today.getMonth() === currentMonth &&
+                              today.getFullYear() === currentYear;
+
+                            return isToday ? ' ⭐️ Today' : '';
+                          })()}
+                        </strong>
+
                         {renderDoctorNamesForDate(dateNum)}
 
                         {/* เพิ่มปุ่มลิงก์ดูตารางนัด */}
