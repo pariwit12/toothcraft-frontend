@@ -6,6 +6,7 @@ import LoginStaff from './pages/login_staff';
 import LoginDoctor from './pages/login_doctor';
 import DashboardPublic from './pages/dashboard_public';
 import PublicRegister from './pages/public_register';
+import LinkLine from './pages/link_line';
 
 /* Doctor */
 import DashboardDoctor from './pages/dashboard_doctor';
@@ -45,6 +46,7 @@ export default function App() {
         <Route path="/login/doctor" element={<LoginDoctor />} />
         <Route path="/public" element={<DashboardPublic />} />
         <Route path="/register-public" element={<PublicRegister />} />
+        <Route path="/link-line" element={<LinkLine />} />
 
 
         {/* Doctor */}
