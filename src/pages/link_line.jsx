@@ -9,18 +9,27 @@ export default function LinkLine() {
   const [idNumber, setIdNumber] = useState('');
   const [phone, setPhone] = useState('');
   const [patient, setPatient] = useState(null);
-  const [status, setStatus] = useState('loading'); // loading, ready, error, verified, success
+  const [status, setStatus] = useState('loading'); // loading, need-add-oa, ready, error, verified, success
 
   useEffect(() => {
     const initLiff = async () => {
       try {
         const liff = (await import('@line/liff')).default;
         await liff.init({ liffId: LIFF_ID });
+
         if (!liff.isLoggedIn()) {
           liff.login();
           return;
         }
+
         const profile = await liff.getProfile();
+        const friendship = await liff.getFriendship();
+
+        if (!friendship.friendFlag) {
+          setStatus('need-add-oa');
+          return;
+        }
+
         setLineUserId(profile.userId);
         setStatus('ready');
       } catch (error) {
@@ -43,7 +52,6 @@ export default function LinkLine() {
         const { status, data } = err.response;
 
         if (status === 400 || status === 404) {
-          // ใช้ข้อความจาก backend โดยตรง
           alert(`❌ ${data.error}`);
         } else {
           alert('❌ เกิดข้อผิดพลาดที่ไม่คาดคิด กรุณาลองใหม่อีกครั้ง');
@@ -79,8 +87,37 @@ export default function LinkLine() {
   };
 
   if (status === 'loading') return <p>กำลังโหลด...</p>;
-  if (status === 'error') return <p>กรุณาเปิดลิงก์นี้จากแอป Line เท่านั้น</p>;
-  if (status === 'success') return <p>✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ</p>;
+
+  if (status === 'error')
+    return <p>กรุณาเปิดลิงก์นี้จากแอป Line เท่านั้น</p>;
+
+  if (status === 'need-add-oa')
+    return (
+      <div className="p-4 max-w-md mx-auto text-center">
+        <p className="mb-4 text-red-600 font-semibold">
+          ⚠️ กรุณาแอด LINE Official Account ก่อนดำเนินการต่อ
+        </p>
+        <a
+          href="https://lin.ee/U4p9FYN" // ← แก้เป็นลิงก์แอด OA ของคุณ
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-green-600 text-white px-4 py-2 rounded inline-block"
+        >
+          ➕ แอด LINE OA
+        </a>
+        <div>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 underline text-blue-600 text-sm"
+          >
+            🔄 โหลดใหม่อีกครั้งหลังแอดเสร็จ
+          </button>
+        </div>
+      </div>
+    );
+
+  if (status === 'success')
+    return <p className="p-4 max-w-md mx-auto text-green-700 font-semibold">✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ</p>;
 
   return (
     <div className="p-4 max-w-md mx-auto">
@@ -109,7 +146,13 @@ export default function LinkLine() {
       {/* STEP 2: แสดงชื่อ + เบอร์โทร */}
       {status === 'verified' && patient && (
         <form onSubmit={handleSubmit}>
-          <p className="mt-4">✅ พบข้อมูลคนไข้: <strong>{patient.first_name} {patient.last_name} ({patient.id_number})</strong></p>
+          <p className="mt-4">
+            ✅ พบข้อมูลคนไข้<br />
+            <strong>
+              ชื่อ: {patient.first_name} {patient.last_name}<br />
+              เลขบัตรประชาชน: {patient.id_number}
+            </strong>
+          </p>
 
           <label className="block mt-4 mb-2">เบอร์โทรศัพท์</label>
           <input
