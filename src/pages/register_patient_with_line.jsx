@@ -5,7 +5,7 @@ import { fromZonedTime } from 'date-fns-tz';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-export default function RegisterPatient() {
+export default function RegisterPatientWithLine() {
   const [form, setForm] = useState({
     first_name: '',
     last_name: '',
@@ -184,14 +184,21 @@ export default function RegisterPatient() {
               type={field.type || 'text'}
               value={form[field.name]}
               onChange={handleChange}
-              required
+              required={field.name !== 'telephone'}
+              disabled={field.name === 'telephone'}
+              placeholder={field.name === 'telephone' ? 'รอคนไข้ลงทะเบียนใน Line' : ''}
               style={{ 
                 width: '100%',
                 padding: '0.5rem',
                 marginTop: '0.25rem',
-                fontSize: '1.25rem'
+                fontSize: '1.25rem',
+                backgroundColor: field.name === 'telephone' ? '#eee' : 'white',
+                color: field.name === 'telephone' ? '#666' : 'black',
               }}
             />
+            {field.name === 'telephone' && (
+              <small style={{ color: '#999' }}>จะดึงข้อมูลเบอร์โทรจากการลงทะเบียนใน Line</small>
+            )}
           </div>
         ))}
         <button type="submit" style={{ padding: '0.5rem 1rem' }}>✅ ลงทะเบียน</button>

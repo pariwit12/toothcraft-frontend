@@ -25,6 +25,7 @@ import ReminderList from './pages/reminder_list';
 import FeedbackList from './pages/feedback_list';
 import ClinicOverview from './pages/clinic_overview';
 import ConfirmCreateSentList from './pages/confirm_create_sent_list';
+import RegisterPatientWithLine from './pages/register_patient_with_line';
 
 /* Admin */
 import MoneyReceivedReport from './pages/money_received_report';
@@ -151,6 +152,14 @@ export default function App() {
         />
         <Route path="/clinic-overview" element={<ClinicOverview />} />
         <Route path="/confirm-create-list" element={<ConfirmCreateSentList />} />
+        <Route
+          path="/register-with-line"
+          element={
+            <ProtectedRoute>
+              <RegisterPatientWithLine />
+            </ProtectedRoute>
+          }
+        />
 
 
         {/* Admin */}

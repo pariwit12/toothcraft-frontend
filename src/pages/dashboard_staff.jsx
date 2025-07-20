@@ -155,8 +155,11 @@ export default function DashboardStaff() {
       <h1>แดชบอร์ดของ Staff</h1>
       <p>ยินดีต้อนรับสู่ระบบ ToothCraft สำหรับพนักงาน</p>
 
+      <Link to="/register-with-line">
+        <button>ลงทะเบียนคนไข้ใหม่ (มี Line)</button>
+      </Link>
       <Link to="/register">
-        <button>ลงทะเบียนคนไข้ใหม่</button>
+        <button style={{ marginLeft: '1rem' }}>ลงทะเบียนคนไข้ใหม่ (ไม่มี Line)</button>
       </Link>
       <Link to="/search">
         <button style={{ marginLeft: '1rem' }}>ค้นหาผู้ป่วยเก่า</button>
