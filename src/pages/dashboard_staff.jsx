@@ -20,6 +20,7 @@ export default function DashboardStaff() {
   const [historyPatientObj, setHistoryPatientObj] = useState(null);
   const [role, setRole] = useState(null); // ✅ เพิ่ม state เก็บ role
   const token = localStorage.getItem('token');
+  const [showExtra, setShowExtra] = useState(false);
 
   // ✅ ดึง role จาก token JWT
   useEffect(() => {
@@ -92,6 +93,19 @@ export default function DashboardStaff() {
 
   // เปิด modal ส่งต่อ พร้อมเลือกคิว
   const handleRefer = (queueItem) => {
+    const tel = queueItem?.patients?.telephone;
+    const lineId = queueItem?.patients?.line_user_id;
+
+    if (!tel || tel.trim() === '') {
+      alert('ไม่สามารถส่งต่อได้ เนื่องจากคนไข้ยังไม่ได้ลงข้อมูลเบอร์โทรศัพท์\nกรุณาให้คนไข้แสกน QR Code เพิ่มเบอร์โทรศัพท์ให้เรียบร้อยก่อนครับ');
+      return;
+    }
+
+    // ✅ เตือนเฉย ๆ ถ้ายังไม่มี Line ID แต่ไม่บล็อก
+    if (!lineId) {
+      alert('⚠️ คนไข้รายนี้ยังไม่มี Line ID\nกรุณาแจ้งคนไข้แสกน QR Code เพื่ออัปเดตข้อมูลด้วยครับ');
+    }
+
     setSelectedQueue(queueItem);
     setModalOpen(true);
   };
@@ -156,13 +170,10 @@ export default function DashboardStaff() {
       <p>ยินดีต้อนรับสู่ระบบ ToothCraft สำหรับพนักงาน</p>
 
       <Link to="/register-with-line">
-        <button>ลงทะเบียนคนไข้ใหม่ (มี Line)</button>
-      </Link>
-      <Link to="/register">
-        <button style={{ marginLeft: '1rem' }}>ลงทะเบียนคนไข้ใหม่ (ไม่มี Line)</button>
+        <button>👤 คนไข้ใหม่</button>
       </Link>
       <Link to="/search">
-        <button style={{ marginLeft: '1rem' }}>ค้นหาผู้ป่วยเก่า</button>
+        <button style={{ marginLeft: '1rem' }}>👤 ค้นหาผู้ป่วยเก่า</button>
       </Link>
       <Link to="/clinic-overview">
         <button style={{ marginLeft: '1rem' }}>🧍‍♂️ ภาพรวมคนไข้</button>
@@ -179,12 +190,39 @@ export default function DashboardStaff() {
       <Link to="/feedback-list">
         <button style={{ marginLeft: '1rem' }}>📨 ประเมินความพึงพอใจ</button>
       </Link>
-      <Link to="/daily-report-fixed">
-        <button style={{ marginLeft: '1rem' }}>📋 รายงานประจำวัน</button>
-      </Link>
-      <Link to="/logout">
-        <button style={{ marginLeft: '1rem' }}>ออกจากระบบ</button>
-      </Link>
+      {/* 🔽 เมนูเพิ่มเติมซ่อนปุ่มไม่บ่อย */}
+      <div style={{ display: 'inline-block', position: 'relative', marginLeft: '1rem' }}>
+        <button onClick={() => setShowExtra(!showExtra)}>
+          เพิ่มเติม ▾
+        </button>
+        {showExtra && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              borderRadius: '6px',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+              padding: '0.5rem',
+              zIndex: 1000,
+            }}
+          >
+            <Link to="/register">
+              <button style={{ display: 'block', width: '100%' }}>
+                👤 คนไข้ใหม่ (ไม่มี Line)
+              </button>
+            </Link>
+            <Link to="/daily-report-fixed">
+              <button style={{ display: 'block', width: '100%' }}>📋 รายงานประจำวัน</button>
+            </Link>
+            <Link to="/logout">
+              <button style={{ display: 'block', width: '100%' }}>ออกจากระบบ</button>
+            </Link>
+          </div>
+        )}
+      </div>
 
       {/* ✅ แสดงปุ่มลับเฉพาะ admin */}
       {role === 'admin' && (
@@ -241,10 +279,28 @@ export default function DashboardStaff() {
             <tbody>
               {newPatients.map((item) => {
                 const p = item.patients;
+                const missingInfo = [];
+
+                if (!p?.telephone) {
+                  missingInfo.push('⚠️ ไม่มีเบอร์โทรศัพท์');
+                }
+
+                if (!p?.line_user_id) {
+                  missingInfo.push('⚠️ ไม่มี Line ID');
+                }
+
                 return (
                   <tr key={item.id}>
                     <td>{p?.id}</td>
-                    <td>{p?.first_name} {p?.last_name}</td>
+                    <td>
+                      {p?.first_name} {p?.last_name}
+                      <br />
+                      <span style={{ color: 'red', fontSize: '0.85rem' }}>
+                        {missingInfo.map((msg, idx) => (
+                          <div key={idx}>{msg}</div>
+                        ))}
+                      </span>
+                    </td>
                     <td>{formatAge(p?.birth_day)}</td>
                     <td>{formatTime(item.time_coming)}</td>
                     <td style={{ whiteSpace: 'pre-wrap' }}>{item.detail_to_room || '-'}</td>
@@ -275,10 +331,27 @@ export default function DashboardStaff() {
             <tbody>
               {waitingPayment.map((item) => {
                 const p = item.patients;
+                const missingInfo = [];
+
+                if (!p?.telephone) {
+                  missingInfo.push('⚠️ ไม่มีเบอร์โทรศัพท์');
+                }
+
+                if (!p?.line_user_id) {
+                  missingInfo.push('⚠️ ไม่มี Line ID');
+                }
                 return (
                   <tr key={item.id}>
                     <td>{p?.id}</td>
-                    <td>{p?.first_name} {p?.last_name}</td>
+                    <td>
+                      {p?.first_name} {p?.last_name}
+                      <br />
+                      <span style={{ color: 'red', fontSize: '0.85rem' }}>
+                        {missingInfo.map((msg, idx) => (
+                          <div key={idx}>{msg}</div>
+                        ))}
+                      </span>
+                    </td>
                     <td>{formatAge(p?.birth_day)}</td>
                     <td>{formatTime(item.time_coming)}</td>
                     <td style={{ whiteSpace: 'pre-wrap' }}>{item.detail_to_room || '-'}</td>

@@ -2,7 +2,19 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AppointmentPatientModal from '../components/appointment_patient_modal';
+import EditPatientModal from '../components/edit_patient_personal_data_modal';
 const API_URL = process.env.REACT_APP_API_URL;
+
+const getUserRole = (token) => {
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.role;
+  } catch (err) {
+    console.error('ไม่สามารถอ่าน token:', err);
+    return null;
+  }
+};
 
 export default function PatientDetail() {
   const { id } = useParams();
@@ -10,14 +22,14 @@ export default function PatientDetail() {
   const [patient, setPatient] = useState(null);
   const [error, setError] = useState('');
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
-
+  const [showEditModal, setShowEditModal] = useState(false);
+  const token = localStorage.getItem('token');
+  const role = getUserRole(token);
 
   // เก็บประวัติการรักษา
   const [visitHistory, setVisitHistory] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
     // ดึงข้อมูลผู้ป่วย
     fetch(`${API_URL}/patients/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -78,6 +90,28 @@ export default function PatientDetail() {
     });
   };
 
+  const handleSave = (updatedFields) => {
+    fetch(`${API_URL}/patients/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ ...patient, ...updatedFields })
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('อัปเดตข้อมูลไม่สำเร็จ');
+        return res.json();
+      })
+      .then((updatedPatient) => {
+        setPatient(updatedPatient);
+        setShowEditModal(false);
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
+  };
+
   return (
     <>
       <div style={{ padding: '1rem' }}>
@@ -94,10 +128,14 @@ export default function PatientDetail() {
             <p><strong>เบอร์โทร:</strong> {patient.telephone}</p>
             <p><strong>เลขบัตรประชาชน:</strong> {patient.id_number}</p>
             <p><strong>วันเกิด:</strong> {patient.birth_day ? new Date(patient.birth_day).toLocaleDateString() : '-'}</p>
+            <p><strong>Line:</strong> {patient.line_user_id ? 'มีข้อมูล' : 'ไม่มีข้อมูล'}</p>
 
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
               <button onClick={() => navigate(-1)}>🔙 ย้อนกลับ</button>
               <button onClick={() => setShowAppointmentModal(true)}>📅 ดูรายการนัด</button>
+              {(role === 'staff' || role === 'admin') && (
+                <button onClick={() => setShowEditModal(true)}>✏️ แก้ไขข้อมูล</button>
+              )}
             </div>
           </div>
         )}
@@ -135,6 +173,13 @@ export default function PatientDetail() {
         <AppointmentPatientModal
           patientId={id}
           onClose={() => setShowAppointmentModal(false)}
+        />
+      )}
+      {showEditModal && (
+        <EditPatientModal
+          patient={patient}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleSave}
         />
       )}
     </>

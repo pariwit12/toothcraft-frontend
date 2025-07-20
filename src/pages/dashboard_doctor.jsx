@@ -70,9 +70,9 @@ export default function DashboardDoctor() {
       <p>ยินดีต้อนรับสู่ระบบ ToothCraft สำหรับคุณหมอ</p>
 
       <div style={{ margin: '1.5rem 0', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
-        <span>
+        {/* <span>
           ห้องที่คุณหมออยู่: <strong>{currentRoom || 'ยังไม่เลือกห้อง'}</strong>
-        </span>
+        </span> */}
         <button onClick={() => setIsModalOpen(true)}>🏥 ห้องตรวจ</button>
         <Link to="/search">
           <button>🔎 ค้นหาผู้ป่วย</button>
