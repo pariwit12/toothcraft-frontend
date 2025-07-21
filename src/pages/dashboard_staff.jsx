@@ -94,10 +94,16 @@ export default function DashboardStaff() {
   // เปิด modal ส่งต่อ พร้อมเลือกคิว
   const handleRefer = (queueItem) => {
     const tel = queueItem?.patients?.telephone;
+    const insuranceType = queueItem?.patients?.insurance_type;
     const lineId = queueItem?.patients?.line_user_id;
 
     if (!tel || tel.trim() === '') {
       alert('ไม่สามารถส่งต่อได้ เนื่องจากคนไข้ยังไม่ได้ลงข้อมูลเบอร์โทรศัพท์\nกรุณาให้คนไข้แสกน QR Code เพิ่มเบอร์โทรศัพท์ให้เรียบร้อยก่อนครับ');
+      return;
+    }
+
+    if (!insuranceType) {
+      alert('ไม่สามารถส่งต่อได้ เนื่องจากยังไม่ได้บันทึกสิทธิการรักษา\nกรุณาบันทึกสิทธิการรักษาให้เรียบร้อยก่อนครับ');
       return;
     }
 
@@ -285,6 +291,10 @@ export default function DashboardStaff() {
                   missingInfo.push('⚠️ ไม่มีเบอร์โทรศัพท์');
                 }
 
+                if (!p?.insurance_type) {
+                  missingInfo.push('⚠️ ยังไม่ได้บันทึกสิทธิการรักษา')
+                }
+
                 if (!p?.line_user_id) {
                   missingInfo.push('⚠️ ไม่มี Line ID');
                 }
@@ -294,7 +304,6 @@ export default function DashboardStaff() {
                     <td>{p?.id}</td>
                     <td>
                       {p?.first_name} {p?.last_name}
-                      <br />
                       <span style={{ color: 'red', fontSize: '0.85rem' }}>
                         {missingInfo.map((msg, idx) => (
                           <div key={idx}>{msg}</div>
@@ -337,6 +346,10 @@ export default function DashboardStaff() {
                   missingInfo.push('⚠️ ไม่มีเบอร์โทรศัพท์');
                 }
 
+                if (!p?.insurance_type) {
+                  missingInfo.push('⚠️ ยังไม่ได้บันทึกสิทธิการรักษา')
+                }
+
                 if (!p?.line_user_id) {
                   missingInfo.push('⚠️ ไม่มี Line ID');
                 }
@@ -345,7 +358,6 @@ export default function DashboardStaff() {
                     <td>{p?.id}</td>
                     <td>
                       {p?.first_name} {p?.last_name}
-                      <br />
                       <span style={{ color: 'red', fontSize: '0.85rem' }}>
                         {missingInfo.map((msg, idx) => (
                           <div key={idx}>{msg}</div>

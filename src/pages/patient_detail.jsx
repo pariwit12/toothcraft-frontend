@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AppointmentPatientModal from '../components/appointment_patient_modal';
 import EditPatientModal from '../components/edit_patient_personal_data_modal';
+import { INSURANCE_TYPE_BY_ID } from '../constants/insurance_type';
+import EditPatientInsuranceModal from '../components/edit_patient_insurance_modal';
 const API_URL = process.env.REACT_APP_API_URL;
 
 const getUserRole = (token) => {
@@ -23,6 +25,7 @@ export default function PatientDetail() {
   const [error, setError] = useState('');
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showEditInsuranceModal, setShowEditInsuranceModal] = useState(false);
   const token = localStorage.getItem('token');
   const role = getUserRole(token);
 
@@ -128,13 +131,20 @@ export default function PatientDetail() {
             <p><strong>เบอร์โทร:</strong> {patient.telephone}</p>
             <p><strong>เลขบัตรประชาชน:</strong> {patient.id_number}</p>
             <p><strong>วันเกิด:</strong> {patient.birth_day ? new Date(patient.birth_day).toLocaleDateString() : '-'}</p>
-            <p><strong>Line:</strong> {patient.line_user_id ? 'มีข้อมูล' : 'ไม่มีข้อมูล'}</p>
-
+            <p><strong>Line:</strong> {patient.line_user_id ? '✅ มีข้อมูล' : '❌ ไม่มีข้อมูล'}</p>
+            <p><strong>สิทธิการรักษา:</strong>{' '}
+              {patient.insurance_type
+                ? INSURANCE_TYPE_BY_ID[patient.insurance_type]
+                : '❌ ยังไม่มีการบันทึกสิทธิการรักษา'}</p>
+            <p><strong>วงเงินคงเหลือ:</strong> {patient.insurance_balance}</p>
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
               <button onClick={() => navigate(-1)}>🔙 ย้อนกลับ</button>
               <button onClick={() => setShowAppointmentModal(true)}>📅 ดูรายการนัด</button>
               {(role === 'staff' || role === 'admin') && (
-                <button onClick={() => setShowEditModal(true)}>✏️ แก้ไขข้อมูล</button>
+                <>
+                  <button onClick={() => setShowEditModal(true)}>✏️ แก้ไขข้อมูล</button>
+                  <button onClick={() => setShowEditInsuranceModal(true)}>🏥 แก้ไขสิทธิ</button>
+                </>
               )}
             </div>
           </div>
@@ -179,6 +189,13 @@ export default function PatientDetail() {
         <EditPatientModal
           patient={patient}
           onClose={() => setShowEditModal(false)}
+          onSave={handleSave}
+        />
+      )}
+      {showEditInsuranceModal && (
+        <EditPatientInsuranceModal
+          patient={patient}
+          onClose={() => setShowEditInsuranceModal(false)}
           onSave={handleSave}
         />
       )}

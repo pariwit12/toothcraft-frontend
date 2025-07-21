@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { INSURANCE_TYPE_BY_ID } from '../constants/insurance_type';
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function SearchPatient() {
@@ -158,7 +159,13 @@ export default function SearchPatient() {
               <label><strong>HN:</strong> {patient.id}</label><br />
               <label><strong>เลขบัตรประชาชน:</strong> {patient.id_number}</label><br />
               <label><strong>วันเกิด:</strong> {new Date(patient.birth_day).toLocaleDateString('th-TH')}</label><br />
-              เบอร์โทร: {patient.telephone}<br />
+              <label><strong>เบอร์โทร:</strong> {patient.telephone}</label><br />
+              <label><strong>Line User ID:</strong> {patient.line_user_id ? '✅ มีข้อมูล' : '❌ ไม่มีข้อมูล'}</label><br />
+              <label><strong>สิทธิการรักษา:</strong>{' '}
+              {patient.insurance_type
+                ? INSURANCE_TYPE_BY_ID[patient.insurance_type]
+                : '❌ ยังไม่มีการบันทึกสิทธิการรักษา'}</label><br />
+              <label><strong>วงเงินคงเหลือ:</strong> {patient.insurance_balance}</label><br />
               <div style={{ marginTop: '0.5rem' }}>
                 <button onClick={() => handleDetailClick(patient.id)}>ดูรายละเอียด</button>
                 {(userRole === 'staff' || userRole === 'admin') && (
