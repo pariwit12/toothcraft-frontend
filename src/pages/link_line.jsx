@@ -114,6 +114,25 @@ export default function LinkLine() {
             font-size: 18px;
             margin-right: 8px;
           }
+
+          .reload-button {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2563eb;
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+          }
+
+          .reload-button:hover {
+            background-color: #dbeafe;
+            transform: translateY(-1px);
+          }
         `}</style>
 
         <p style={{ marginBottom: '1rem', color: '#DC2626', fontWeight: '600' }}>
@@ -133,15 +152,7 @@ export default function LinkLine() {
         <div>
           <button
             onClick={() => window.location.reload()}
-            style={{
-              marginTop: '1rem',
-              textDecoration: 'underline',
-              color: '#2563eb',
-              fontSize: '0.9rem',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-            }}
+            className="reload-button"
           >
             🔄 โหลดใหม่อีกครั้งหลังแอดเสร็จ
           </button>
