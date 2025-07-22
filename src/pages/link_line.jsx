@@ -47,10 +47,8 @@ export default function LinkLine() {
       setStatus('verified');
     } catch (err) {
       console.error(err);
-
       if (err.response) {
         const { status, data } = err.response;
-
         if (status === 400 || status === 404) {
           alert(`❌ ${data.error}`);
         } else {
@@ -67,13 +65,11 @@ export default function LinkLine() {
     if (!lineUserId || !patient?.id || !phone) return;
 
     try {
-      // 1. ผูกบัญชี Line
       await axios.post(`${API_URL}/public/link-line`, {
         id_number: patient.id_number,
         line_user_id: lineUserId,
       });
 
-      // 2. อัปเดตเบอร์โทรศัพท์
       await axios.put(`${API_URL}/public/${patient.id}`, {
         ...patient,
         telephone: phone,
@@ -88,76 +84,113 @@ export default function LinkLine() {
 
   if (status === 'loading') return <p>กำลังโหลด...</p>;
 
-  if (status === 'error')
-    return <p>กรุณาเปิดลิงก์นี้จากแอป Line เท่านั้น</p>;
+  if (status === 'error') return <p>กรุณาเปิดลิงก์นี้จากแอป Line เท่านั้น</p>;
 
-  if (status === 'need-add-oa')
+  if (status === 'need-add-oa') {
     return (
-      <div className="p-4 max-w-md mx-auto text-center">
-        <p className="mb-4 text-red-600 font-semibold">
+      <div className="text-center" style={{ padding: '1rem', maxWidth: '400px', margin: '0 auto' }}>
+        <style>{`
+          .line-add-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            background-color: #06C755;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 999px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-bottom: 1rem;
+          }
+
+          .line-add-button:hover {
+            background-color: #05b64a;
+            transform: translateY(-1px);
+          }
+
+          .line-icon {
+            font-size: 18px;
+            margin-right: 8px;
+          }
+        `}</style>
+
+        <p style={{ marginBottom: '1rem', color: '#DC2626', fontWeight: '600' }}>
           ⚠️ กรุณาแอด LINE Official Account ก่อนดำเนินการต่อ
         </p>
-        {/* <a
-          href="https://lin.ee/U4p9FYN" // ← แก้เป็นลิงก์แอด OA ของคุณ
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-green-600 text-white px-4 py-2 rounded inline-block"
-        >
-          ➕ แอด LINE OA
-        </a> */}
+
         <a
           href="https://lin.ee/U4p9FYN"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-5 py-2 rounded-full shadow-md transition duration-200"
+          className="line-add-button"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19.667 4H4.333C3.6 4 3 4.6 3 5.333v13.334C3 19.4 3.6 20 4.333 20H6v2.667L9.333 20h10.334c.733 0 1.333-.6 1.333-1.333V5.333C21 4.6 20.4 4 19.667 4zM12 14.667h-1.333v-4H9.333V9.333h2.667v5.334zm4 0h-1.333v-2.667h-1.334v2.667h-1.333V9.333h1.333v2h1.334v-2H16v5.334z" />
-          </svg>
+          <span className="line-icon">➕</span>
           เพิ่มเพื่อนกับ LINE OA
         </a>
+
         <div>
           <button
             onClick={() => window.location.reload()}
-            className="mt-4 underline text-blue-600 text-sm"
+            style={{
+              marginTop: '1rem',
+              textDecoration: 'underline',
+              color: '#2563eb',
+              fontSize: '0.9rem',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
             🔄 โหลดใหม่อีกครั้งหลังแอดเสร็จ
           </button>
         </div>
       </div>
     );
+  }
 
-  if (status === 'success')
-    return <p className="p-4 max-w-md mx-auto text-green-700 font-semibold">✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ</p>;
+  if (status === 'success') {
+    return (
+      <p style={{ padding: '1rem', maxWidth: '400px', margin: '0 auto', color: '#15803D', fontWeight: '600' }}>
+        ✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ
+      </p>
+    );
+  }
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-4">ลงทะเบียน ToothCraft</h2>
+    <div style={{ padding: '1rem', maxWidth: '400px', margin: '0 auto' }}>
+      <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>ลงทะเบียน ToothCraft</h2>
 
-      {/* STEP 1: กรอกเลขบัตร */}
       {status === 'ready' && (
         <>
-          <label className="block mb-2">เลขบัตรประชาชน</label>
+          <label style={{ display: 'block', marginBottom: '0.5rem' }}>เลขบัตรประชาชน</label>
           <input
             type="text"
-            className="border p-2 w-full mb-4"
+            style={{ border: '1px solid #ccc', padding: '0.5rem', width: '100%', marginBottom: '1rem' }}
             value={idNumber}
             onChange={(e) => setIdNumber(e.target.value)}
             required
           />
           <button
             onClick={handleVerifyId}
-            className="bg-blue-600 text-white px-4 py-2 rounded"
+            style={{
+              backgroundColor: '#2563eb',
+              color: 'white',
+              padding: '0.5rem 1rem',
+              borderRadius: '4px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
             ตรวจสอบ
           </button>
         </>
       )}
 
-      {/* STEP 2: แสดงชื่อ + เบอร์โทร */}
       {status === 'verified' && patient && (
         <form onSubmit={handleSubmit}>
-          <p className="mt-4">
+          <p style={{ marginTop: '1rem' }}>
             ✅ พบข้อมูลคนไข้<br />
             <strong>
               ชื่อ: {patient.first_name} {patient.last_name}<br />
@@ -165,10 +198,10 @@ export default function LinkLine() {
             </strong>
           </p>
 
-          <label className="block mt-4 mb-2">เบอร์โทรศัพท์</label>
+          <label style={{ display: 'block', marginTop: '1rem', marginBottom: '0.5rem' }}>เบอร์โทรศัพท์</label>
           <input
             type="text"
-            className="border p-2 w-full mb-4"
+            style={{ border: '1px solid #ccc', padding: '0.5rem', width: '100%', marginBottom: '1rem' }}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             required
@@ -176,7 +209,14 @@ export default function LinkLine() {
 
           <button
             type="submit"
-            className="bg-green-600 text-white px-4 py-2 rounded"
+            style={{
+              backgroundColor: '#16A34A',
+              color: 'white',
+              padding: '0.5rem 1rem',
+              borderRadius: '4px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
             ยืนยันข้อมูลและลงทะเบียน
           </button>
