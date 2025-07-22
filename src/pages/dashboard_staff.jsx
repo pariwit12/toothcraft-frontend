@@ -223,6 +223,9 @@ export default function DashboardStaff() {
             <Link to="/daily-report-fixed">
               <button style={{ display: 'block', width: '100%' }}>📋 รายงานประจำวัน</button>
             </Link>
+            <Link to="/insurance-patient-list">
+              <button style={{ display: 'block', width: '100%' }}>💳 ผู้ป่วยตามสิทธิ</button>
+            </Link>
             <Link to="/logout">
               <button style={{ display: 'block', width: '100%' }}>ออกจากระบบ</button>
             </Link>
