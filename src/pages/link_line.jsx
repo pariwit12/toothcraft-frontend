@@ -97,13 +97,24 @@ export default function LinkLine() {
         <p className="mb-4 text-red-600 font-semibold">
           ⚠️ กรุณาแอด LINE Official Account ก่อนดำเนินการต่อ
         </p>
-        <a
+        {/* <a
           href="https://lin.ee/U4p9FYN" // ← แก้เป็นลิงก์แอด OA ของคุณ
           target="_blank"
           rel="noopener noreferrer"
           className="bg-green-600 text-white px-4 py-2 rounded inline-block"
         >
           ➕ แอด LINE OA
+        </a> */}
+        <a
+          href="https://lin.ee/U4p9FYN"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-5 py-2 rounded-full shadow-md transition duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.667 4H4.333C3.6 4 3 4.6 3 5.333v13.334C3 19.4 3.6 20 4.333 20H6v2.667L9.333 20h10.334c.733 0 1.333-.6 1.333-1.333V5.333C21 4.6 20.4 4 19.667 4zM12 14.667h-1.333v-4H9.333V9.333h2.667v5.334zm4 0h-1.333v-2.667h-1.334v2.667h-1.333V9.333h1.333v2h1.334v-2H16v5.334z" />
+          </svg>
+          เพิ่มเพื่อนกับ LINE OA
         </a>
         <div>
           <button
