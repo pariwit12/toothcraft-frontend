@@ -178,7 +178,7 @@ export default function LinkLine() {
           <label style={{ display: 'block', marginBottom: '0.5rem' }}>เลขบัตรประชาชน</label>
           <input
             type="text"
-            style={{ border: '1px solid #ccc', padding: '0.5rem', width: '100%', marginBottom: '1rem', paddingRight: '1rem' }}
+            style={{ border: '1px solid #ccc', padding: '0.5rem', width: '100%', marginBottom: '1rem' }}
             value={idNumber}
             onChange={(e) => setIdNumber(e.target.value)}
             required
@@ -212,7 +212,7 @@ export default function LinkLine() {
           <label style={{ display: 'block', marginTop: '1rem', marginBottom: '0.5rem' }}>เบอร์โทรศัพท์</label>
           <input
             type="text"
-            style={{ border: '1px solid #ccc', padding: '0.5rem', width: '100%', marginBottom: '1rem', paddingRight: '1rem' }}
+            style={{ border: '1px solid #ccc', padding: '0.5rem', width: '100%', marginBottom: '1rem' }}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             required
