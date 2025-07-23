@@ -83,6 +83,9 @@ export default function ReminderList() {
     }
   };
 
+  const pendingReminders = appointments.filter(a => !a.reminder_sent);
+  const sentReminders = appointments.filter(a => a.reminder_sent);
+
   return (
     <div style={{ padding: '2rem' }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -90,81 +93,129 @@ export default function ReminderList() {
         <button
           onClick={() => navigate('/dashboard/staff')}
           style={{
-            marginLeft: '1rem', // ✅ เพิ่มระยะห่าง
+            marginLeft: '1rem',
             border: 'none',
             padding: '0.5rem 1rem',
             borderRadius: '6px',
             cursor: 'pointer',
           }}
         >
-            ⬅️ กลับหน้าหลัก
+          ⬅️ กลับหน้าหลัก
         </button>
       </div>
 
       {loading ? (
         <p>กำลังโหลดข้อมูล...</p>
-      ) : appointments.length === 0 ? (
-        <p>ไม่พบผู้ป่วยที่ต้องแจ้งเตือน</p>
       ) : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {appointments.map((a) => {
-            const message = generateMessage(a);
-            const hn = a.patients?.id || 'ไม่พบ HN';
+        <>
+          {/* รายการที่ยังไม่ส่งแจ้งเตือน */}
+          <h3 style={{ marginTop: '2rem' }}>🟡 ยังไม่ได้แจ้งเตือน</h3>
+          {pendingReminders.length === 0 ? (
+            <p>ไม่พบผู้ป่วยที่ต้องแจ้งเตือน</p>
+          ) : (
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {pendingReminders.map((a) => {
+                const message = generateMessage(a);
+                const hn = a.patients?.id || 'ไม่พบ HN';
+                const name = `${a.patients?.first_name || ''} ${a.patients?.last_name || ''}`;
 
-            return (
-              <li
-                key={a.id}
-                style={{
-                  border: '1px solid #ddd',
-                  borderRadius: '10px',
-                  padding: '1rem',
-                  marginBottom: '1rem',
-                  backgroundColor: '#fefefe', // 💡 สีอ่อนขึ้นกว่าเดิม
-                }}
-              >
-                <div style={{ marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  🆔 HN: {hn}
-                </div>
-                <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{message}</pre>
-                <div style={{ marginTop: '0.5rem' }}>
-                  <button
-                    onClick={() => copyToClipboard(message)}
+                return (
+                  <li
+                    key={a.id}
                     style={{
-                      backgroundColor: '#4caf50',
-                      color: 'white',
-                      border: 'none',
-                      padding: '0.5rem 1rem',
-                      borderRadius: '6px',
-                      marginRight: '1rem',
-                      cursor: 'pointer',
+                      border: '1px solid #ddd',
+                      borderRadius: '10px',
+                      padding: '1rem',
+                      marginBottom: '1rem',
+                      backgroundColor: '#fefefe',
                     }}
                   >
-                    📋 คัดลอกข้อความ
-                  </button>
+                    <div style={{ marginBottom: '0.5rem', fontWeight: 'bold' }}>
+                      🆔 HN: {hn}
+                    </div>
+                    <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{message}</pre>
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <button
+                        onClick={() => copyToClipboard(message)}
+                        style={{
+                          backgroundColor: '#4caf50',
+                          color: 'white',
+                          border: 'none',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '6px',
+                          marginRight: '1rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        📋 คัดลอกข้อความ
+                      </button>
+                      <button
+                        onClick={() => markAsReminded(a.id, name)}
+                        style={{
+                          backgroundColor: '#1976d2',
+                          color: 'white',
+                          border: 'none',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        ✅ ส่งแล้ว
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
 
-                  <button
-                    onClick={() =>
-                      markAsReminded(
-                        a.id,
-                        `${a.patients?.first_name || ''} ${a.patients?.last_name || ''}`
-                      )
-                    }
+          {/* รายการที่ส่งแจ้งเตือนแล้ว */}
+          <h3 style={{ marginTop: '3rem' }}>✅ แจ้งเตือนแล้ว</h3>
+          {sentReminders.length === 0 ? (
+            <p>ยังไม่มีรายการที่แจ้งเตือนแล้ว</p>
+          ) : (
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {sentReminders.map((a) => {
+                const message = generateMessage(a);
+                const hn = a.patients?.id || 'ไม่พบ HN';
+
+                return (
+                  <li
+                    key={a.id}
                     style={{
-                      backgroundColor: '#1976d2',
-                      color: 'white',
-                      border: 'none',
-                      padding: '0.5rem 1rem',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
+                      border: '1px solid #ddd',
+                      borderRadius: '10px',
+                      padding: '1rem',
+                      marginBottom: '1rem',
+                      backgroundColor: '#f4f4f4',
+                      opacity: 0.8,
                     }}
                   >
-                    ✅ ส่งแล้ว
-                  </button>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+                    <div style={{ marginBottom: '0.5rem', fontWeight: 'bold' }}>
+                      🆔 HN: {hn}
+                    </div>
+                    <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{message}</pre>
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <button
+                        onClick={() => copyToClipboard(message)}
+                        style={{
+                          backgroundColor: '#4caf50',
+                          color: 'white',
+                          border: 'none',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        📋 คัดลอกข้อความ
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </>
       )}
     </div>
   );

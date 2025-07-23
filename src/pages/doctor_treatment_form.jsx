@@ -390,7 +390,7 @@ export default function DoctorTreatmentForm() {
           {message && <p style={{ color: 'red' }}>{message}</p>}
 
           <div style={{ marginTop: '1rem' }}>
-            <button onClick={() => setIsReferOpen(true)}>📤 ส่งต่อ</button>{' '}
+            <button onClick={() => setIsReferOpen(true)}>💾 บันทึก</button>{' '}
             <button onClick={() => navigate('/dashboard/doctor/room')}>ยกเลิก</button>
           </div>
         </div>
