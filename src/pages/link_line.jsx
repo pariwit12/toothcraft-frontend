@@ -40,6 +40,12 @@ export default function LinkLine() {
     initLiff();
   }, []);
 
+  useEffect(() => {
+    if (status === 'success') {
+      alert('✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ');
+    }
+  }, [status]);
+
   const handleVerifyId = async () => {
     try {
       const res = await axios.get(`${API_URL}/public/search-patients-by-id-number/${idNumber.trim()}`);
@@ -157,12 +163,6 @@ export default function LinkLine() {
       </div>
     );
   }
-
-  useEffect(() => {
-  if (status === 'success') {
-    alert('✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ');
-  }
-}, [status]);
 
   if (status === 'success') {
     return (
