@@ -44,6 +44,7 @@ export default function LinkLine() {
     try {
       const res = await axios.get(`${API_URL}/public/search-patients-by-id-number/${idNumber.trim()}`);
       setPatient(res.data);
+      setPhone(res.data.telephone || '');
       setStatus('verified');
     } catch (err) {
       console.error(err);
@@ -62,23 +63,19 @@ export default function LinkLine() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!lineUserId || !patient?.id || !phone) return;
+    if (!lineUserId || !patient?.id_number || !phone) return;
 
     try {
-      await axios.post(`${API_URL}/public/link-line`, {
+      await axios.post(`${API_URL}/public/link-line-and-update-phone`, {
         id_number: patient.id_number,
         line_user_id: lineUserId,
-      });
-
-      await axios.put(`${API_URL}/public/${patient.id}`, {
-        ...patient,
         telephone: phone,
       });
 
       setStatus('success');
     } catch (err) {
       console.error(err);
-      alert('❌ เกิดข้อผิดพลาดในการเชื่อมบัญชีหรืออัปเดตเบอร์โทร');
+      alert('❌ เกิดข้อผิดพลาดในการลงทะเบียน');
     }
   };
 
