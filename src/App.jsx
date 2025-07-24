@@ -13,6 +13,7 @@ import DashboardDoctor from './pages/dashboard_doctor';
 import DoctorRoomPage from './pages/doctor_room_page';
 import DoctorTreatmentForm from './pages/doctor_treatment_form';
 import MyDfSummaryReport from './pages/my_df_summary_report';
+import DoctorTodaySummary from './pages/doctor_today_summary';
 
 /* Staff || Admin */
 import DashboardStaff from './pages/dashboard_staff';
@@ -84,6 +85,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/doctor-today-summary" element={<DoctorTodaySummary />} />
 
 
         {/* Staff || Admin */}

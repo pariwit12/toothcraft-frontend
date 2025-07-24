@@ -77,6 +77,9 @@ export default function DashboardDoctor() {
         <Link to="/search">
           <button>🔎 ค้นหาผู้ป่วย</button>
         </Link>
+        <Link to="/doctor-today-summary">
+          <button>📝 สรุปวันนี้</button>
+        </Link>
         <Link to="/my-df-summary-report">
           <button>📄 ดูรายงาน DF ของฉัน</button>
         </Link>
