@@ -72,7 +72,6 @@ export default function LinkLine() {
         telephone: phone,
       });
 
-      alert('✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ');
       setStatus('success');
     } catch (err) {
       console.error(err);
@@ -158,6 +157,12 @@ export default function LinkLine() {
       </div>
     );
   }
+
+  useEffect(() => {
+  if (status === 'success') {
+    alert('✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ');
+  }
+}, [status]);
 
   if (status === 'success') {
     return (
