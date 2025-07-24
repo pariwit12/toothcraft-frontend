@@ -117,10 +117,10 @@ export default function DoctorTreatmentForm() {
       const procName = vp.procedures?.name || 'ไม่มีชื่อหัตถการ';
       const tooth = vp.tooth ? `#${vp.tooth}` : '';
       const price = vp.price ? `(${vp.price})` : '';
-      const paidStatus = vp.paid ? 'ชำระแล้ว' : 'ยังไม่ชำระ';
+      const paidStatus = vp.paid ? '' : ' - ยังไม่ชำระ';
       return (
         <React.Fragment key={idx}>
-          {`${procName} ${tooth} ${price} - ${paidStatus}`}
+          {`${procName} ${tooth} ${price}${paidStatus}`}
           {idx !== visit.visit_procedures.length - 1 && <br />}
         </React.Fragment>
       );
@@ -404,6 +404,7 @@ export default function DoctorTreatmentForm() {
               <thead>
                 <tr>
                   <th style={{ border: '1px solid #ccc', padding: '0.5rem' }}>วันที่</th>
+                  <th style={{ border: '1px solid #ccc', padding: '0.5rem' }}>หมอ</th>
                   <th style={{ border: '1px solid #ccc', padding: '0.5rem' }}>บันทึก</th>
                   <th style={{ border: '1px solid #ccc', padding: '0.5rem' }}>หัตถการ</th>
                   <th style={{ border: '1px solid #ccc', padding: '0.5rem' }}>นัดครั้งหน้า</th>
@@ -414,6 +415,9 @@ export default function DoctorTreatmentForm() {
                   <tr key={v.id}>
                     <td style={{ whiteSpace: 'nowrap', padding: '0.25rem 0', border: '1px solid #ccc' }}>
                       {new Date(v.visit_time).toLocaleDateString('th-TH')}
+                    </td>
+                    <td style={{ whiteSpace: 'pre-wrap', padding: '0.25rem 0', border: '1px solid #ccc' }}>
+                      {`${v.doctors.first_name} (${v.doctors.nickname})` || '-'}
                     </td>
                     <td style={{ whiteSpace: 'pre-wrap', padding: '0.25rem 0', border: '1px solid #ccc' }}>
                       {v.treatment_note || '-'}
