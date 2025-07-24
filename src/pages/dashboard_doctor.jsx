@@ -125,7 +125,7 @@ export default function DashboardDoctor() {
                 </td>
                 <td style={{ border: '1px solid #ccc', padding: '8px' }}>
                   {appt.patients
-                    ? `${appt.patients.first_name || ''} ${appt.patients.last_name || ''}`
+                    ? `${appt.patient_id} - ${appt.patients.first_name || ''} ${appt.patients.last_name || ''}`
                     : '-'}
                 </td>
                 <td style={{ border: '1px solid #ccc', padding: '8px' }}>
