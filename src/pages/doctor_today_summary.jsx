@@ -46,7 +46,7 @@ export default function DoctorVisitTodayPage() {
   };
   
   const formatProcedures = (visit) => {
-    if (!visit.visit_procedures || visit.visit_procedures.length === 0) return '-';
+    if (!visit.visit_procedures || visit.visit_procedures.length === 0) return '';
 
     return visit.visit_procedures.map((vp, idx) => {
       const procName = vp.procedures?.name || 'ไม่มีชื่อหัตถการ';

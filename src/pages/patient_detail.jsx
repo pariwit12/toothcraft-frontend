@@ -86,7 +86,7 @@ export default function PatientDetail() {
 
       return (
         <React.Fragment key={idx}>
-          - {displayText + statusText}
+          {'- ' + displayText + statusText}
           {idx !== visit.visit_procedures.length - 1 && <br />}
         </React.Fragment>
       );
