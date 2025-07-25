@@ -64,7 +64,7 @@ export default function PatientHistoryModal({ isOpen, patientObj, onClose }) {
                   <td>{v.doctors?.first_name} {v.doctors?.last_name}</td>
                   <td style={{ whiteSpace: 'pre-wrap' }}>{v.treatment_note || '-'}</td>
                   <td style={{ whiteSpace: 'pre-wrap' }}>{formatProcedures(v)}</td>
-                  <td>{v.next_visit || '-'}</td>
+                  <td style={{ whiteSpace: 'pre-wrap' }}>{v.next_visit || '-'}</td>
                 </tr>
               ))}
             </tbody>
@@ -86,8 +86,8 @@ const modalStyle = {
   background: '#fff',
   padding: '2rem',
   borderRadius: '10px',
-  width: '90%',
-  maxWidth: '600px',
+  width: '95%',
+  maxWidth: '1200px',
   maxHeight: '90vh',
   overflowY: 'auto',
 };

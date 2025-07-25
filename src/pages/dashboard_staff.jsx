@@ -220,6 +220,11 @@ export default function DashboardStaff() {
                 👤 คนไข้ใหม่ (ไม่มี Line)
               </button>
             </Link>
+            <Link to="/visit-today-summary">
+              <button style={{ display: 'block', width: '100%' }}>
+                📋 คนไข้ที่มาวันนี้
+              </button>
+            </Link>
             <Link to="/daily-report-fixed">
               <button style={{ display: 'block', width: '100%' }}>📋 รายงานประจำวัน</button>
             </Link>
