@@ -59,7 +59,7 @@ export default function DoctorVisitTodayPage() {
 
       return (
         <div key={vp.id}>
-          - {displayText + statusText}
+          {'- ' + displayText + statusText}
           {!vp.paid && (
             <button
               style={{ marginLeft: '0.5rem', color: 'red' }}
