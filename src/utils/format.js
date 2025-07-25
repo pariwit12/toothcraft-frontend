@@ -41,7 +41,7 @@ export function formatProcedures(visit) {
 
     return (
       <>
-        {displayText + statusText}
+        {'- ' + displayText + statusText}
         {idx !== visit.visit_procedures.length - 1 && <br />}
       </>
     );
