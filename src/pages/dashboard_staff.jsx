@@ -231,6 +231,9 @@ export default function DashboardStaff() {
             <Link to="/insurance-patient-list">
               <button style={{ display: 'block', width: '100%' }}>💳 ผู้ป่วยตามสิทธิ</button>
             </Link>
+            <Link to="/doctor-list">
+              <button style={{ display: 'block', width: '100%' }}>🧑‍⚕️ รายชื่อหมอทั้งหมด</button>
+            </Link>
             <Link to="/logout">
               <button style={{ display: 'block', width: '100%' }}>ออกจากระบบ</button>
             </Link>

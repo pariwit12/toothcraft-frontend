@@ -29,6 +29,7 @@ import ConfirmCreateSentList from './pages/confirm_create_sent_list';
 import RegisterPatientWithLine from './pages/register_patient_with_line';
 import InsurancePatientList from './pages/insurance_patient_list';
 import VisitTodaySummary from './pages/visit_today_summary';
+import DoctorList from './pages/doctor_list';
 
 /* Admin */
 import MoneyReceivedReport from './pages/money_received_report';
@@ -166,6 +167,7 @@ export default function App() {
         />
         <Route path="/insurance-patient-list" element={<InsurancePatientList />} />
         <Route path="/visit-today-summary" element={<VisitTodaySummary />} />
+        <Route path="/doctor-list" element={<DoctorList />} />
 
 
         {/* Admin */}
