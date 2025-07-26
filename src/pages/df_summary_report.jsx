@@ -11,6 +11,9 @@ export default function DfSummaryReport() {
   const [loading, setLoading] = useState(false);
   const [reportData, setReportData] = useState(null);
   const [error, setError] = useState(null);
+  const [insuranceInputs, setInsuranceInputs] = useState({});
+  const [savedInsurance, setSavedInsurance] = useState({});
+  const [lockedDoctors, setLockedDoctors] = useState({});
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
@@ -42,6 +45,51 @@ export default function DfSummaryReport() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleInsuranceChange = (doctorId, date, value) => {
+    setInsuranceInputs((prev) => ({
+      ...prev,
+      [`${doctorId}_${date}`]: value,
+    }));
+  };
+  
+  const handleSaveInsuranceAll = (doctorId, dailySummary) => {
+    const newSaved = {};
+    dailySummary.forEach((day) => {
+      const key = `${doctorId}_${day.date}`;
+      const value = insuranceInputs[key] || '0';
+      newSaved[key] = value;
+    });
+
+    setSavedInsurance((prev) => ({
+      ...prev,
+      ...newSaved,
+    }));
+
+    setLockedDoctors((prev) => ({
+      ...prev,
+      [doctorId]: true,
+    }));
+  };
+
+  const handleEditInsurance = (doctorId, dailySummary) => {
+    setLockedDoctors((prev) => ({
+      ...prev,
+      [doctorId]: false,
+    }));
+
+    // เติมค่าเดิมกลับไปใน input เพื่อให้แก้ไขต่อได้
+    const newInputs = {};
+    dailySummary.forEach((day) => {
+      const key = `${doctorId}_${day.date}`;
+      newInputs[key] = savedInsurance[key] || '';
+    });
+
+    setInsuranceInputs((prev) => ({
+      ...prev,
+      ...newInputs,
+    }));
   };
 
   return (
@@ -135,6 +183,141 @@ export default function DfSummaryReport() {
                     </tr>
                   </tbody>
                 </table>
+
+                {doc.dailySummary && doc.dailySummary.length > 0 && (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <strong>สรุป DF รายวัน:</strong>
+                    <table
+                      style={{
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        marginTop: '0.5rem',
+                        border: '1px solid #ccc',
+                      }}
+                    >
+                      <thead>
+                        <tr style={{ backgroundColor: '#f0f0f0' }}>
+                          <th style={{ padding: '0.4rem', border: '1px solid #ccc' }}>วันที่</th>
+                          <th style={{ padding: '0.4rem', border: '1px solid #ccc', textAlign: 'right' }}>DF (บาท)</th>
+                          <th style={{ padding: '0.4rem', border: '1px solid #ccc', textAlign: 'center' }}>ประกัน (บาท)</th>
+                          <th style={{ padding: '0.4rem', border: '1px solid #ccc', textAlign: 'right' }}>จ่ายจริง (บาท)</th>
+                          <th style={{ padding: '0.4rem', border: '1px solid #ccc' }}>หมายเหตุ</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {doc.dailySummary.map((day, i) => {
+                          const isWorkingDay = doc.workingDates.some((wd) => {
+                            const wdDateStr = new Date(wd.start_time).toLocaleDateString('en-CA', {
+                              timeZone: 'Asia/Bangkok',
+                            });
+                            return wdDateStr === day.date;
+                          });
+
+                          return (
+                            <tr
+                              key={i}
+                              style={{
+                                backgroundColor: isWorkingDay ? 'white' : '#ffe6e6',
+                                fontWeight: isWorkingDay ? 'normal' : 'bold',
+                              }}
+                            >
+                              <td style={{ padding: '0.4rem', border: '1px solid #ccc' }}>{day.date}</td>
+                              <td style={{ padding: '0.4rem', border: '1px solid #ccc', textAlign: 'right' }}>
+                                {Number(day.totalDF).toLocaleString()}
+                              </td>
+                              <td style={{ padding: '0.4rem', border: '1px solid #ccc', textAlign: 'center' }}>
+                                {lockedDoctors[doc.doctorId] ? (
+                                  <span>{Number(savedInsurance[`${doc.doctorId}_${day.date}`] || 0).toLocaleString()} บาท</span>
+                                ) : (
+                                  <input
+                                    type="number"
+                                    value={insuranceInputs[`${doc.doctorId}_${day.date}`] || ''}
+                                    onChange={(e) => handleInsuranceChange(doc.doctorId, day.date, e.target.value)}
+                                    style={{
+                                      width: '100px',
+                                      padding: '0.2rem',
+                                      borderRadius: '4px',
+                                      border: '1px solid #ccc',
+                                      marginBottom: '0.2rem',
+                                    }}
+                                  />
+                                )}
+                              </td>
+                              <td style={{ padding: '0.4rem', border: '1px solid #ccc', textAlign: 'right' }}>
+                                {(() => {
+                                  const df = Number(day.totalDF || 0);
+                                  const key = `${doc.doctorId}_${day.date}`;
+                                  const insurance = Number(savedInsurance[key] || insuranceInputs[key] || 0);
+                                  const actual = Math.max(df, insurance);
+                                  return actual.toLocaleString();
+                                })()}
+                              </td>
+                              <td style={{ padding: '0.4rem', border: '1px solid #ccc' }}>
+                                {!isWorkingDay && '⚠️ ไม่ได้ลงตารางทำงาน'}
+                              </td>
+                            </tr>
+                          );
+                        })}
+
+                        <tr style={{ backgroundColor: '#e8f5e9', fontWeight: 'bold' }}>
+                          <td style={{ padding: '0.4rem', border: '1px solid #ccc' }}>รวม</td>
+                          <td style={{ padding: '0.4rem', border: '1px solid #ccc', textAlign: 'right' }}>
+                            {doc.dailySummary.reduce((sum, day) => sum + Number(day.totalDF || 0), 0).toLocaleString()}
+                          </td>
+                          <td></td>
+                          <td style={{ padding: '0.4rem', border: '1px solid #ccc', textAlign: 'right' }}>
+                            {(() => {
+                              return doc.dailySummary.reduce((sum, day) => {
+                                const df = Number(day.totalDF || 0);
+                                const key = `${doc.doctorId}_${day.date}`;
+                                const insurance = Number(savedInsurance[key] || insuranceInputs[key] || 0);
+                                return sum + Math.max(df, insurance);
+                              }, 0).toLocaleString();
+                            })()}
+                          </td>
+                          <td></td>
+                        </tr>
+
+                        {/* ✅ แถวปุ่มบันทึก */}
+                        <tr>
+                          <td colSpan="5" style={{ textAlign: 'right', padding: '0.6rem' }}>
+                            {lockedDoctors[doc.doctorId] ? (
+                              <button
+                                onClick={() => handleEditInsurance(doc.doctorId, doc.dailySummary)}
+                                style={{
+                                  fontSize: '1rem',
+                                  padding: '0.4rem 1rem',
+                                  backgroundColor: '#ffc107',
+                                  color: '#000',
+                                  border: 'none',
+                                  borderRadius: '4px',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                ✏️ แก้ไข
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleSaveInsuranceAll(doc.doctorId, doc.dailySummary)}
+                                style={{
+                                  fontSize: '1rem',
+                                  padding: '0.4rem 1rem',
+                                  backgroundColor: '#007bff',
+                                  color: '#fff',
+                                  border: 'none',
+                                  borderRadius: '4px',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                💾 บันทึก
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
 
                 {/* ตารางแสดงรายการ money_received ของหมอคนนั้น */}
                 <h4>รายการเงินรับของ {doc.doctorName || '-'}</h4>
