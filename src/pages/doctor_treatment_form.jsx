@@ -120,7 +120,7 @@ export default function DoctorTreatmentForm() {
       const paidStatus = vp.paid ? '' : ' - ยังไม่ชำระ';
       return (
         <React.Fragment key={idx}>
-          {`${procName} ${tooth} ${price}${paidStatus}`}
+          {`- ${procName} ${tooth} ${price}${paidStatus}`}
           {idx !== visit.visit_procedures.length - 1 && <br />}
         </React.Fragment>
       );
