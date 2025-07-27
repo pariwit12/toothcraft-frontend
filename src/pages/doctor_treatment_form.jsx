@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReferModal from '../components/refer_modal';
+import ToothSelectModal from '../components/tooth_select_modal';
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function DoctorTreatmentForm() {
@@ -16,6 +17,8 @@ export default function DoctorTreatmentForm() {
   const [visitHistory, setVisitHistory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [isReferOpen, setIsReferOpen] = useState(false);
+  const [isToothModalOpen, setIsToothModalOpen] = useState(false);
+  const [editingToothIndex, setEditingToothIndex] = useState(null);
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -212,11 +215,22 @@ export default function DoctorTreatmentForm() {
     }
   };
 
-
   const allCategories = [...new Set(availableProcedures.map((p) => p.category?.trim()))];
 
   const handleRemoveProcedure = (index) => {
     setProcedures((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const openToothModal = (index) => {
+    setEditingToothIndex(index);
+    setIsToothModalOpen(true);
+  };
+
+  const handleToothSelect = (value) => {
+    if (editingToothIndex !== null) {
+      handleChangeProcedure(editingToothIndex, 'tooth', value);
+      setEditingToothIndex(null);
+    }
   };
 
   return (
@@ -337,18 +351,19 @@ export default function DoctorTreatmentForm() {
 
                       <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <label htmlFor={`tooth-${index}`}>ซี่ฟัน:</label>
-                        <input
-                          id={`tooth-${index}`}
-                          type="text"
-                          value={proc.tooth}
-                          onChange={(e) => handleChangeProcedure(index, 'tooth', e.target.value)}
+                        <button
+                          onClick={() => openToothModal(index)}
                           style={{
-                            width: '60px',
-                            padding: '4px 6px',
-                            borderRadius: '5px',
+                            padding: '4px 8px',
                             border: '1px solid #ccc',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                            minWidth: '60px',
+                            background: '#f9f9f9'
                           }}
-                        />
+                        >
+                          {proc.tooth || 'เลือก'}
+                        </button>
                       </div>
 
                       <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -390,7 +405,19 @@ export default function DoctorTreatmentForm() {
           {message && <p style={{ color: 'red' }}>{message}</p>}
 
           <div style={{ marginTop: '1rem' }}>
-            <button onClick={() => setIsReferOpen(true)}>💾 บันทึก</button>{' '}
+            <button
+              onClick={async () => {
+                // 🔒 ตรวจสอบการเลือกซี่ฟันให้ครบทุกหัตถการ
+                const missingTooth = procedures.some((p) => !p.tooth || p.tooth.trim() === '');
+                if (missingTooth) {
+                  alert('กรุณาเลือกซี่ฟันให้ครบทุกหัตถการ');
+                  return;
+                }
+                setIsReferOpen(true);
+              }}
+            >
+              💾 บันทึก
+            </button>{' '}
             <button onClick={() => navigate('/dashboard/doctor/room')}>ยกเลิก</button>
           </div>
         </div>
@@ -440,6 +467,11 @@ export default function DoctorTreatmentForm() {
         onClose={() => setIsReferOpen(false)}
         onConfirm={handleReferConfirm}
         queueId={queueId}
+      />
+      <ToothSelectModal
+        isOpen={isToothModalOpen}
+        onClose={() => setIsToothModalOpen(false)}
+        onSelect={handleToothSelect}
       />
     </div>
   );
