@@ -228,6 +228,9 @@ export default function DashboardStaff() {
             <Link to="/daily-report-fixed">
               <button style={{ display: 'block', width: '100%' }}>📋 รายงานประจำวัน</button>
             </Link>
+            <Link to="/continue-tx-patient-list">
+              <button style={{ display: 'block', width: '100%' }}>🔁 ผู้ป่วยต่อเนื่อง</button>
+            </Link>
             <Link to="/insurance-patient-list">
               <button style={{ display: 'block', width: '100%' }}>💳 ผู้ป่วยตามสิทธิ</button>
             </Link>
