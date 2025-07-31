@@ -26,16 +26,17 @@ export default function ContinueTxPatientList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    try {
-      const decoded = jwtDecode(token);
-      setRole(decoded.role);
-    } catch (err) {
-      console.error('Token decode failed', err);
-    }
+    const decoded = jwtDecode(token || '');
+    setRole(decoded.role);
 
     const fetchPatients = async () => {
       try {
-        const res = await fetch(`${API_URL}/continue-tx-patient`, {
+        const url =
+          decoded.role === 'doctor'
+            ? `${API_URL}/continue-tx-patient/doctor`
+            : `${API_URL}/continue-tx-patient`;
+
+        const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -101,7 +102,9 @@ export default function ContinueTxPatientList() {
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <h2>รายชื่อผู้ป่วยต่อเนื่อง</h2>
         <button
-          onClick={() => navigate('/dashboard/staff')}
+          onClick={() =>
+            navigate(role === 'doctor' ? '/dashboard/doctor' : '/dashboard/staff')
+          }
           style={{
             marginLeft: '1rem',
             border: 'none',
@@ -242,14 +245,16 @@ export default function ContinueTxPatientList() {
                 >
                   📅 วันนัด
                 </button>
-                <button
-                  onClick={() => {
-                    setSelectedNotePatient(p);
-                    setEditNoteModalOpen(true);
-                  }}
-                >
-                  📝 แก้ไขหมายเหตุ
-                </button>
+                {(role === 'admin' || role === 'staff') && (
+                  <button
+                    onClick={() => {
+                      setSelectedNotePatient(p);
+                      setEditNoteModalOpen(true);
+                    }}
+                  >
+                    📝 แก้ไขหมายเหตุ
+                  </button>
+                )}
                 {role === 'admin' && (
                   <button
                     style={{

@@ -80,6 +80,9 @@ export default function DashboardDoctor() {
         <Link to="/doctor-today-summary">
           <button>📝 สรุปวันนี้</button>
         </Link>
+        <Link to="/continue-tx-patient-list">
+          <button>🔁 ผู้ป่วยต่อเนื่อง</button>
+        </Link>
         <Link to="/my-df-summary-report">
           <button>📄 ดูรายงาน DF ของฉัน</button>
         </Link>
