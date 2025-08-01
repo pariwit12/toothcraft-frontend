@@ -32,6 +32,16 @@ export default function PatientDetail() {
   // เก็บประวัติการรักษา
   const [visitHistory, setVisitHistory] = useState([]);
 
+  const [filterDoctor, setFilterDoctor] = useState([]);
+  const [filterProcedure, setFilterProcedure] = useState([]);
+  const [filterTooth, setFilterTooth] = useState([]);
+  const [searchNote, setSearchNote] = useState('');
+  const [searchNextVisit, setSearchNextVisit] = useState('');
+
+  const [allDoctors, setAllDoctors] = useState([]);
+  const [allProcedures, setAllProcedures] = useState([]);
+  const [allTeeth, setAllTeeth] = useState([]);
+
   useEffect(() => {
     // ดึงข้อมูลผู้ป่วย
     fetch(`${API_URL}/patients/${id}`, {
@@ -59,6 +69,20 @@ export default function PatientDetail() {
       .then((data) => {
         if (Array.isArray(data)) setVisitHistory(data);
         else setVisitHistory([]);
+
+        setAllDoctors([...new Set(data.map(v => `${v.doctors?.first_name} ${v.doctors?.last_name}`).filter(Boolean))]);
+
+        setAllProcedures([...new Set(
+          data.flatMap(v =>
+            v.visit_procedures?.map(vp => vp.procedures?.name).filter(Boolean) || []
+          )
+        )]);
+
+        setAllTeeth([...new Set(
+          data.flatMap(v =>
+            v.visit_procedures?.map(vp => vp.tooth).filter(Boolean) || []
+          )
+        )]);
       })
       .catch((err) => {
         console.error(err);
@@ -115,6 +139,31 @@ export default function PatientDetail() {
       });
   };
 
+  const toggleFilter = (value, currentArray, setArray) => {
+    if (currentArray.includes(value)) {
+      setArray(currentArray.filter(v => v !== value));
+    } else {
+      setArray([...currentArray, value]);
+    }
+  };
+
+  const filteredVisitHistory = visitHistory.filter(v => {
+    const doctorName = `${v.doctors?.first_name} ${v.doctors?.last_name}`;
+    const procedureNames = v.visit_procedures?.map(vp => vp.procedures?.name) || [];
+    const toothNumbers = v.visit_procedures?.map(vp => vp.tooth) || [];
+
+    const matchDoctor = filterDoctor.length === 0 || filterDoctor.includes(doctorName);
+    const matchProcedure =
+      filterProcedure.length === 0 || procedureNames.some(p => filterProcedure.includes(p));
+    const matchTooth =
+      filterTooth.length === 0 || toothNumbers.some(t => filterTooth.includes(t));
+
+    const matchNote = v.treatment_note?.toLowerCase().includes(searchNote.toLowerCase() || '');
+    const matchNextVisit = v.next_visit?.toLowerCase().includes(searchNextVisit.toLowerCase() || '');
+
+    return matchDoctor && matchProcedure && matchTooth && matchNote && matchNextVisit;
+  });
+
   return (
     <>
       <div style={{ padding: '1rem' }}>
@@ -150,7 +199,107 @@ export default function PatientDetail() {
           </div>
         )}
 
-        <h3>ประวัติการรักษา</h3>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <h3>ประวัติการรักษา</h3>
+          <button
+            onClick={() => {
+              setFilterDoctor([]);
+              setFilterProcedure([]);
+              setFilterTooth([]);
+            }}
+            style={{
+              marginLeft: '1rem',
+              border: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: '6px',
+              cursor: 'pointer',
+            }}
+          >🧹 ล้างการกรอง</button>
+        </div>
+        {/* ช่องค้นหาเพิ่มเติม */}
+        <div>
+          <input
+            type="text"
+            placeholder="ค้นหาในบันทึก"
+            value={searchNote}
+            onChange={(e) => setSearchNote(e.target.value)}
+            style={{
+              padding: '0.5rem',
+              width: '100%',
+              maxWidth: '300px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+              marginBottom: '1rem',
+            }}
+          />
+        </div>
+
+        <div>
+          <input
+            type="text"
+            placeholder="ค้นหาในนัดครั้งหน้า"
+            value={searchNextVisit}
+            onChange={(e) => setSearchNextVisit(e.target.value)}
+            style={{
+              padding: '0.5rem',
+              width: '100%',
+              maxWidth: '300px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+              marginBottom: '1rem',
+            }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', gap: '2rem', marginBottom: '1rem' }}>
+          {/* หมอ */}
+          <div>
+            <strong>กรองหมอ:</strong><br />
+            {allDoctors.map((d, idx) => (
+              <label key={idx}>
+                <input
+                  type="checkbox"
+                  checked={filterDoctor.includes(d)}
+                  onChange={() => toggleFilter(d, filterDoctor, setFilterDoctor)}
+                />{' '}
+                {d}
+                <br />
+              </label>
+            ))}
+          </div>
+
+          {/* หัตถการ */}
+          <div>
+            <strong>กรองหัตถการ:</strong><br />
+            {allProcedures.map((p, idx) => (
+              <label key={idx}>
+                <input
+                  type="checkbox"
+                  checked={filterProcedure.includes(p)}
+                  onChange={() => toggleFilter(p, filterProcedure, setFilterProcedure)}
+                />{' '}
+                {p}
+                <br />
+              </label>
+            ))}
+          </div>
+
+          {/* ซี่ฟัน */}
+          <div>
+            <strong>กรองซี่ฟัน:</strong><br />
+            {allTeeth.map((t, idx) => (
+              <label key={idx}>
+                <input
+                  type="checkbox"
+                  checked={filterTooth.includes(t)}
+                  onChange={() => toggleFilter(t, filterTooth, setFilterTooth)}
+                />{' '}
+                {t}
+                <br />
+              </label>
+            ))}
+          </div>
+        </div>
         {visitHistory.length === 0 ? (
           <p>ไม่มีประวัติการรักษา</p>
         ) : (
@@ -165,7 +314,7 @@ export default function PatientDetail() {
               </tr>
             </thead>
             <tbody>
-              {visitHistory.map((v) => (
+              {filteredVisitHistory.map((v) => (
                 <tr key={v.id}>
                   <td>{formatDate(v.visit_time)}</td>
                   <td>{v.doctors?.first_name} {v.doctors?.last_name}</td>
