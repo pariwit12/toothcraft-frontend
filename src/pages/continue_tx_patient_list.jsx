@@ -224,7 +224,15 @@ export default function ContinueTxPatientList() {
               <td>{p.tooth || '-'}</td>
               <td>{p.continue_tx_list?.name || '-'}</td>
               <td>{p.patients?.appointments?.[0]?.appointment_time ? 
-                p.patients?.appointments?.[0]?.appointment_time : '-'
+                new Date(p.patients?.appointments?.[0]?.appointment_time).toLocaleString('th-TH', {
+                  timeZone: 'Asia/Bangkok',
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
+                }) : '-'
                 }
               </td>
               <td style={{ whiteSpace: 'pre-wrap' }}>{p.continue_tx_note || '-'}</td>
