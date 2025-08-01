@@ -158,8 +158,8 @@ export default function PatientDetail() {
     const matchTooth =
       filterTooth.length === 0 || toothNumbers.some(t => filterTooth.includes(t));
 
-    const matchNote = v.treatment_note?.toLowerCase().includes(searchNote.toLowerCase() || '');
-    const matchNextVisit = v.next_visit?.toLowerCase().includes(searchNextVisit.toLowerCase() || '');
+    const matchNote = (v.treatment_note || '').toLowerCase().includes(searchNote.toLowerCase());
+    const matchNextVisit = (v.next_visit || '').toLowerCase().includes(searchNextVisit.toLowerCase());
 
     return matchDoctor && matchProcedure && matchTooth && matchNote && matchNextVisit;
   });
