@@ -481,6 +481,8 @@ export default function DoctorTreatmentForm() {
                 setFilterDoctor([]);
                 setFilterProcedure([]);
                 setFilterTooth([]);
+                setSearchNote('');
+                setSearchNextVisit('');
               }}
               style={{
                 marginLeft: '1rem',

@@ -99,6 +99,8 @@ export default function PatientHistoryModal({ isOpen, patientObj, onClose }) {
               setFilterDoctor([]);
               setFilterProcedure([]);
               setFilterTooth([]);
+              setSearchNote('');
+              setSearchNextVisit('');
             }}
             style={{
               marginLeft: '1rem',

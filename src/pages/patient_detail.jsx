@@ -206,6 +206,8 @@ export default function PatientDetail() {
               setFilterDoctor([]);
               setFilterProcedure([]);
               setFilterTooth([]);
+              setSearchNote('');
+              setSearchNextVisit('');
             }}
             style={{
               marginLeft: '1rem',
