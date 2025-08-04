@@ -1,8 +1,9 @@
 // 📁 frontend/src/pages/doctor_treatment_form.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReferModal from '../components/refer_modal';
 import ToothSelectModal from '../components/tooth_select_modal';
+import { jwtDecode } from 'jwt-decode';
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function DoctorTreatmentForm() {
@@ -11,6 +12,7 @@ export default function DoctorTreatmentForm() {
   const [nextVisit, setNextVisit] = useState('');
   const [procedures, setProcedures] = useState([]);
   const [availableProcedures, setAvailableProcedures] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [message, setMessage] = useState('');
   const [patient, setPatient] = useState(null);
   const [queueDetail, setQueueDetail] = useState(null);
@@ -23,24 +25,86 @@ export default function DoctorTreatmentForm() {
   const [searchNote, setSearchNote] = useState('');
   const [searchNextVisit, setSearchNextVisit] = useState('');
 
+  const [showHistoryFilter, setShowHistoryFilter] = useState('Hide'); // หรือ 'Show'
+
   const [allDoctors, setAllDoctors] = useState([]);
   const [allProcedures, setAllProcedures] = useState([]);
   const [allTeeth, setAllTeeth] = useState([]);
 
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [isReferOpen, setIsReferOpen] = useState(false);
   const [isToothModalOpen, setIsToothModalOpen] = useState(false);
-  const [editingToothIndex, setEditingToothIndex] = useState(null);
+  const [editingProcedureIndex, setEditingProcedureIndex] = useState(null);
+  const [editingIoFindingIndex, setEditingIoFindingIndex] = useState(null);
+
+
+  const [ioFindingListToInsert, setIoFindingListToInsert] = useState([]);
+  const [availableIoFindingList, setAvailableIoFindingList] = useState([]);
+  const [selectedIoPlan, setSelectedIoPlan] = useState('');
+
+
+  const [lastIoExams, setLastIoExams] = useState([]);
+
+  
+  const [displayMode, setDisplayMode] = useState('planOnly'); // 'planAndName' | 'planOnly' | 'byTooth'
+
+
+  const [selectedIoIdsToUpdateDateEnd, setSelectedIoIdsToUpdateDateEnd] = useState([]);
+
+  const [patientIoExams, setPatientIoExams] = useState([]);
+
+  const [visitHistoryIoDisplayMode, setVisitHistoryIoDisplayMode] = useState('planOnly'); // หรือ 'planAndName'
+
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  const decoded = jwtDecode(token);
 
   useEffect(() => {
     fetchProcedures();
     fetchPatientInfo();
     fetchQueueDetail();
     fetchVisitHistory();
+    fetchIoFindingList();
+    fetchLastIoExam();
+    fetchPatientIoExam();
   }, []);
+
+  const fetchPatientIoExam = async () => {
+    try {
+      const res = await fetch(`${API_URL}/io-exam-patient/patient/${patientId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) setPatientIoExams(data);
+    } catch {
+      console.error('ไม่สามารถโหลดผลการตรวจทั้งหมดของคนไข้');
+    }
+  };
+
+  const fetchLastIoExam = async () => {
+    try {
+      const res = await fetch(`${API_URL}/io-exam-patient/last/${patientId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) setLastIoExams(data);
+    } catch {
+      console.error('ไม่สามารถโหลดผลการตรวจล่าสุด');
+    }
+  };
+
+  const fetchIoFindingList = async () => {
+    try {
+      const res = await fetch(`${API_URL}/io-finding-list`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+
+      setAvailableIoFindingList(data);
+    } catch {
+      console.error('ไม่สามารถโหลด io_finding_list');
+    }
+  };
 
   const fetchProcedures = async () => {
     try {
@@ -242,22 +306,39 @@ export default function DoctorTreatmentForm() {
   };
 
   const allCategories = [...new Set(availableProcedures.map((p) => p.category?.trim()))];
+  const allPlan = [...new Set(availableIoFindingList.map((p) => p.plan?.trim()))];
 
   const handleRemoveProcedure = (index) => {
     setProcedures((prev) => prev.filter((_, i) => i !== index));
   };
+  
 
-  const openToothModal = (index) => {
-    setEditingToothIndex(index);
+  const openToothModal = ({ type, index }) => {
+    if (type === 'procedure') {
+      setEditingProcedureIndex(index);
+      setEditingIoFindingIndex(null);
+    } else if (type === 'io') {
+      setEditingProcedureIndex(null);
+      setEditingIoFindingIndex(index);
+    }
     setIsToothModalOpen(true);
   };
 
   const handleToothSelect = (value) => {
-    if (editingToothIndex !== null) {
-      handleChangeProcedure(editingToothIndex, 'tooth', value);
-      setEditingToothIndex(null);
+    if (editingProcedureIndex !== null) {
+      const updated = [...procedures];
+      updated[editingProcedureIndex].tooth = value;
+      setProcedures(updated);
+    } else if (editingIoFindingIndex !== null) {
+      const updated = [...ioFindingListToInsert];
+      updated[editingIoFindingIndex].tooth = value;
+      setIoFindingListToInsert(updated);
     }
+    setEditingProcedureIndex(null);
+    setEditingIoFindingIndex(null);
+    setIsToothModalOpen(false);
   };
+
 
   const toggleFilter = (value, currentArray, setArray) => {
     if (currentArray.includes(value)) {
@@ -284,9 +365,263 @@ export default function DoctorTreatmentForm() {
     return matchDoctor && matchProcedure && matchTooth && matchNote && matchNextVisit;
   });
 
+
+  const handleSaveIoFindings = async () => {
+    setMessage('');
+
+    if (ioFindingListToInsert.length === 0) {
+      alert('ยังไม่มีรายการผลการตรวจ');
+      return;
+    }
+
+    // ตรวจสอบว่าทุกรายการมีซี่ฟันครบ
+    const missingTooth = ioFindingListToInsert.some((item) => !item.tooth || item.tooth.trim() === '');
+    if (missingTooth) {
+      alert('กรุณาเลือกซี่ฟันให้ครบทุกผลการตรวจ');
+      return;
+    }
+
+    try {
+      const payload = {
+        patient_id: Number(patientId),
+        doctor_id: decoded.id, // ดึงจาก token
+        findings: ioFindingListToInsert,
+      };
+
+      const res = await fetch(`${API_URL}/io-exam-patient/multi-insert`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setMessage(data.error || 'เกิดข้อผิดพลาดในการบันทึกผลการตรวจ');
+        return;
+      }
+
+      alert('บันทึกผลการตรวจเรียบร้อยแล้ว');
+      setIoFindingListToInsert([]); // ล้างรายการที่เลือก
+      setSelectedIoPlan('');  // ล้าง Plan ที่เลือก
+
+      await fetchLastIoExam();
+      
+    } catch (err) {
+      console.error('เกิดข้อผิดพลาด:', err);
+      setMessage('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์');
+    }
+  };
+
+
+  const toothOrder = [
+    '18','17','16','15','14','13','12','11',
+    '21','22','23','24','25','26','27','28',
+    '38','37','36','35','34','33','32','31',
+    '41','42','43','44','45','46','47','48',
+    '55','54','53','52','51',
+    '61','62','63','64','65',
+    '75','74','73','72','71',
+    '81','82','83','84','85'
+  ];
+
+  const getToothOrderIndex = (toothSurface) => {
+    const match = toothSurface.match(/^(\d+)/);
+    const tooth = match ? match[1] : '';
+    return toothOrder.indexOf(tooth);
+  };
+
+
+  const groupedByPlanAndName = useMemo(() => {
+    const grouped = {};
+
+    lastIoExams.forEach(item => {
+      const { plan, name } = item.io_finding_list;
+      const tooth = item.tooth || '';
+      const surface = (item.surface || '').replaceAll(',', '');
+      const toothSurface = `${tooth}${surface}`;
+
+      if (!grouped[plan]) grouped[plan] = {};
+      if (!grouped[plan][name]) grouped[plan][name] = [];
+
+      grouped[plan][name].push({
+        id: item.id,
+        toothSurface,
+        tooth,
+        surface,
+      });
+    });
+
+    // เรียง toothSurface ภายในแต่ละ group
+    Object.keys(grouped).forEach(plan => {
+      Object.keys(grouped[plan]).forEach(name => {
+        grouped[plan][name].sort((a, b) => getToothOrderIndex(a.toothSurface) - getToothOrderIndex(b.toothSurface));
+      });
+    });
+
+    return grouped;
+  }, [lastIoExams]);
+
+
+  const groupedByPlan = useMemo(() => {
+    const grouped = {};
+
+    lastIoExams.forEach(item => {
+      const { plan, name } = item.io_finding_list;
+      const tooth = item.tooth || '';
+      const surface = (item.surface || '').replaceAll(',', '');
+      const toothSurface = `${tooth}${surface}`;
+
+      if (!grouped[plan]) grouped[plan] = [];
+      
+      grouped[plan].push({
+        id: item.id,
+        tooth,
+        surface,
+        io_finding_list: item.io_finding_list,
+      });
+    });
+
+    Object.keys(grouped).forEach(plan => {
+      grouped[plan].sort((a, b) => getToothOrderIndex(`${a.tooth}${a.surface}`) - getToothOrderIndex(`${b.tooth}${b.surface}`));
+    });
+
+    return grouped;
+  }, [lastIoExams]);
+
+
+  const groupedByTooth = useMemo(() => {
+    const grouped = {};
+
+    lastIoExams.forEach(item => {
+      const { plan, name } = item.io_finding_list;
+      const tooth = item.tooth || '';
+      const surface = (item.surface || '').replaceAll(',', '');
+      const toothSurface = `${tooth}${surface}`;
+
+      if (!grouped[tooth]) grouped[tooth] = [];
+      
+      grouped[tooth].push({
+        id: item.id,
+        surface,
+        toothSurface,
+        io_finding_list: item.io_finding_list,
+      });
+    });
+
+    Object.keys(grouped).forEach(tooth => {
+      grouped[tooth].sort((a, b) => {
+        const sa = a.surface || '';
+        const sb = b.surface || '';
+        return sa.localeCompare(sb);
+      });
+    });
+
+    // จัดเรียงลำดับซี่ฟันตามที่กำหนด
+    const ordered = {};
+    toothOrder.forEach(tooth => {
+      if (grouped[tooth]) ordered[tooth] = grouped[tooth];
+    });
+
+    return ordered;
+  }, [lastIoExams]);
+
+
+  const toggleIoSelectionToUpdateDateEnd = (id) => {
+    setSelectedIoIdsToUpdateDateEnd(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  };
+
+
+  const getIoPlansForVisit = (visit, mode = 'planAndName') => {
+    const plans = patientIoExams.filter(io =>
+      new Date(io.date_create) <= new Date(visit.visit_time) &&
+      (!io.date_end || new Date(io.date_end) > new Date(visit.visit_time))
+    );
+
+    if (plans.length === 0) return '-';
+
+    if (mode === 'planOnly') {
+      // 👉 Group by plan only
+      const grouped = {};
+
+      plans.forEach(io => {
+        const plan = io.io_finding_list?.plan || 'ไม่ระบุแผน';
+        const tooth = io.tooth || '';
+        const surface = (io.surface || '').replaceAll(',', '');
+        const toothSurface = `${tooth}${surface}`;
+
+        if (!grouped[plan]) grouped[plan] = [];
+
+        grouped[plan].push({ toothSurface });
+      });
+
+      // Sort each plan's toothSurfaces
+      Object.keys(grouped).forEach(plan => {
+        grouped[plan].sort((a, b) =>
+          getToothOrderIndex(a.toothSurface) - getToothOrderIndex(b.toothSurface)
+        );
+      });
+
+      return (
+        <>
+          {Object.entries(grouped).map(([plan, list]) => (
+            <div key={plan}>
+              <strong>- {plan}</strong>: {list.map(i => i.toothSurface).join(', ')}
+            </div>
+          ))}
+        </>
+      );
+    }
+
+    // 👉 Default: planAndName
+    const grouped = {};
+
+    plans.forEach(io => {
+      const plan = io.io_finding_list?.plan || 'ไม่ระบุแผน';
+      const name = io.io_finding_list?.name || 'ไม่ระบุชื่อ';
+      const tooth = io.tooth || '';
+      const surface = (io.surface || '').replaceAll(',', '');
+      const toothSurface = `${tooth}${surface}`;
+
+      if (!grouped[plan]) grouped[plan] = {};
+      if (!grouped[plan][name]) grouped[plan][name] = [];
+
+      grouped[plan][name].push({ toothSurface });
+    });
+
+    // Sort each plan/name
+    Object.keys(grouped).forEach(plan => {
+      Object.keys(grouped[plan]).forEach(name => {
+        grouped[plan][name].sort(
+          (a, b) => getToothOrderIndex(a.toothSurface) - getToothOrderIndex(b.toothSurface)
+        );
+      });
+    });
+
+    return (
+      <>
+        {Object.entries(grouped).map(([plan, names]) => (
+          <li key={plan}>
+            <strong>{plan}</strong>
+            {Object.entries(names).map(([name, toothList]) => (
+              <div key={name}>
+                - {name} {toothList.length > 0 && `(${toothList.map(i => i.toothSurface).join(', ')})`}
+              </div>
+            ))}
+          </li>
+        ))}
+      </>
+    );
+  };
+
+
   return (
     <div style={{ padding: '2rem' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', alignItems: 'stretch' }}>
         <div style={{ flex: 1, maxWidth: '50%', display: 'flex', flexDirection: 'column' }}>
           <h2>บันทึกการรักษา</h2>
 
@@ -403,7 +738,7 @@ export default function DoctorTreatmentForm() {
                       <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <label htmlFor={`tooth-${index}`}>ซี่ฟัน:</label>
                         <button
-                          onClick={() => openToothModal(index)}
+                          onClick={() => openToothModal({ type: 'procedure', index })}
                           style={{
                             padding: '4px 8px',
                             border: '1px solid #ccc',
@@ -458,6 +793,12 @@ export default function DoctorTreatmentForm() {
           <div style={{ marginTop: '1rem' }}>
             <button
               onClick={async () => {
+                // ✅ ตรวจสอบว่ามีผลการตรวจที่ยังไม่ได้บันทึกหรือไม่
+                if (ioFindingListToInsert.length > 0) {
+                  alert('กรุณาบันทึกผลการตรวจให้เรียบร้อยก่อนบันทึกการรักษา');
+                  return;
+                }
+                
                 // 🔒 ตรวจสอบการเลือกซี่ฟันให้ครบทุกหัตถการ
                 const missingTooth = procedures.some((p) => !p.tooth || p.tooth.trim() === '');
                 if (missingTooth) {
@@ -473,111 +814,549 @@ export default function DoctorTreatmentForm() {
           </div>
         </div>
 
-        <div style={{ flex: 1, maxWidth: '50%', padding: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <h3>ประวัติการรักษา</h3>
-            <button
-              onClick={() => {
-                setFilterDoctor([]);
-                setFilterProcedure([]);
-                setFilterTooth([]);
-                setSearchNote('');
-                setSearchNextVisit('');
-              }}
-              style={{
-                marginLeft: '1rem',
-                border: 'none',
-                padding: '0.5rem 1rem',
-                borderRadius: '6px',
-                cursor: 'pointer',
-              }}
-            >🧹 ล้างการกรอง</button>
+        {/* ให้ดัน content แยกกันในแนวบน-ล่าง (flexDirection: 'column') */}
+        <div 
+          style={{
+            flex: 1,
+            padding: '1rem',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          {/* ส่วนที่อยู่ชิดบน */}
+          <div> 
+            <div className="flex gap-2 mb-4" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <h2>แผนการรักษา</h2>
+              <button
+                onClick={() => {
+                  setDisplayMode('planAndName');
+                  setSelectedIoIdsToUpdateDateEnd([]);
+                }}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: displayMode === 'planAndName' ? '#007bff' : '#eee',
+                  color: displayMode === 'planAndName' ? 'white' : 'black',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+
+                  marginLeft: '0.5rem',
+                }}
+              >
+                ตาม I/O
+              </button>
+              <button
+                onClick={() => {
+                  setDisplayMode('planOnly');
+                  setSelectedIoIdsToUpdateDateEnd([]);
+                }}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: displayMode === 'planOnly' ? '#007bff' : '#eee',
+                  color: displayMode === 'planOnly' ? 'white' : 'black',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                }}
+              >
+                ตามแผน
+              </button>
+              <button
+                onClick={() => {
+                  setDisplayMode('byTooth');
+                  setSelectedIoIdsToUpdateDateEnd([]);
+                }}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: displayMode === 'byTooth' ? '#007bff' : '#eee',
+                  color: displayMode === 'byTooth' ? 'white' : 'black',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                }}
+              >
+                ตามซี่ฟัน
+              </button>
+            </div>
+
+
+            {lastIoExams.length > 0 && (
+              <>
+
+                {displayMode === 'planAndName' && (
+                  Object.entries(groupedByPlanAndName).map(([plan, items]) => (
+                    <div key={plan}>
+                      <h4 className="font-semibold text-md mb-1">🚨 {plan}</h4>
+                      {Object.entries(items).map(([name, arr]) => (
+                        <div key={name} className="ml-4" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
+                          - 
+                          {arr.map((item) => (
+                            <button
+                              key={item.id}
+                              onClick={() => toggleIoSelectionToUpdateDateEnd(item.id)}
+                              style={{
+                                background: selectedIoIdsToUpdateDateEnd.includes(item.id) ? '#007bff' : '#eee',
+                                color: selectedIoIdsToUpdateDateEnd.includes(item.id) ? 'white' : 'black',
+                                border: 'none',
+                                borderRadius: '5px',
+                                padding: '2px 6px',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {item.toothSurface}
+                            </button>
+                          ))}
+                          <span>{name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ))
+                )}
+
+
+                {displayMode === 'planOnly' && (
+                  Object.entries(groupedByPlan).map(([plan, arr]) => (
+                    <div key={plan}>
+                      <div className="ml-4" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
+                        <div className="font-semibold text-md mb-1"><h4 style={{display: 'inline'}}>🚨 {plan}: </h4></div>
+                        {arr.map((item) => (
+                          <button
+                            key={item.id}
+                            onClick={() => toggleIoSelectionToUpdateDateEnd(item.id)}
+                            style={{
+                              background: selectedIoIdsToUpdateDateEnd.includes(item.id) ? '#007bff' : '#eee',
+                              color: selectedIoIdsToUpdateDateEnd.includes(item.id) ? 'white' : 'black',
+                              border: 'none',
+                              borderRadius: '5px',
+                              padding: '2px 6px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {`${item.tooth}${item.surface}`}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
+
+                {displayMode === 'byTooth' && (
+                  Object.entries(groupedByTooth).map(([tooth, arr]) => (
+                    <div key={tooth}>
+                      <div className="font-semibold text-md mb-1" style={{marginTop: '0.25rem'}}><h4 style={{display: 'inline'}}>🚨 {tooth}</h4></div>
+                      <div className="ml-4" style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.25rem' }}>
+                        {arr.map((item) => (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            - 
+                            <button
+                              key={item.id}
+                              onClick={() => toggleIoSelectionToUpdateDateEnd(item.id)}
+                              style={{
+                                background: selectedIoIdsToUpdateDateEnd.includes(item.id) ? '#007bff' : '#eee',
+                                color: selectedIoIdsToUpdateDateEnd.includes(item.id) ? 'white' : 'black',
+                                border: 'none',
+                                borderRadius: '5px',
+                                padding: '2px 6px',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {item.io_finding_list.plan} {item.toothSurface ? `(${item.toothSurface})` : ''}
+                            </button>
+                            <span>- {item.io_finding_list.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
+
+
+              </>
+            )}
+
+
+            {selectedIoIdsToUpdateDateEnd.length > 0 && (
+              <div style={{ marginTop: '1rem' }}>
+                <button
+                  onClick={async () => {
+                    try {
+                      const payload = {
+                        ids: selectedIoIdsToUpdateDateEnd,
+                      };
+
+                      const res = await fetch(`${API_URL}/io-exam-patient/update-multi-date-end`, {
+                        method: 'PUT',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${token}`,
+                        },
+                        body: JSON.stringify(payload),
+                      });
+
+                      if (!res.ok) {
+                        const data = await res.json();
+                        alert(data.error || 'เกิดข้อผิดพลาดในการอัปเดต');
+                        return;
+                      }
+
+                      alert('อัปเดต date_end เรียบร้อย');
+                      setSelectedIoIdsToUpdateDateEnd([]);
+                      await fetchLastIoExam();
+                    } catch (err) {
+                      console.error(err);
+                      alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์');
+                    }
+                  }}
+                  style={{
+                    marginTop: '1rem',
+                    padding: '0.5rem 1rem',
+                    background: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✅ เสร็จสิ้น / ลบรายการ ({selectedIoIdsToUpdateDateEnd.length} รายการ)
+                </button>
+              </div>
+            )}
+
+
+            <h3>เพิ่มผลการตรวจ</h3>
+
+            {/* แสดงแท็บหมวดหมู่ */}
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              {allPlan.map((plan) => (
+                <button
+                  key={plan}
+                  onClick={() => setSelectedIoPlan((prev) => (prev === plan ? '' : plan))}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: selectedIoPlan === plan ? '#007bff' : '#eee',
+                    color: selectedIoPlan === plan ? 'white' : 'black',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {plan}
+                </button>
+              ))}
+            </div>
+
+            <div>
+              {selectedIoPlan && (
+                <div style={{ marginTop: '1rem' }}>
+                  {availableIoFindingList
+                    .filter((p) => p.plan?.trim() === selectedIoPlan)
+                    .map((p) => (
+                      <div
+                        key={p.id}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '3fr 1fr 0.5fr 1fr auto',
+                          gap: '0.5rem',
+                          alignItems: 'center',
+                          padding: '0.25rem 0',
+                        }}
+                      >
+                        <span>{p.name}</span>
+                        <button
+                          onClick={() =>
+                            setIoFindingListToInsert((prev) => [
+                              {
+                                io_finding_id: p.id,
+                                tooth: '',
+                                surface: '',
+                              },
+                              ...prev,
+                            ])
+                          }
+                          style={{ cursor: 'pointer' }}
+                        >
+                          ➕ เพิ่ม
+                        </button>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+
+            {ioFindingListToInsert.length > 0 && (
+              <div>
+                <h4>รายการผลการตรวจที่เลือก</h4>
+                <div>
+                  {ioFindingListToInsert.map((proc, index) => {
+                    const name =
+                      availableIoFindingList.find((p) => p.id === Number(proc.io_finding_id))?.name || '(ไม่พบ)';
+                    const plan = 
+                      availableIoFindingList.find((p) => p.id === Number(proc.io_finding_id))?.plan || '(ไม่พบ)';
+                    return (
+                      <div
+                        key={index}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '1rem',
+                          padding: '0.5rem 0',
+                          flexWrap: 'wrap',
+                        }}
+                      >
+                        <div style={{ flex: 3 }}>
+                          <b>{plan} - {name}</b>
+                        </div>
+
+                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <label htmlFor={`tooth-${index}`}>ซี่ฟัน:</label>
+                          <button
+                            onClick={() => openToothModal({ type: 'io', index })}
+                            style={{
+                              padding: '4px 8px',
+                              border: '1px solid #ccc',
+                              borderRadius: '5px',
+                              cursor: 'pointer',
+                              minWidth: '60px',
+                              background: '#f9f9f9'
+                            }}
+                          >
+                            {proc.tooth || 'เลือก'}
+                          </button>
+                        </div>
+
+                        {/* ✅ ปุ่มเลือกด้านฟัน */}
+                        <div style={{ display: 'flex', gap: '0.25rem' }}>
+                          {['O', 'B', 'Li', 'M', 'D'].map((side) => {
+                            const current = ioFindingListToInsert[index].surface?.split(',') || [];
+                            const isSelected = current.includes(side);
+
+                            return (
+                              <button
+                                key={side}
+                                onClick={() => {
+                                  const updated = [...ioFindingListToInsert];
+                                  const current = updated[index].surface?.split(',') || [];
+                                  const has = current.includes(side);
+                                  let newSurface = has
+                                    ? current.filter((s) => s !== side)
+                                    : [...current, side];
+
+                                  const order = ['O', 'B', 'Li', 'M', 'D'];
+                                  newSurface = order.filter((o) => newSurface.includes(o));
+                                  updated[index].surface = newSurface.join(',');
+                                  setIoFindingListToInsert(updated);
+                                }}
+                                style={{
+                                  padding: '2px 6px',
+                                  borderRadius: '4px',
+                                  border: '1px solid #aaa',
+                                  background: isSelected ? '#007bff' : '#f0f0f0',
+                                  color: isSelected ? '#fff' : '#000',
+                                  fontWeight: 'bold',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                {side}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+
+                        <div>
+                          <button
+                            onClick={() => 
+                              setIoFindingListToInsert((prev) => prev.filter((_, i) => i !== index))
+                            }
+                            style={{
+                              color: 'red',
+                              border: 'none',
+                              background: 'transparent',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            ❌ ลบ
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {ioFindingListToInsert.length > 0 && (
+              <div style={{ marginTop: '1rem' }}>
+                <button
+                  onClick={handleSaveIoFindings}
+                  style={{
+                    background: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '5px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  💾 บันทึกผลการตรวจ
+                </button>
+              </div>
+            )}
           </div>
-          {/* ช่องค้นหาเพิ่มเติม */}
+
+          {/* ส่วนที่อยู่ชิดล่าง */}
           <div>
-            <input
-              type="text"
-              placeholder="ค้นหาในบันทึก"
-              value={searchNote}
-              onChange={(e) => setSearchNote(e.target.value)}
-              style={{
-                padding: '0.5rem',
-                width: '100%',
-                maxWidth: '300px',
-                borderRadius: '6px',
-                border: '1px solid #ccc',
-                marginBottom: '1rem',
-              }}
-            />
-          </div>
-
-          <div>
-            <input
-              type="text"
-              placeholder="ค้นหาในนัดครั้งหน้า"
-              value={searchNextVisit}
-              onChange={(e) => setSearchNextVisit(e.target.value)}
-              style={{
-                padding: '0.5rem',
-                width: '100%',
-                maxWidth: '300px',
-                borderRadius: '6px',
-                border: '1px solid #ccc',
-                marginBottom: '1rem',
-              }}
-            />
-          </div>
-
-          <div style={{ display: 'flex', gap: '2rem', marginBottom: '1rem' }}>
-            {/* หมอ */}
-            <div>
-              <strong>กรองหมอ:</strong><br />
-              {allDoctors.map((d, idx) => (
-                <label key={idx}>
-                  <input
-                    type="checkbox"
-                    checked={filterDoctor.includes(d)}
-                    onChange={() => toggleFilter(d, filterDoctor, setFilterDoctor)}
-                  />{' '}
-                  {d}
-                  <br />
-                </label>
-              ))}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <h2>ประวัติการรักษา</h2>
+              {showHistoryFilter === 'Hide' && (
+                <button
+                  onClick={() => {
+                    setShowHistoryFilter('Show');
+                  }}
+                  style={{
+                    marginLeft: '1rem',
+                    border: 'none',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                  }}
+                >🔍 แสดงระบบกรอง</button>
+              )}
+              {showHistoryFilter === 'Show' && (
+                <>
+                  <button
+                    onClick={() => {
+                      setFilterDoctor([]);
+                      setFilterProcedure([]);
+                      setFilterTooth([]);
+                      setSearchNote('');
+                      setSearchNextVisit('');
+                    }}
+                    style={{
+                      marginLeft: '1rem',
+                      border: 'none',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                    }}
+                  >🧹 ล้างการกรอง</button>
+                  <button
+                    onClick={() => {
+                      setShowHistoryFilter('Hide');
+                      setFilterDoctor([]);
+                      setFilterProcedure([]);
+                      setFilterTooth([]);
+                      setSearchNote('');
+                      setSearchNextVisit('');
+                    }}
+                    style={{
+                      marginLeft: '1rem',
+                      border: 'none',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                    }}
+                  >❌ ซ่อนระบบกรอง</button>
+                </>
+              )}
             </div>
 
-            {/* หัตถการ */}
-            <div>
-              <strong>กรองหัตถการ:</strong><br />
-              {allProcedures.map((p, idx) => (
-                <label key={idx}>
-                  <input
-                    type="checkbox"
-                    checked={filterProcedure.includes(p)}
-                    onChange={() => toggleFilter(p, filterProcedure, setFilterProcedure)}
-                  />{' '}
-                  {p}
-                  <br />
-                </label>
-              ))}
-            </div>
+            {showHistoryFilter === 'Show' && (
+              <>
 
-            {/* ซี่ฟัน */}
-            <div>
-              <strong>กรองซี่ฟัน:</strong><br />
-              {allTeeth.map((t, idx) => (
-                <label key={idx}>
+                {/* ช่องค้นหาเพิ่มเติม */}
+                <div>
                   <input
-                    type="checkbox"
-                    checked={filterTooth.includes(t)}
-                    onChange={() => toggleFilter(t, filterTooth, setFilterTooth)}
-                  />{' '}
-                  {t}
-                  <br />
-                </label>
-              ))}
-            </div>
+                    type="text"
+                    placeholder="ค้นหาในบันทึก"
+                    value={searchNote}
+                    onChange={(e) => setSearchNote(e.target.value)}
+                    style={{
+                      padding: '0.5rem',
+                      width: '100%',
+                      maxWidth: '300px',
+                      borderRadius: '6px',
+                      border: '1px solid #ccc',
+                      marginBottom: '1rem',
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    placeholder="ค้นหาในนัดครั้งหน้า"
+                    value={searchNextVisit}
+                    onChange={(e) => setSearchNextVisit(e.target.value)}
+                    style={{
+                      padding: '0.5rem',
+                      width: '100%',
+                      maxWidth: '300px',
+                      borderRadius: '6px',
+                      border: '1px solid #ccc',
+                      marginBottom: '1rem',
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '2rem' }}>
+                  {/* หมอ */}
+                  <div>
+                    <strong>กรองหมอ:</strong><br />
+                    {allDoctors.map((d, idx) => (
+                      <label key={idx}>
+                        <input
+                          type="checkbox"
+                          checked={filterDoctor.includes(d)}
+                          onChange={() => toggleFilter(d, filterDoctor, setFilterDoctor)}
+                        />{' '}
+                        {d}
+                        <br />
+                      </label>
+                    ))}
+                  </div>
+
+                  {/* หัตถการ */}
+                  <div>
+                    <strong>กรองหัตถการ:</strong><br />
+                    {allProcedures.map((p, idx) => (
+                      <label key={idx}>
+                        <input
+                          type="checkbox"
+                          checked={filterProcedure.includes(p)}
+                          onChange={() => toggleFilter(p, filterProcedure, setFilterProcedure)}
+                        />{' '}
+                        {p}
+                        <br />
+                      </label>
+                    ))}
+                  </div>
+
+                  {/* ซี่ฟัน */}
+                  <div>
+                    <strong>กรองซี่ฟัน:</strong><br />
+                    {allTeeth.map((t, idx) => (
+                      <label key={idx}>
+                        <input
+                          type="checkbox"
+                          checked={filterTooth.includes(t)}
+                          onChange={() => toggleFilter(t, filterTooth, setFilterTooth)}
+                        />{' '}
+                        {t}
+                        <br />
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+              </>
+            )}
+
           </div>
-
+        </div>
+      </div>
+          <div style={{ marginTop: '1rem' }}>
           {visitHistory.length === 0 ? (
             <p>ไม่มีประวัติการรักษา</p>
           ) : (
@@ -588,6 +1367,43 @@ export default function DoctorTreatmentForm() {
                   <th style={{ border: '1px solid #ccc', padding: '0.5rem' }}>หมอ</th>
                   <th style={{ border: '1px solid #ccc', padding: '0.5rem' }}>บันทึก</th>
                   <th style={{ border: '1px solid #ccc', padding: '0.5rem' }}>หัตถการ</th>
+                  <th style={{ border: '1px solid #ccc', padding: '0.5rem' }}>
+                    แผนการรักษา
+                    {visitHistoryIoDisplayMode === 'planAndName' ? (
+                      <button
+                        className={`px-3 py-1 rounded ${
+                          visitHistoryIoDisplayMode === 'planOnly' ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                        }`}
+                        onClick={() => setVisitHistoryIoDisplayMode('planOnly')}
+                        style={{
+                          marginLeft: '1rem',
+                          border: 'none',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        ซ่อน I/O
+                      </button>
+                    ) : (
+                      <button
+                        className={`px-3 py-1 rounded ${
+                          visitHistoryIoDisplayMode === 'planAndName' ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                        }`}
+                        onClick={() => setVisitHistoryIoDisplayMode('planAndName')}
+                        style={{
+                          marginLeft: '1rem',
+                          border: 'none',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        แสดง I/O
+                      </button>
+                    )}
+
+                  </th>
                   <th style={{ border: '1px solid #ccc', padding: '0.5rem' }}>นัดครั้งหน้า</th>
                 </tr>
               </thead>
@@ -607,6 +1423,9 @@ export default function DoctorTreatmentForm() {
                       {formatProcedures(v)}
                     </td>
                     <td style={{ whiteSpace: 'pre-wrap', padding: '0.25rem 0', border: '1px solid #ccc' }}>
+                      {getIoPlansForVisit(v, visitHistoryIoDisplayMode)}
+                    </td>
+                    <td style={{ whiteSpace: 'pre-wrap', padding: '0.25rem 0', border: '1px solid #ccc' }}>
                       {v.next_visit || '-'}
                     </td>
                   </tr>
@@ -614,8 +1433,9 @@ export default function DoctorTreatmentForm() {
               </tbody>
             </table>
           )}
-        </div>
-      </div>
+          </div>
+        {/* </div> */}
+      {/* </div> */}
       <ReferModal
         isOpen={isReferOpen}
         onClose={() => setIsReferOpen(false)}
