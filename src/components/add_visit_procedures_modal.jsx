@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ToothSelectModal from '../components/tooth_select_modal';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -6,6 +7,11 @@ export default function AddVisitProceduresModal({ isOpen, onClose, visitId, onSu
   const [availableProcedures, setAvailableProcedures] = useState([]);
   const [procedures, setProcedures] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
+
+  const [isToothModalOpen, setIsToothModalOpen] = useState(false);
+  const [editingProcedureIndex, setEditingProcedureIndex] = useState(null);
+  const [editingIoFindingIndex, setEditingIoFindingIndex] = useState(null);
+
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -71,6 +77,28 @@ export default function AddVisitProceduresModal({ isOpen, onClose, visitId, onSu
   const allCategories = [...new Set(availableProcedures.map((p) => p.category?.trim()))];
 
   if (!isOpen) return null;
+
+  const openToothModal = ({ type, index }) => {
+    if (type === 'procedure') {
+      setEditingProcedureIndex(index);
+      setEditingIoFindingIndex(null);
+    } else if (type === 'io') {
+      setEditingProcedureIndex(null);
+      setEditingIoFindingIndex(index);
+    }
+    setIsToothModalOpen(true);
+  };
+
+  const handleToothSelect = (value) => {
+    if (editingProcedureIndex !== null) {
+      const updated = [...procedures];
+      updated[editingProcedureIndex].tooth = value;
+      setProcedures(updated);
+    }
+    setEditingProcedureIndex(null);
+    setEditingIoFindingIndex(null);
+    setIsToothModalOpen(false);
+  };
 
   return (
     <div style={{
@@ -161,18 +189,19 @@ export default function AddVisitProceduresModal({ isOpen, onClose, visitId, onSu
 
                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: '120px' }}>
                       <label htmlFor={`tooth-${index}`}>ซี่ฟัน:</label>
-                      <input
-                        id={`tooth-${index}`}
-                        type="text"
-                        value={proc.tooth}
-                        onChange={(e) => handleChangeProcedure(index, 'tooth', e.target.value)}
+                      <button
+                        onClick={() => openToothModal({ type: 'procedure', index })}
                         style={{
-                          width: '60px',
-                          padding: '4px 6px',
-                          borderRadius: '5px',
+                          padding: '4px 8px',
                           border: '1px solid #ccc',
+                          borderRadius: '5px',
+                          cursor: 'pointer',
+                          minWidth: '60px',
+                          background: '#f9f9f9'
                         }}
-                      />
+                      >
+                        {proc.tooth || 'เลือก'}
+                      </button>
                     </div>
 
                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: '120px' }}>
@@ -215,7 +244,15 @@ export default function AddVisitProceduresModal({ isOpen, onClose, visitId, onSu
 
           <div style={{ marginTop: '1rem' }}>
             <button
-              onClick={handleSubmit}
+              onClick={async () => {
+                // 🔒 ตรวจสอบการเลือกซี่ฟันให้ครบทุกหัตถการ
+                const missingTooth = procedures.some((p) => !p.tooth || p.tooth.trim() === '');
+                if (missingTooth) {
+                  alert('กรุณาเลือกซี่ฟันให้ครบทุกหัตถการ');
+                  return;
+                }
+                handleSubmit();
+              }}
               style={{
                 padding: '0.5rem 1.5rem',
                 backgroundColor: '#007bff',
@@ -242,6 +279,11 @@ export default function AddVisitProceduresModal({ isOpen, onClose, visitId, onSu
           </div>
         </div>
       </div>
+      <ToothSelectModal
+        isOpen={isToothModalOpen}
+        onClose={() => setIsToothModalOpen(false)}
+        onSelect={handleToothSelect}
+      />
     </div>
   );
 }
