@@ -3,6 +3,8 @@ import { jwtDecode } from 'jwt-decode';
 import { Link } from 'react-router-dom';
 import EditPatientHistoryModal from '../components/edit_patient_history_modal';
 import AddVisitProceduresModal from '../components/add_visit_procedures_modal';
+import AppointmentPatientModal from '../components/appointment_patient_modal';
+import PatientHistoryModal from '../components/patient_history_modal';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -14,6 +16,12 @@ export default function DoctorVisitTodayPage() {
   const [selectedVisit, setSelectedVisit] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
+
+  const [appointmentModalOpen, setAppointmentModalOpen] = useState(false);
+  const [appointmentPatientId, setAppointmentPatientId] = useState(null);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [historyPatientObj, setHistoryPatientObj] = useState(null);
+
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -148,6 +156,7 @@ export default function DoctorVisitTodayPage() {
               <th>หมายเหตุ</th>
               <th>นัดครั้งหน้า</th>
               <th>แก้ไข</th>
+              <th>เลือก</th>
             </tr>
           </thead>
           <tbody>
@@ -168,6 +177,29 @@ export default function DoctorVisitTodayPage() {
                 <td>
                   <button onClick={() => handleEditClick(v)}>✏️ แก้ไข</button>
                 </td>
+                <td>
+                  <div>
+                    <button
+                      onClick={() => {
+                        setHistoryPatientObj({
+                          patient_id: v.patient_id,
+                          patients: v.patients,
+                        });
+                        setHistoryModalOpen(true);
+                      }}
+                    >
+                      🧾 ประวัติ
+                    </button>
+                    <button
+                      onClick={() => {
+                        setAppointmentPatientId(v.patient_id);
+                        setAppointmentModalOpen(true);
+                      }}
+                    >
+                      📅 วันนัด
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -184,6 +216,17 @@ export default function DoctorVisitTodayPage() {
         onClose={() => setAddModalOpen(false)}
         visitId={selectedVisit?.id}
         onSuccess={reloadVisits}
+      />
+      {appointmentModalOpen && (
+        <AppointmentPatientModal
+          patientId={appointmentPatientId}
+          onClose={() => setAppointmentModalOpen(false)}
+        />
+      )}
+      <PatientHistoryModal
+        isOpen={historyModalOpen}
+        patientObj={historyPatientObj}
+        onClose={() => setHistoryModalOpen(false)}
       />
     </div>
   );
