@@ -1024,10 +1024,10 @@ export default function DoctorTreatmentForm() {
             )}
 
 
-            <h3>เพิ่มผลการตรวจ</h3>
-
+            <h3>เพิ่มแผนการรักษา</h3>
+            
             {/* แสดงแท็บหมวดหมู่ */}
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap' , gap: '0.5rem' }}>
               {allPlan.map((plan) => (
                 <button
                   key={plan}
