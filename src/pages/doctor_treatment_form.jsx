@@ -1127,7 +1127,7 @@ export default function DoctorTreatmentForm() {
 
                         {/* ✅ ปุ่มเลือกด้านฟัน */}
                         <div style={{ display: 'flex', gap: '0.25rem' }}>
-                          {['O', 'B', 'Li', 'M', 'D'].map((side) => {
+                          {['O', 'M', 'D', 'B', 'Li'].map((side) => {
                             const current = ioFindingListToInsert[index].surface?.split(',') || [];
                             const isSelected = current.includes(side);
 
@@ -1142,7 +1142,7 @@ export default function DoctorTreatmentForm() {
                                     ? current.filter((s) => s !== side)
                                     : [...current, side];
 
-                                  const order = ['O', 'B', 'Li', 'M', 'D'];
+                                  const order = ['O', 'M', 'D', 'B', 'Li'];
                                   newSurface = order.filter((o) => newSurface.includes(o));
                                   updated[index].surface = newSurface.join(',');
                                   setIoFindingListToInsert(updated);
