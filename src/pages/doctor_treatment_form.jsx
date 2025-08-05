@@ -1056,13 +1056,13 @@ export default function DoctorTreatmentForm() {
                         key={p.id}
                         style={{
                           display: 'grid',
-                          gridTemplateColumns: '3fr 1fr 0.5fr 1fr auto',
+                          gridTemplateColumns: '1.5fr 1fr 0.5fr 1fr auto',
                           gap: '0.5rem',
                           alignItems: 'center',
                           padding: '0.25rem 0',
                         }}
                       >
-                        <span>{p.name}</span>
+                        <li>{p.name}</li>
                         <button
                           onClick={() =>
                             setIoFindingListToInsert((prev) => [
