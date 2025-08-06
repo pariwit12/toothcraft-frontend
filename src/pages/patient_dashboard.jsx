@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
 import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -47,9 +48,18 @@ export default function PatientDashboard() {
       <p>เบอร์โทร: {patient.telephone}</p>
       <p>เลขบัตรประชาชน: {patient.id_number}</p>
       {/* สามารถเพิ่มเมนูอื่นๆ เช่น ประวัติการรักษา, คิว, ใบนัด */}
-      <a href="/patient-my-appointments" style={{ display: "inline-block", marginTop: "10px" }}>
-        ดูวันนัดของฉัน
-      </a>
+      <Link to="/patient-my-appointments">
+        <button
+          style={{
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+        >
+          📆 ดูวันนัดของฉัน
+        </button>
+      </Link>
     </div>
   );
 }

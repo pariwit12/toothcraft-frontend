@@ -1,3 +1,4 @@
+// 📁 frontend/src/pages/patient_appointments.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -39,7 +40,7 @@ export default function PatientAppointments() {
           }
         );
 
-        setAppointments(appRes.data);
+        setAppointments(Array.isArray(appRes.data) ? appRes.data : []);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching appointments", error);
@@ -53,33 +54,71 @@ export default function PatientAppointments() {
 
   if (loading) return <p>กำลังโหลด...</p>;
 
+  // 🕒 แบ่งรายการนัด
+  const now = new Date();
+  const upcomingAppointments = appointments.filter(
+    (appt) => new Date(appt.appointment_time) >= now
+  );
+  const pastAppointments = appointments.filter(
+    (appt) => new Date(appt.appointment_time) < now
+  );
+
+  // 🧩 ตารางรายการนัด
+  const renderTable = (list) => (
+    <table
+      border="1"
+      width="100%"
+      style={{ borderCollapse: "collapse", marginTop: "0.5rem" }}
+    >
+      <thead>
+        <tr>
+          <th>วันที่นัด</th>
+          <th>เวลา</th>
+          <th>หมอ</th>
+        </tr>
+      </thead>
+      <tbody>
+        {list.map((appt) => (
+          <tr key={appt.id}>
+            <td>{new Date(appt.appointment_time).toLocaleDateString("th-TH")}</td>
+            <td>
+              {new Date(appt.appointment_time).toLocaleTimeString("th-TH", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })}
+            </td>
+            <td>
+              {`${appt.doctors.first_name} (${appt.doctors.nickname})`}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
   return (
-    <div style={{ padding: "1rem" }}>
-      <h2>📅 วันนัดของคุณ {patient.first_name} {patient.last_name}</h2>
+    <div style={{ padding: "1rem", maxWidth: "800px", margin: "0 auto" }}>
+      <h2>📅 รายการนัดของ {patient.first_name} {patient.last_name}</h2>
+
       {appointments.length === 0 ? (
-        <p>ไม่มีข้อมูลนัด</p>
+        <p>ไม่มีรายการนัด</p>
       ) : (
-        <table border="1" cellPadding="8" style={{ borderCollapse: "collapse", marginTop: "10px" }}>
-          <thead>
-            <tr>
-              <th>วันนัด</th>
-              <th>เวลา</th>
-              <th>แพทย์</th>
-            </tr>
-          </thead>
-          <tbody>
-            {appointments.map((app) => {
-              const date = new Date(app.appointment_time);
-              return (
-                <tr key={app.id}>
-                  <td>{date.toLocaleDateString("th-TH")}</td>
-                  <td>{date.toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit' })}</td>
-                  <td>{app.doctors ? `${app.doctors.first_name} ${app.doctors.last_name}` : "-"}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <>
+          {upcomingAppointments.length > 0 && (
+            <>
+              <h3 style={{ marginTop: "1rem" }}>🟢 รายการนัดที่ยังไม่ถึง</h3>
+              {renderTable(upcomingAppointments)}
+            </>
+          )}
+
+          {pastAppointments.length > 0 && (
+            <>
+              <h3 style={{ marginTop: "1rem" }}>⚫ รายการนัดที่ผ่านมาแล้ว</h3>
+              {renderTable(pastAppointments)}
+            </>
+          )}
+        </>
       )}
     </div>
   );
