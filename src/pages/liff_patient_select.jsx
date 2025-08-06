@@ -36,7 +36,7 @@ export default function LiffPatientSelect() {
         }
 
         // เรียก API backend เพื่อดึง patient
-        const res = await axios.get(`${API_URL}/public/search-patient-by-LIFF`, {
+        const res = await axios.post(`${API_URL}/public/search-patient-by-LIFF`, {
           line_user_id: profile.userId
         });
 
