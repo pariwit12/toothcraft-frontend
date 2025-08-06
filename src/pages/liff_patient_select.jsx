@@ -142,12 +142,11 @@ export default function LiffPatientSelect() {
         ) : (
           <div>
             {patients.map((p) => (
-              <>
               <p style={{ marginTop: '1rem' }}>
                 ✅ พบข้อมูลคนไข้<br />
                 <strong>
                   ชื่อ: {p.first_name} {p.last_name}<br />
-                  เลขบัตรประชาชน: {p.id_number}
+                  เลขบัตรประชาชน: {p.id_number}<br />
                 </strong>
                 <button
                   key={p.id}
@@ -163,26 +162,6 @@ export default function LiffPatientSelect() {
                   เข้าสู่ระบบ ({p.first_name})
                 </button>
               </p>
-              <li
-                key={p.id}
-                style={{
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  marginBottom: "0.5rem",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-                onClick={() => handleSelectPatient(p)}
-              >
-                <p style={{ marginTop: '1rem' }}>
-                  ✅ พบข้อมูลคนไข้<br />
-                  <strong>
-                    ชื่อ: {p.first_name} {p.last_name}<br />
-                    เลขบัตรประชาชน: {p.id_number}
-                  </strong>
-                </p>
-              </li>
-              </>
             ))}
           </div>
         )}
