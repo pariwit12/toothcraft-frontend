@@ -42,6 +42,7 @@ import ContinueTxPatientList from './pages/continue_tx_patient_list';
 
 /* Patient */
 import PatientDashboard from './pages/patient_dashboard';
+import PatientMyAppointments from "./pages/patient_my_appointments";
 
 
 import ProtectedRoute from './components/protected_route';
@@ -209,7 +210,8 @@ export default function App() {
 
         {/* Patient */}
         <Route path="/patient-dashboard" element={<PatientDashboard />} />
-        
+        <Route path="/patient-my-appointments" element={<PatientMyAppointments />} />
+
 
 
         <Route path="/logout" element={<Logout />} />

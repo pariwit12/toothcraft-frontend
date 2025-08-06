@@ -60,7 +60,6 @@ export default function LiffPatientSelect() {
       // เก็บ token ใน localStorage
       localStorage.setItem("token", res.data.token);
 
-      alert(`เข้าสู่ระบบสำเร็จ: ${patient.first_name} ${patient.last_name}`);
       // redirect ไปหน้า Dashboard ของ patient
       window.location.href = "/patient-dashboard";
     } catch (err) {

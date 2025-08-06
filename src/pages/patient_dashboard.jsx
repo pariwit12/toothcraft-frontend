@@ -47,6 +47,9 @@ export default function PatientDashboard() {
       <p>เบอร์โทร: {patient.telephone}</p>
       <p>เลขบัตรประชาชน: {patient.id_number}</p>
       {/* สามารถเพิ่มเมนูอื่นๆ เช่น ประวัติการรักษา, คิว, ใบนัด */}
+      <a href="/patient-my-appointments" style={{ display: "inline-block", marginTop: "10px" }}>
+        ดูวันนัดของฉัน
+      </a>
     </div>
   );
 }
