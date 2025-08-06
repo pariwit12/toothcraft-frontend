@@ -30,6 +30,13 @@ export default function LinkLine() {
           return;
         }
 
+        // ปกติ liff.getProfile() จะไม่คืน anonymous ID (จะคืนจริงเลยถ้าเป็นเพื่อน)
+        // แต่เพื่อความชัวร์ ควรเช็คว่า profile.userId เริ่มต้นด้วย "U" ซึ่งเป็น prefix ของ LINE userId จริง
+        if (!profile.userId || !profile.userId.startsWith("U")) {
+          setStatus('need-add-oa');
+          return;
+        }
+
         setLineUserId(profile.userId);
         setStatus('ready');
       } catch (error) {
