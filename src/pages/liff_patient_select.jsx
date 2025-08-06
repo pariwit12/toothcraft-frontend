@@ -157,7 +157,9 @@ export default function LiffPatientSelect() {
                   border: "1px solid #ccc",
                   marginBottom: "0.5rem",
                   borderRadius: "8px",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  display: 'flex',
+                  flexWrap: 'wrap'
                 }}
                 onClick={() => handleSelectPatient(p)}
               >
