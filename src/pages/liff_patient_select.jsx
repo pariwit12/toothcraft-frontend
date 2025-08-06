@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
-const LIFF_ID = '2007782065-45k6ZA90';
+const LIFF_ID = '2007782065-3M56JnV7';
 
 export default function LiffPatientSelect() {
   const [patients, setPatients] = useState([]);
