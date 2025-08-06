@@ -161,7 +161,13 @@ export default function LiffPatientSelect() {
                 }}
                 onClick={() => handleSelectPatient(p)}
               >
-                {p.first_name} {p.last_name} ({p.telephone || "ไม่มีเบอร์"})
+                <p style={{ marginTop: '1rem' }}>
+                  ✅ พบข้อมูลคนไข้<br />
+                  <strong>
+                    ชื่อ: {p.first_name} {p.last_name}<br />
+                    เลขบัตรประชาชน: {p.id_number}
+                  </strong>
+                </p>
               </li>
               </>
             ))}
