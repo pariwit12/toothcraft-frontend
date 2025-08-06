@@ -40,6 +40,9 @@ import DfSummaryReport from './pages/df_summary_report';
 import SearchPatient from './pages/search_patient';
 import ContinueTxPatientList from './pages/continue_tx_patient_list';
 
+/* Patient */
+import PatientDashboard from './pages/patient_dashboard';
+
 
 import ProtectedRoute from './components/protected_route';
 import Logout from './pages/logout';
@@ -202,6 +205,11 @@ export default function App() {
           }
         />
         <Route path="/continue-tx-patient-list" element={<ContinueTxPatientList />} />
+
+
+        {/* Patient */}
+        <Route path="/patient-dashboard" element={<PatientDashboard />} />
+        
 
 
         <Route path="/logout" element={<Logout />} />

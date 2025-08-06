@@ -51,9 +51,22 @@ export default function LiffPatientSelect() {
     initLiff();
   }, []);
 
-  const handleSelectPatient = (patient) => {
-    alert(`คุณเลือก ${patient.first_name} ${patient.last_name}`);
-    // ที่นี่สามารถเรียก API /auth/login-patient-liff เพื่อสร้าง token ได้เลย
+  const handleSelectPatient = async (patient) => {
+    try {
+      const res = await axios.post(`${API_URL}/auth/login-patient-liff`, {
+        patient_id: patient.id
+      });
+
+      // เก็บ token ใน localStorage
+      localStorage.setItem("token", res.data.token);
+
+      alert(`เข้าสู่ระบบสำเร็จ: ${patient.first_name} ${patient.last_name}`);
+      // redirect ไปหน้า Dashboard ของ patient
+      window.location.href = "/patient-dashboard";
+    } catch (err) {
+      console.error("Login patient error", err);
+      alert("ไม่สามารถเข้าสู่ระบบได้");
+    }
   };
 
   if (status === "loading") return <p>กำลังโหลด...</p>;
