@@ -151,7 +151,7 @@ export default function LiffPatientSelect() {
                 <button
                   key={p.id}
                   style={{
-                    marginLeft: '1rem',
+                    marginTop: '0.5rem',
                     border: 'none',
                     padding: '0.5rem 1rem',
                     borderRadius: '6px',
