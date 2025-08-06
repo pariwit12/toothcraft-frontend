@@ -140,7 +140,7 @@ export default function LiffPatientSelect() {
         {patients.length === 0 ? (
           <p>ไม่พบข้อมูลคนไข้ที่เชื่อมกับ LINE นี้</p>
         ) : (
-          <ul>
+          <div>
             {patients.map((p) => (
               <>
               <p style={{ marginTop: '1rem' }}>
@@ -149,6 +149,19 @@ export default function LiffPatientSelect() {
                   ชื่อ: {p.first_name} {p.last_name}<br />
                   เลขบัตรประชาชน: {p.id_number}
                 </strong>
+                <button
+                  key={p.id}
+                  style={{
+                    marginLeft: '1rem',
+                    border: 'none',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => handleSelectPatient(p)}
+                >
+                  เข้าสู่ระบบ ({p.first_name})
+                </button>
               </p>
               <li
                 key={p.id}
@@ -158,8 +171,6 @@ export default function LiffPatientSelect() {
                   marginBottom: "0.5rem",
                   borderRadius: "8px",
                   cursor: "pointer",
-                  display: 'flex',
-                  flexWrap: 'wrap'
                 }}
                 onClick={() => handleSelectPatient(p)}
               >
@@ -173,7 +184,7 @@ export default function LiffPatientSelect() {
               </li>
               </>
             ))}
-          </ul>
+          </div>
         )}
       </div>
     );
