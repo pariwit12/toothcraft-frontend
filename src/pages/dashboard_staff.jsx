@@ -174,7 +174,7 @@ export default function DashboardStaff() {
     <div>
       <h1>แดชบอร์ดของ Staff</h1>
       <p>ยินดีต้อนรับสู่ระบบ ToothCraft สำหรับพนักงาน</p>
-      <div style={{display: 'flex', flexWrap: 'wrap', gap: '1rem'}}>
+      <div style={{display: 'inline flex', flexWrap: 'wrap', gap: '1rem'}}>
         <Link to="/register-with-line">
           <button>👤 คนไข้ใหม่</button>
         </Link>
