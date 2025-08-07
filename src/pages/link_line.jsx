@@ -301,7 +301,7 @@ export default function LinkLine() {
             ตรวจสอบ
           </button>
           <button
-            onClick={setStatus('register-new-hn')}
+            // onClick={setStatus('register-new-hn')}
             style={{
               backgroundColor: '#50ff59ff',
               color: 'white',
