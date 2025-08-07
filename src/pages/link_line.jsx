@@ -118,7 +118,7 @@ export default function LinkLine() {
     setMessage('');
     setSubmitting(true);
 
-    if (!validateIdNumber(form.id_number)) {
+    if (!validateIdNumber(idNumber)) {
       setMessage('❌ เลขบัตรประชาชนไม่ถูกต้อง');
       setSubmitting(false);
       return;
