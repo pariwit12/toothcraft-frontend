@@ -174,7 +174,7 @@ export default function DashboardStaff() {
     <div>
       <h1>แดชบอร์ดของ Staff</h1>
       <p>ยินดีต้อนรับสู่ระบบ ToothCraft สำหรับพนักงาน</p>
-      <div style={{gap: '1rem'}}>
+      <div style={{display: 'flex', flexWrap: 'wrap', gap: '1rem'}}>
         <Link to="/register-with-line">
           <button>👤 คนไข้ใหม่</button>
         </Link>
@@ -197,7 +197,7 @@ export default function DashboardStaff() {
           <button>📨 ประเมินความพึงพอใจ</button>
         </Link>
         {/* 🔽 เมนูเพิ่มเติมซ่อนปุ่มไม่บ่อย */}
-        <div style={{ display: 'inline-block', position: 'relative', marginLeft: '1rem' }}>
+        <div style={{ display: 'inline-block', position: 'relative' }}>
           <button onClick={() => setShowExtra(!showExtra)}>
             เพิ่มเติม ▾
           </button>
