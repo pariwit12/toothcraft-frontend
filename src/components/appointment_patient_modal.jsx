@@ -58,7 +58,7 @@ export default function AppointmentPatientModal({ patientId, onClose }) {
               minute: '2-digit',
               hour12: false
             })}</td>
-            <td>{appt.doctors?.first_name ? `${appt.doctors.first_name} ${appt.doctors.last_name || ''}` : '-'}</td>
+            <td>{`${appt.doctors.first_name} (${appt.doctors.nickname})`}</td>
             <td>{appt.note || '-'}</td>
           </tr>
         ))}
