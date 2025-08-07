@@ -45,9 +45,6 @@ export default function PatientDashboard() {
   return (
     <div style={{ padding: "1rem" }}>
       <h1>สวัสดี {patient.first_name} {patient.last_name}</h1>
-      <p>เบอร์โทร: {patient.telephone}</p>
-      <p>เลขบัตรประชาชน: {patient.id_number}</p>
-      {/* สามารถเพิ่มเมนูอื่นๆ เช่น ประวัติการรักษา, คิว, ใบนัด */}
       <Link to="/patient-my-appointments">
         <button
           style={{

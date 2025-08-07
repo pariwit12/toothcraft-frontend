@@ -174,74 +174,75 @@ export default function DashboardStaff() {
     <div>
       <h1>แดชบอร์ดของ Staff</h1>
       <p>ยินดีต้อนรับสู่ระบบ ToothCraft สำหรับพนักงาน</p>
-
-      <Link to="/register-with-line">
-        <button>👤 คนไข้ใหม่</button>
-      </Link>
-      <Link to="/search">
-        <button style={{ marginLeft: '1rem' }}>👤 ค้นหาผู้ป่วยเก่า</button>
-      </Link>
-      <Link to="/clinic-overview">
-        <button style={{ marginLeft: '1rem' }}>🧍‍♂️ ภาพรวมคนไข้</button>
-      </Link>
-      <Link to="/appointments-calendar">
-        <button style={{ marginLeft: '1rem' }}>📆 ตารางนัด</button>
-      </Link>
-      <Link to="/confirm-create-list">
-        <button style={{ marginLeft: '1rem' }}>📨 แจ้งลงนัด</button>
-      </Link>
-      <Link to="/reminder-list">
-        <button style={{ marginLeft: '1rem' }}>🔔 เตือนนัด</button>
-      </Link>
-      <Link to="/feedback-list">
-        <button style={{ marginLeft: '1rem' }}>📨 ประเมินความพึงพอใจ</button>
-      </Link>
-      {/* 🔽 เมนูเพิ่มเติมซ่อนปุ่มไม่บ่อย */}
-      <div style={{ display: 'inline-block', position: 'relative', marginLeft: '1rem' }}>
-        <button onClick={() => setShowExtra(!showExtra)}>
-          เพิ่มเติม ▾
-        </button>
-        {showExtra && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '100%',
-              left: 0,
-              backgroundColor: 'white',
-              border: '1px solid #ccc',
-              borderRadius: '6px',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-              padding: '0.5rem',
-              zIndex: 1000,
-            }}
-          >
-            <Link to="/register">
-              <button style={{ display: 'block', width: '100%' }}>
-                👤 คนไข้ใหม่ (ไม่มี Line)
-              </button>
-            </Link>
-            <Link to="/visit-today-summary">
-              <button style={{ display: 'block', width: '100%' }}>
-                📋 คนไข้ที่มาวันนี้
-              </button>
-            </Link>
-            <Link to="/daily-report-fixed">
-              <button style={{ display: 'block', width: '100%' }}>📋 รายงานประจำวัน</button>
-            </Link>
-            <Link to="/continue-tx-patient-list">
-              <button style={{ display: 'block', width: '100%' }}>🔁 ผู้ป่วยต่อเนื่อง</button>
-            </Link>
-            <Link to="/insurance-patient-list">
-              <button style={{ display: 'block', width: '100%' }}>💳 ผู้ป่วยตามสิทธิ</button>
-            </Link>
-            <Link to="/doctor-list">
-              <button style={{ display: 'block', width: '100%' }}>🧑‍⚕️ รายชื่อหมอทั้งหมด</button>
-            </Link>
-            <Link to="/logout">
-              <button style={{ display: 'block', width: '100%' }}>ออกจากระบบ</button>
-            </Link>
-          </div>
-        )}
+      <div style={{display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center'}}>
+        <Link to="/register-with-line">
+          <button>👤 คนไข้ใหม่</button>
+        </Link>
+        <Link to="/search">
+          <button>👤 ค้นหาผู้ป่วยเก่า</button>
+        </Link>
+        <Link to="/clinic-overview">
+          <button>🧍‍♂️ ภาพรวมคนไข้</button>
+        </Link>
+        <Link to="/appointments-calendar">
+          <button>📆 ตารางนัด</button>
+        </Link>
+        <Link to="/confirm-create-list">
+          <button>📨 แจ้งลงนัด</button>
+        </Link>
+        <Link to="/reminder-list">
+          <button>🔔 เตือนนัด</button>
+        </Link>
+        <Link to="/feedback-list">
+          <button>📨 ประเมินความพึงพอใจ</button>
+        </Link>
+        {/* 🔽 เมนูเพิ่มเติมซ่อนปุ่มไม่บ่อย */}
+        <div style={{ display: 'inline-block', position: 'relative', marginLeft: '1rem' }}>
+          <button onClick={() => setShowExtra(!showExtra)}>
+            เพิ่มเติม ▾
+          </button>
+          {showExtra && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                backgroundColor: 'white',
+                border: '1px solid #ccc',
+                borderRadius: '6px',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                padding: '0.5rem',
+                zIndex: 1000,
+              }}
+            >
+              <Link to="/register">
+                <button style={{ display: 'block', width: '100%' }}>
+                  👤 คนไข้ใหม่ (ไม่มี Line)
+                </button>
+              </Link>
+              <Link to="/visit-today-summary">
+                <button style={{ display: 'block', width: '100%' }}>
+                  📋 คนไข้ที่มาวันนี้
+                </button>
+              </Link>
+              <Link to="/daily-report-fixed">
+                <button style={{ display: 'block', width: '100%' }}>📋 รายงานประจำวัน</button>
+              </Link>
+              <Link to="/continue-tx-patient-list">
+                <button style={{ display: 'block', width: '100%' }}>🔁 ผู้ป่วยต่อเนื่อง</button>
+              </Link>
+              <Link to="/insurance-patient-list">
+                <button style={{ display: 'block', width: '100%' }}>💳 ผู้ป่วยตามสิทธิ</button>
+              </Link>
+              <Link to="/doctor-list">
+                <button style={{ display: 'block', width: '100%' }}>🧑‍⚕️ รายชื่อหมอทั้งหมด</button>
+              </Link>
+              <Link to="/logout">
+                <button style={{ display: 'block', width: '100%' }}>ออกจากระบบ</button>
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ✅ แสดงปุ่มลับเฉพาะ admin */}
