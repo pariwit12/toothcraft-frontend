@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { fromZonedTime } from 'date-fns-tz';
 
 const API_URL = process.env.REACT_APP_API_URL;
 const LIFF_ID = '2007782065-45k6ZA90';
@@ -9,7 +10,12 @@ export default function LinkLine() {
   const [idNumber, setIdNumber] = useState('');
   const [phone, setPhone] = useState('');
   const [patient, setPatient] = useState(null);
-  const [status, setStatus] = useState('loading'); // loading, need-add-oa, ready, error, verified, success
+  const [status, setStatus] = useState('loading'); // loading, need-add-oa, register-new-hn, ready, error, verified, success
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [birthDay, setBirthDay] = useState('');
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const initLiff = async () => {
@@ -91,6 +97,94 @@ export default function LinkLine() {
       alert('❌ เกิดข้อผิดพลาดในการลงทะเบียน');
     }
   };
+
+  const validateIdNumber = (id) => {
+    if (!id || id.length !== 13) return false;
+    if (!/^[0-9]{13}$/.test(id)) return false;
+    const digits = id.split('').map(Number);
+    let sum = 0;
+    for (let i = 0; i < 12; i++) sum += digits[i] * (13 - i);
+    const checkDigit = (11 - (sum % 11)) % 10;
+    return checkDigit === digits[12];
+  };
+
+  const handleCreateSubmit = async (e) => {
+    e.preventDefault();
+
+    // แสดง popup ยืนยัน
+    const confirmSubmit = window.confirm('คุณต้องการยืนยันการลงทะเบียนใช่หรือไม่?');
+    if (!confirmSubmit) return; // ถ้าไม่ยืนยัน -> หยุด
+
+    setMessage('');
+    setSubmitting(true);
+
+    if (!validateIdNumber(form.id_number)) {
+      setMessage('❌ เลขบัตรประชาชนไม่ถูกต้อง');
+      setSubmitting(false);
+      return;
+    }
+
+    try {
+
+      const payload = {
+        first_name: firstName,
+        last_name: lastName,
+        telephone: phone,
+        id_number: idNumber,
+        birth_day: birthDay     // 👇 แปลง birth_day ให้เป็น DateTime ISO string
+          ? fromZonedTime(`${birthDay}T00:00:00.000Z`, 'Asia/Bangkok')
+          : null,
+        line_user_id: lineUserId,
+      };
+
+      const res = await fetch(`${API_URL}/public/link-line-and-register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage(data.error || '❌ เกิดข้อผิดพลาดในการลงทะเบียน');
+        setSubmitting(false);
+        return;
+      }
+      
+      setStatus('success');
+
+    } catch (err) {
+      console.error(err);
+      setMessage('❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์');
+    }
+
+    setSubmitting(false);
+
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: '12px',
+    paddingRight: '12px',           // ✅ 🔧 เพิ่ม padding ด้านขวาให้เสมอ
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    fontSize: '1rem',
+    boxSizing: 'border-box',
+    appearance: 'none',             // ✅ 🔧 ปิด default appearance (icon calendar)
+    WebkitAppearance: 'none',       // ✅ 🔧 รองรับ Chrome/Safari
+  };
+
+  const buttonStyle = (submitting) => ({
+    padding: '14px',
+    borderRadius: '6px',
+    backgroundColor: submitting ? '#ccc' : '#4CAF50',
+    color: 'white',
+    border: 'none',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    cursor: submitting ? 'not-allowed' : 'pointer',
+    transition: 'background-color 0.3s ease',
+  });
 
   if (status === 'loading') return <p>กำลังโหลด...</p>;
 
@@ -206,7 +300,99 @@ export default function LinkLine() {
           >
             ตรวจสอบ
           </button>
+          <button
+            onClick={setStatus('register-new-hn')}
+            style={{
+              backgroundColor: '#50ff59ff',
+              color: 'white',
+              padding: '0.5rem 1rem',
+              borderRadius: '4px',
+              border: 'none',
+              cursor: 'pointer',
+              marginLeft: '1rem',
+            }}
+          >
+            คนไข้ใหม่
+          </button>
         </>
+      )}
+
+      {status === 'register-new-hn' && (
+        <form onSubmit={handleCreateSubmit}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+
+            <div>
+              <label>ชื่อจริง</label><br />
+              <input
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+                style={inputStyle} // 🔧 ใช้ input style เดียวกันทุก input
+              />
+            </div>
+
+            <div>
+              <label>นามสกุล</label><br />
+              <input
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+                style={inputStyle} // 🔧 ใช้ input style เดียวกันทุก input
+              />
+            </div>
+
+            <div>
+              <label>เบอร์โทรศัพท์</label><br />
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+                style={inputStyle} // 🔧 ใช้ input style เดียวกันทุก input
+              />
+            </div>
+
+            <div>
+              <label>เลขบัตรประชาชน</label><br />
+              <input
+                value={idNumber}
+                onChange={(e) => setIdNumber(e.target.value)}
+                required
+                style={inputStyle} // 🔧 ใช้ input style เดียวกันทุก input
+              />
+            </div>
+
+            <div>
+              <label>วันเดือนปีเกิด</label><br />
+              <input
+                name="birth_day"
+                type="date"
+                value={birthDay}
+                onChange={(e) => setBirthDay(e.target.value)}
+                required
+                style={inputStyle}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              style={buttonStyle(submitting)}
+            >
+              {submitting ? 'กำลังลงทะเบียน...' : '✅ ยืนยันลงทะเบียน'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {message && (
+        <p style={{
+          marginTop: '1rem',
+          color: 'red',
+          fontWeight: 'bold',
+          fontSize: '1rem'
+        }}>
+          {message}
+        </p>
       )}
 
       {status === 'verified' && patient && (

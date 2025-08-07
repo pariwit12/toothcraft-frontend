@@ -215,11 +215,6 @@ export default function DashboardStaff() {
                 zIndex: 1000,
               }}
             >
-              <Link to="/register">
-                <button style={{ display: 'block', width: '100%' }}>
-                  👤 คนไข้ใหม่ (ไม่มี Line)
-                </button>
-              </Link>
               <Link to="/visit-today-summary">
                 <button style={{ display: 'block', width: '100%' }}>
                   📋 คนไข้ที่มาวันนี้

@@ -18,7 +18,6 @@ import DoctorTodaySummary from './pages/doctor_today_summary';
 
 /* Staff || Admin */
 import DashboardStaff from './pages/dashboard_staff';
-import RegisterPatient from './pages/register_patient';
 import PatientDetail from './pages/patient_detail';
 import MoneyReceivedReportFixed from './pages/money_received_report_fixed';
 import AppointmentCalendar from './pages/appointment_calendar';
@@ -103,14 +102,6 @@ export default function App() {
           element={
             <ProtectedRoute>
               <DashboardStaff />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <ProtectedRoute>
-              <RegisterPatient />
             </ProtectedRoute>
           }
         />
