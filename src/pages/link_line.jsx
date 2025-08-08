@@ -124,6 +124,13 @@ export default function LinkLine() {
       return;
     }
 
+    // ✅ ตรวจสอบว่า birth_day ไม่ควรอยู่ในอนาคต = กรอกมาเป็น พ.ศ.
+    if (birthDay && new Date(birthDay) > new Date()) {      // ไม่ได้สนใจ time-zone
+      setMessage('❌ กรุณากรอกวันเกิดเป็นปี ค.ศ.');
+      setSubmitting(false);
+      return;
+    }
+
     try {
 
       const payload = {

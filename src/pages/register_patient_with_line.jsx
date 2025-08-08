@@ -65,6 +65,12 @@ export default function RegisterPatientWithLine() {
         }
       }
 
+      // ✅ ตรวจสอบว่า birth_day ไม่ควรอยู่ในอนาคต = กรอกมาเป็น พ.ศ.
+      if (trimmedForm.birth_day && new Date(trimmedForm.birth_day) > new Date()) {      // ไม่ได้สนใจ time-zone
+        setMessage('❌ กรุณากรอกวันเกิดเป็นปี ค.ศ.');
+        return;
+      }
+
       const res = await fetch(`${API_URL}/patients`, {
         method: 'POST',
         headers: {
