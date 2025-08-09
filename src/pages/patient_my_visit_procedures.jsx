@@ -110,10 +110,10 @@ export default function PatientMyVisitProcedures() {
               <table border="1" width="100%" style={{ borderCollapse: "collapse" }}>
                 <thead>
                   <tr>
-                    <th>เวลา</th>
-                    <th>หัตถการ</th>
-                    <th>ซี่ฟัน</th>
-                    <th>หมอ</th>
+                    <th width="15%">เวลา</th>
+                    <th width="40%">หัตถการ</th>
+                    <th width="10%">ซี่ฟัน</th>
+                    <th width="25%">หมอ</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -275,7 +275,7 @@ export default function PatientMyVisitProcedures() {
           top: 0,
           left: 0,
           width: "100%",
-          height: "100%",
+          height: "90%",
           background: "rgba(0,0,0,0.5)",
           display: "flex",
           alignItems: "center",
