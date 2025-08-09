@@ -43,7 +43,7 @@ export default function PatientDashboard() {
   if (loading) return <p>กำลังโหลด...</p>;
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', padding: "1rem" }}>
       <h1>สวัสดี {patient.first_name} {patient.last_name}</h1>
       <Link to="/patient-my-appointments">
         <button
@@ -55,6 +55,18 @@ export default function PatientDashboard() {
           }}
         >
           📆 ดูวันนัดของฉัน
+        </button>
+      </Link>
+      <Link to="/patient-my-visit-procedures">
+        <button
+          style={{
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+        >
+          📋 ดูประวัติหัตถการรักษาของฉัน
         </button>
       </Link>
     </div>
