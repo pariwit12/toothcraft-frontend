@@ -75,6 +75,7 @@ export default function PatientMyVisitProcedures() {
         <button
           onClick={() => setFormat('by-date')}
           style={{
+            padding: '0.5rem 1rem',
             background: format === 'by-date' ? '#007bff' : '#eee',
             color: format === 'by-date' ? 'white' : 'black',
             border: 'none',
@@ -87,6 +88,7 @@ export default function PatientMyVisitProcedures() {
         <button
           onClick={() => setFormat('by-tooth')}
           style={{
+            padding: '0.5rem 1rem',
             background: format === 'by-tooth' ? '#007bff' : '#eee',
             color: format === 'by-tooth' ? 'white' : 'black',
             border: 'none',
