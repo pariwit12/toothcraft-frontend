@@ -218,36 +218,41 @@ export default function PatientMyVisitProcedures() {
             const teethInQuadrant = quadrantTeeth[quadrantToShow] || [];
 
             return (
-              <table border="1" width="100%" style={{ borderCollapse: "collapse" }}>
-                <thead>
-                  <tr>
-                    <th>ซี่ฟัน</th>
-                    <th>คำอธิบาย</th>
-                    <th>ดูประวัติ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {teethInQuadrant.map((tooth) => (
-                    <tr key={tooth}>
-                      <td>{tooth}</td>
-                      <td>{toothDescriptions[tooth] || "-"}</td>
-                      <td>
-                        <button
-                          onClick={() => {
-                            const history = visitProcedures.filter(
-                              (vp) => vp.tooth == tooth
-                            );
-                            setModalData(history);
-                            setShowModal(true);
-                          }}
-                        >
-                          ดูประวัติ
-                        </button>
-                      </td>
+              <>
+                {quadrantToShow === 'Q1' && (
+                  <h3>Quadrant 1 (ด้านขวาบน)</h3>
+                )}
+                <table border="1" width="100%" style={{ borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr>
+                      <th>ซี่ฟัน</th>
+                      <th>คำอธิบาย</th>
+                      <th>ดูประวัติ</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {teethInQuadrant.map((tooth) => (
+                      <tr key={tooth}>
+                        <td>{tooth}</td>
+                        <td>{toothDescriptions[tooth] || "-"}</td>
+                        <td>
+                          <button
+                            onClick={() => {
+                              const history = visitProcedures.filter(
+                                (vp) => vp.tooth == tooth
+                              );
+                              setModalData(history);
+                              setShowModal(true);
+                            }}
+                          >
+                            ดูประวัติ
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
             );
           })()}
         </div>
