@@ -270,45 +270,86 @@ export default function PatientMyVisitProcedures() {
 
       {/* Modal แสดงประวัติ */}
       {showModal && (
-        <div style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "rgba(0,0,0,0.5)",
-          display: "flex",
-          alignItems: "flex-start", // ชิดบน
-          justifyContent: "center",
-          overflowY: "auto", // ให้ scroll ได้ทั้งหน้าจอ
-          padding: "1rem", // กันเนื้อหาติดขอบบน
-          boxSizing: "border-box",
-        }}>
-          <div style={{ background: "#fff", padding: "1rem", maxWidth: "600px", width: "100%" }}>
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "center",
+            overflowY: "auto",
+            padding: "1rem",
+            boxSizing: "border-box",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              padding: "1rem",
+              maxWidth: "600px",
+              width: "100%",
+            }}
+          >
             <h3>ประวัติหัตถการรักษา</h3>
             {modalData.length > 0 ? (
-              <table border="1" width="100%" style={{ borderCollapse: "collapse" }}>
-                <thead>
-                  <tr>
-                    <th>เวลา</th>
-                    <th>หัตถการ</th>
-                    <th>ซี่ฟัน</th>
-                    <th>หมอ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {modalData
-                  .sort((a, b) => new Date(b.visits.visit_time) - new Date(a.visits.visit_time))
-                  .map((vp) => (
-                    <tr>
-                      <td>{new Date(vp.visits.visit_time).toLocaleDateString("th-TH")}</td>
-                      <td>{vp.procedures?.name}</td>
-                      <td>{vp.tooth}</td>
-                      <td>{vp.visits.doctors.first_name} ({vp.visits.doctors.nickname})</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              (() => {
+                let dateToPrint = "";
+                const sortedData = [...modalData].sort(
+                  (a, b) => new Date(b.visits.visit_time) - new Date(a.visits.visit_time)
+                );
+
+                return sortedData.map((vp, idx) => {
+                  const currentDate = new Date(vp.visits.visit_time).toLocaleDateString("th-TH");
+                  const isNewDate = currentDate !== dateToPrint;
+                  if (isNewDate) dateToPrint = currentDate;
+
+                  return (
+                    <React.Fragment key={idx}>
+                      {isNewDate && (
+                        <h3 style={{ background: "#f0f0f0", padding: "0.5rem" }}>
+                          {currentDate}
+                        </h3>
+                      )}
+                      {isNewDate && (
+                        <table border="1" width="100%" style={{ borderCollapse: "collapse" }}>
+                          <thead>
+                            <tr>
+                              <th>เวลา</th>
+                              <th>หัตถการ</th>
+                              <th>ซี่ฟัน</th>
+                              <th>หมอ</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>{new Date(vp.visits.visit_time).toLocaleTimeString("th-TH")}</td>
+                              <td>{vp.procedures?.name}</td>
+                              <td>{vp.tooth}</td>
+                              <td>
+                                {vp.visits.doctors.first_name} ({vp.visits.doctors.nickname})
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      )}
+                      {!isNewDate && (
+                        <tr>
+                          <td>{new Date(vp.visits.visit_time).toLocaleTimeString("th-TH")}</td>
+                          <td>{vp.procedures?.name}</td>
+                          <td>{vp.tooth}</td>
+                          <td>
+                            {vp.visits.doctors.first_name} ({vp.visits.doctors.nickname})
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                });
+              })()
             ) : (
               <p>ไม่มีประวัติหัตถการรักษาของฟันซี่นี้</p>
             )}
@@ -316,6 +357,7 @@ export default function PatientMyVisitProcedures() {
           </div>
         </div>
       )}
+
     </div>
   );
 }
