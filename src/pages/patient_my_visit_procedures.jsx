@@ -306,7 +306,7 @@ export default function PatientMyVisitProcedures() {
               <button
                 onClick={() => setShowModal(false)}
                 style={{
-                  padding: '0.5rem 1rem',
+                  padding: '0.5rem 0rem',
                   background: '#eee',
                   color: 'black',
                   border: 'none',
