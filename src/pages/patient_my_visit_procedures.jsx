@@ -295,6 +295,19 @@ export default function PatientMyVisitProcedures() {
             }}
           >
             <h3>ประวัติหัตถการรักษา</h3>
+            <button
+              onClick={() => setShowModal(false)}
+              style={{
+                padding: '0.5rem 1rem',
+                background: '#eee',
+                color: 'black',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+              }}
+            >
+              ปิด
+            </button>
             {modalData.length > 0 ? (
               (() => {
                 // 🗂 Group ข้อมูลใน modal ตามวันที่ เหมือน format === 'by-date'
@@ -347,7 +360,19 @@ export default function PatientMyVisitProcedures() {
             ) : (
               <p>ไม่มีประวัติหัตถการรักษาของฟันซี่นี้</p>
             )}
-            <button onClick={() => setShowModal(false)}>ปิด</button>
+            <button
+              onClick={() => setShowModal(false)}
+              style={{
+                padding: '0.5rem 1rem',
+                background: '#eee',
+                color: 'black',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+              }}
+            >
+              ปิด
+            </button>
           </div>
         </div>
       )}
