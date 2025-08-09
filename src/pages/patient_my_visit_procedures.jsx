@@ -71,7 +71,7 @@ export default function PatientMyVisitProcedures() {
     <div style={{ padding: "1rem", maxWidth: "800px", margin: "0 auto" }}>
       <h2>📋 ประวัติหัตถการรักษาของ {patient.first_name} {patient.last_name}</h2>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
         <button
           onClick={() => setFormat('by-date')}
           style={{
@@ -144,13 +144,17 @@ export default function PatientMyVisitProcedures() {
 
       {format === 'by-tooth' && (
         <div>
-          <div style={{ marginBottom: "1rem" }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: "1rem" }}>
             {['Q1', 'Q2', 'Q3', 'Q4'].map((q) => (
               <button
                 key={q}
                 style={{
-                  marginRight: "0.5rem",
-                  background: quadrantToShow === q ? "#ddd" : "#fff",
+                  padding: '0.5rem 1rem',
+                  background: quadrantToShow === q ? '#007bff' : '#eee',
+                  color: quadrantToShow === q ? 'white' : 'black',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
                 }}
                 onClick={() => setQuadrantToShow(q)}
               >
