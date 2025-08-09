@@ -307,7 +307,7 @@ export default function PatientMyVisitProcedures() {
                 onClick={() => setShowModal(false)}
                 style={{
                   padding: '0rem 1rem',
-                  background: '#eee',
+                  background: 'none',
                   color: 'black',
                   border: 'none',
                   borderRadius: '5px',
@@ -318,18 +318,18 @@ export default function PatientMyVisitProcedures() {
               </button>
             </div>
             {modalData.length > 0 ? (
-              (() => {
-                // 🗂 Group ข้อมูลใน modal ตามวันที่ เหมือน format === 'by-date'
-                const groupedModalData = modalData.reduce((acc, vp) => {
-                  const dateKey = new Date(vp.visits.visit_time)
-                    .toLocaleDateString("th-TH", { timeZone: 'Asia/Bangkok' });
-                  if (!acc[dateKey]) acc[dateKey] = [];
-                  acc[dateKey].push(vp);
-                  return acc;
-                }, {});
+              <>
+                {(() => {
+                  // 🗂 Group ข้อมูลใน modal ตามวันที่ เหมือน format === 'by-date'
+                  const groupedModalData = modalData.reduce((acc, vp) => {
+                    const dateKey = new Date(vp.visits.visit_time)
+                      .toLocaleDateString("th-TH", { timeZone: 'Asia/Bangkok' });
+                    if (!acc[dateKey]) acc[dateKey] = [];
+                    acc[dateKey].push(vp);
+                    return acc;
+                  }, {});
 
-                return Object.keys(groupedModalData).map((date) => (
-                  <>
+                  return Object.keys(groupedModalData).map((date) => (
                     <div key={date} style={{ marginBottom: "1rem" }}>
                       <h3 style={{ background: "#f0f0f0", padding: "0.5rem" }}>{date}</h3>
                       <table border="1" width="100%" style={{ borderCollapse: "collapse" }}>
@@ -365,22 +365,24 @@ export default function PatientMyVisitProcedures() {
                         </tbody>
                       </table>
                     </div>
-                    <button
-                      onClick={() => setShowModal(false)}
-                      style={{
-                        padding: '0.5rem 1rem',
-                        background: '#eee',
-                        color: 'black',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      ปิด
-                    </button>
-                  </>
-                ));
-              })()
+                  ));
+                
+                })()}
+                
+                <button
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: '#eee',
+                    color: 'black',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ปิด
+                </button>
+              </>
             ) : (
               <p>ไม่มีประวัติหัตถการรักษาของฟันซี่นี้</p>
             )}
