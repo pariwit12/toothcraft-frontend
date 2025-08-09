@@ -294,11 +294,10 @@ export default function PatientMyVisitProcedures() {
               width: "100%",
             }}
           >
-            
+
             <div 
               style={{
                 flex: 1,
-                padding: '1rem',
                 display: 'flex',
                 justifyContent: 'space-between',
               }}
@@ -315,7 +314,7 @@ export default function PatientMyVisitProcedures() {
                   cursor: 'pointer',
                 }}
               >
-                ปิด
+                ❌ ปิด
               </button>
             </div>
             {modalData.length > 0 ? (
