@@ -294,7 +294,7 @@ export default function PatientMyVisitProcedures() {
               width: "100%",
             }}
           >
-            <h3 style={{display: 'inline'}}>ประวัติหัตถการรักษา</h3>
+            <h3 style={{ display: 'inline', marginRight: '1rem' }}>ประวัติหัตถการรักษา</h3>
             <button
               onClick={() => setShowModal(false)}
               style={{
