@@ -275,11 +275,14 @@ export default function PatientMyVisitProcedures() {
           top: 0,
           left: 0,
           width: "100%",
-          height: "90%",
+          height: "100%",
           background: "rgba(0,0,0,0.5)",
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center"
+          alignItems: "flex-start", // ชิดบน
+          justifyContent: "center",
+          overflowY: "auto", // ให้ scroll ได้ทั้งหน้าจอ
+          padding: "1rem", // กันเนื้อหาติดขอบบน
+          boxSizing: "border-box",
         }}>
           <div style={{ background: "#fff", padding: "1rem", maxWidth: "600px", width: "100%" }}>
             <h3>ประวัติหัตถการรักษา</h3>
