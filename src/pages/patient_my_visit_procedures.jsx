@@ -294,28 +294,20 @@ export default function PatientMyVisitProcedures() {
               width: "100%",
             }}
           >
-            <div
-             style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '1rem',
-             }}
+            <h3 style={{display: 'inline'}}>ประวัติหัตถการรักษา</h3>
+            <button
+              onClick={() => setShowModal(false)}
+              style={{
+                padding: '0.5rem 1rem',
+                background: '#eee',
+                color: 'black',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+              }}
             >
-              <h3>ประวัติหัตถการรักษา</h3>
-              <button
-                onClick={() => setShowModal(false)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: '#eee',
-                  color: 'black',
-                  border: 'none',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                }}
-              >
-                ปิด
-              </button>
-            </div>
+              ปิด
+            </button>
             {modalData.length > 0 ? (
               (() => {
                 // 🗂 Group ข้อมูลใน modal ตามวันที่ เหมือน format === 'by-date'
