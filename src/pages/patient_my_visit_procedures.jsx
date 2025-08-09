@@ -72,8 +72,32 @@ export default function PatientMyVisitProcedures() {
       <h2>📋 ประวัติหัตถการรักษาของ {patient.first_name} {patient.last_name}</h2>
 
       <div style={{ marginBottom: "1rem", display: 'flex', flexWrap: 'wrap', gap: '1rem', padding: "1rem" }}>
-        <button onClick={() => setFormat('by-date')}>ดูทั้งหมด</button>
-        <button onClick={() => setFormat('by-tooth')}>ดูตามซี่ฟัน</button>
+        <button
+          onClick={() => setFormat('by-date')}
+          style={{
+            padding: '0.5rem 1rem',
+            background: format === 'by-date' ? '#007bff' : '#eee',
+            color: format === 'by-date' ? 'white' : 'black',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          ดูทั้งหมด
+        </button>
+        <button
+          onClick={() => setFormat('by-tooth')}
+          style={{
+            padding: '0.5rem 1rem',
+            background: format === 'by-tooth' ? '#007bff' : '#eee',
+            color: format === 'by-tooth' ? 'white' : 'black',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          ดูตามซี่ฟัน
+        </button>
       </div>
 
       {format === 'by-date' && (
