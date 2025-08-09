@@ -9,7 +9,9 @@ export default function PatientMyVisitProcedures() {
   const [loading, setLoading] = useState(true);
   const [patient, setPatient] = useState(null);
   const [format, setFormat] = useState('by-date'); // 'by-date', 'by-tooth'
-  const [quadrandToShow, setQuadrantToShow] = useState('Q1'); // 'Q1', 'Q2', 'Q3', 'Q4'
+  const [quadrantToShow, setQuadrantToShow] = useState('Q1'); // 'Q1', 'Q2', 'Q3', 'Q4'
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -62,24 +64,6 @@ export default function PatientMyVisitProcedures() {
       .toLocaleDateString("th-TH", { timeZone: 'Asia/Bangkok',});
     if (!acc[dateKey]) acc[dateKey] = [];
     acc[dateKey].push(vp);
-    return acc;
-  }, {});
-
-  // ฟังก์ชันตรวจว่า tooth อยู่ Quadrant ไหน
-  const getToothQuadrant = (tooth) => {
-    const t = parseInt(tooth, 10);
-    if (t >= 11 && t <= 18) return 'Q1';
-    if (t >= 21 && t <= 28) return 'Q2';
-    if (t >= 31 && t <= 38) return 'Q3';
-    if (t >= 41 && t <= 48) return 'Q4';
-    return 'Other';
-  };
-
-  // Group ตาม Quadrant
-  const groupedByQuadrant = visitProcedures.reduce((acc, vp) => {
-    const quad = getToothQuadrant(vp.tooth);
-    if (!acc[quad]) acc[quad] = [];
-    acc[quad].push(vp);
     return acc;
   }, {});
 
