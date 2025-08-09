@@ -71,7 +71,7 @@ export default function PatientMyVisitProcedures() {
     <div style={{ padding: "1rem", maxWidth: "800px", margin: "0 auto" }}>
       <h2>📋 ประวัติหัตถการรักษาของ {patient.first_name} {patient.last_name}</h2>
 
-      <div style={{ marginBottom: "1rem" }}>
+      <div style={{ marginBottom: "1rem", display: 'flex', flexWrap: 'wrap', gap: '1rem', padding: "1rem" }}>
         <button onClick={() => setFormat('by-date')}>ดูทั้งหมด</button>
         <button onClick={() => setFormat('by-tooth')}>ดูตามซี่ฟัน</button>
       </div>
@@ -102,8 +102,8 @@ export default function PatientMyVisitProcedures() {
                           hour12: false,
                         })}
                       </td>
-                      <td> {vp.procedures?.name || "-"}</td>
-                      <td> {vp.tooth || "-"}</td>
+                      <td>{vp.procedures?.name || "-"}</td>
+                      <td>{vp.tooth || "-"}</td>
                       <td>
                         {vp.visits.doctors
                           ? `${vp.visits.doctors.first_name} (${vp.visits.doctors.nickname})`
