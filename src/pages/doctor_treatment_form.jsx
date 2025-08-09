@@ -655,6 +655,48 @@ export default function DoctorTreatmentForm() {
               style={{ width: '100%' }}
             />
 
+            <label style={{ marginTop: '1rem', display: 'block' }}>แผนการรักษา:</label>
+
+            {displayMode === 'planOnly' && (() => {
+              let textValue = '';
+              Object.entries(groupedByPlan).map(([plan, arr]) => {
+                // สร้าง string รวมจาก tooth + surface
+                textValue += `\n- ${plan}:` + arr.map((item) => ` ${item.tooth}${item.surface}`).join(',');
+              })
+
+              return (
+                <div style={{ marginBottom: '1rem' }}>
+                  <textarea
+                    value={textValue.trim()}
+                    rows={6}
+                    style={{ width: '100%' }}
+                    readOnly
+                  />
+                </div>
+              );
+            })()}
+
+            {(displayMode === 'planAndName' || displayMode === 'byTooth') && (() => {
+              let textValue = '';
+
+              Object.entries(groupedByPlanAndName).forEach(([plan, items]) => {
+                Object.entries(items).forEach(([name, arr]) => {
+                  textValue += `- ${plan} - ${arr.map(item => item.toothSurface).join(', ')} ${name}\n`;
+                });
+              });
+
+              return (
+                <div style={{ marginBottom: '1rem' }}>
+                  <textarea
+                    value={textValue.trim()}
+                    rows={6}
+                    style={{ width: '100%' }}
+                    readOnly
+                  />
+                </div>
+              );
+            })()}
+
             <label style={{ marginTop: '1rem', display: 'block' }}>นัดครั้งหน้า:</label>
             <textarea
               value={nextVisit}
