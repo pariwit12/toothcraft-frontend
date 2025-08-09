@@ -102,8 +102,8 @@ export default function PatientMyVisitProcedures() {
                           hour12: false,
                         })}
                       </td>
-                      <td>{vp.procedures?.name || "-"}</td>
-                      <td>{vp.tooth || "-"}</td>
+                      <td> {vp.procedures?.name || "-"}</td>
+                      <td> {vp.tooth || "-"}</td>
                       <td>
                         {vp.visits.doctors
                           ? `${vp.visits.doctors.first_name} (${vp.visits.doctors.nickname})`
