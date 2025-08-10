@@ -450,55 +450,55 @@ export default function LinkLine() {
             onChange={(e) => setPhone(e.target.value)}
             required
           />
-
-          <button
-            type="submit"
-            style={{
-              backgroundColor: '#16A34A',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              borderRadius: '4px',
-              border: 'none',
-              cursor: 'pointer',
-              marginRight: '1rem',
-            }}
-          >
-            ยืนยันข้อมูลและลงทะเบียน
-          </button>
-          <button
-            type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
-            onClick={async () => {
-              setStatus('loading');
-              localStorage.removeItem("token");
-              setStatus('ready');
-            }}
-            style={{
-              backgroundColor: '#dc2626',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              borderRadius: '4px',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            ไม่ใช่คุณ (กรอกเลขบัตรใหม่)
-          </button>
-          <button
-            type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
-            onClick={() => {
-              navigate("/liff-patient-select");
-            }}
-            style={{
-              backgroundColor: '#dc2626',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              borderRadius: '4px',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            ไม่ใช่คุณ (กลับหน้าเลือก User)
-          </button>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+            <button
+              type="submit"
+              style={{
+                backgroundColor: '#16A34A',
+                color: 'white',
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              ยืนยันข้อมูลและลงทะเบียน
+            </button>
+            <button
+              type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
+              onClick={async () => {
+                setStatus('loading');
+                localStorage.removeItem("token");
+                setStatus('ready');
+              }}
+              style={{
+                backgroundColor: '#dc2626',
+                color: 'white',
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              ไม่ใช่คุณ (กรอกเลขบัตรใหม่)
+            </button>
+            <button
+              type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
+              onClick={() => {
+                navigate("/liff-patient-select");
+              }}
+              style={{
+                backgroundColor: '#dc2626',
+                color: 'white',
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              ไม่ใช่คุณ (กลับหน้าเลือก User)
+            </button>
+          </div>
         </form>
       )}
     </div>
