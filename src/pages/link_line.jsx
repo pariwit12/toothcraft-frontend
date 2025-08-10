@@ -27,6 +27,7 @@ export default function LinkLine() {
 
   useEffect(() => {
     if (status === 'success') {
+      localStorage.removeItem("token");
       alert('✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ');
     }
   }, [status]);
@@ -312,8 +313,6 @@ export default function LinkLine() {
           <button
             type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
             onClick={async () => {
-              setStatus('loading');
-              localStorage.removeItem("token");
               setStatus('ready');
             }}
             style={{
