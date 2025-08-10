@@ -17,40 +17,67 @@ export default function LinkLine() {
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const token = localStorage.getItem("token");
+  const [roleFromToken, setRoleFromToken] = useState('');
+
   useEffect(() => {
-    const initLiff = async () => {
-      try {
-        const liff = (await import('@line/liff')).default;
-        await liff.init({ liffId: LIFF_ID });
 
-        if (!liff.isLoggedIn()) {
-          liff.login();
-          return;
+    if (token) {
+      const fetchTokenData = async () => {
+        try {
+          const res = await axios.get(`${API_URL}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          setRoleFromToken(res.data.role);
+          if (res.data.role === "patient") {
+            setPatient(res.data.data);
+            setStatus('verified');
+          }
+
+        } catch (err) {
+          console.error("Error fetching patient data", err);
         }
+      };
 
-        const profile = await liff.getProfile();
-        const friendship = await liff.getFriendship();
+      fetchTokenData();
+    }
 
-        if (!friendship.friendFlag) {
-          setStatus('need-add-oa');
-          return;
+    if (roleFromToken !== "patient" || !token) {
+      const initLiff = async () => {
+        try {
+          const liff = (await import('@line/liff')).default;
+          await liff.init({ liffId: LIFF_ID });
+
+          if (!liff.isLoggedIn()) {
+            liff.login();
+            return;
+          }
+
+          const profile = await liff.getProfile();
+          const friendship = await liff.getFriendship();
+
+          if (!friendship.friendFlag) {
+            setStatus('need-add-oa');
+            return;
+          }
+
+          // ปกติ liff.getProfile() จะไม่คืน anonymous ID (จะคืนจริงเลยถ้าเป็นเพื่อน)
+          // แต่เพื่อความชัวร์ ควรเช็คว่า profile.userId เริ่มต้นด้วย "U" ซึ่งเป็น prefix ของ LINE userId จริง
+          if (!profile.userId || !profile.userId.startsWith("U")) {
+            setStatus('need-add-oa');
+            return;
+          }
+
+          setLineUserId(profile.userId);
+          setStatus('ready');
+        } catch (error) {
+          console.error('LIFF init error', error);
+          setStatus('error');
         }
-
-        // ปกติ liff.getProfile() จะไม่คืน anonymous ID (จะคืนจริงเลยถ้าเป็นเพื่อน)
-        // แต่เพื่อความชัวร์ ควรเช็คว่า profile.userId เริ่มต้นด้วย "U" ซึ่งเป็น prefix ของ LINE userId จริง
-        if (!profile.userId || !profile.userId.startsWith("U")) {
-          setStatus('need-add-oa');
-          return;
-        }
-
-        setLineUserId(profile.userId);
-        setStatus('ready');
-      } catch (error) {
-        console.error('LIFF init error', error);
-        setStatus('error');
-      }
-    };
-    initLiff();
+      };
+      initLiff();
+    }
   }, []);
 
   useEffect(() => {
