@@ -18,49 +18,13 @@ export default function LinkLine() {
   const [submitting, setSubmitting] = useState(false);
 
   const token = localStorage.getItem("token");
-  const [roleFromToken, setRoleFromToken] = useState('');
 
   useEffect(() => {
-    const initLiff = async () => {
-      try {
-        const liff = (await import('@line/liff')).default;
-        await liff.init({ liffId: LIFF_ID });
-
-        if (!liff.isLoggedIn()) {
-          liff.login();
-          return;
-        }
-
-        const profile = await liff.getProfile();
-        const friendship = await liff.getFriendship();
-
-        if (!friendship.friendFlag) {
-          setStatus('need-add-oa');
-          return;
-        }
-
-        // ปกติ liff.getProfile() จะไม่คืน anonymous ID (จะคืนจริงเลยถ้าเป็นเพื่อน)
-        // แต่เพื่อความชัวร์ ควรเช็คว่า profile.userId เริ่มต้นด้วย "U" ซึ่งเป็น prefix ของ LINE userId จริง
-        if (!profile.userId || !profile.userId.startsWith("U")) {
-          setStatus('need-add-oa');
-          return;
-        }
-
-        setLineUserId(profile.userId);
-        setStatus('ready');
-      } catch (error) {
-        console.error('LIFF init error', error);
-        setStatus('error');
-      }
-    };
-
     const fetchTokenData = async () => {
       try {
         const res = await axios.get(`${API_URL}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        setRoleFromToken(res.data.role);
 
         if (res.data.role === "patient") {
           setPatient(res.data.data);
@@ -72,7 +36,6 @@ export default function LinkLine() {
         }
       } catch (err) {
         console.error("Error fetching patient data", err);
-        setRoleFromToken(''); // reset ถ้า error
         setStatus('error');
       }
     };
@@ -91,6 +54,39 @@ export default function LinkLine() {
       alert('✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ');
     }
   }, [status]);
+
+  const initLiff = async () => {
+    try {
+      const liff = (await import('@line/liff')).default;
+      await liff.init({ liffId: LIFF_ID });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
+      const profile = await liff.getProfile();
+      const friendship = await liff.getFriendship();
+
+      if (!friendship.friendFlag) {
+        setStatus('need-add-oa');
+        return;
+      }
+
+      // ปกติ liff.getProfile() จะไม่คืน anonymous ID (จะคืนจริงเลยถ้าเป็นเพื่อน)
+      // แต่เพื่อความชัวร์ ควรเช็คว่า profile.userId เริ่มต้นด้วย "U" ซึ่งเป็น prefix ของ LINE userId จริง
+      if (!profile.userId || !profile.userId.startsWith("U")) {
+        setStatus('need-add-oa');
+        return;
+      }
+
+      setLineUserId(profile.userId);
+      setStatus('ready');
+    } catch (error) {
+      console.error('LIFF init error', error);
+      setStatus('error');
+    }
+  };
 
   const handleVerifyId = async () => {
     try {
@@ -463,9 +459,27 @@ export default function LinkLine() {
               borderRadius: '4px',
               border: 'none',
               cursor: 'pointer',
+              marginRight: '1rem',
             }}
           >
             ยืนยันข้อมูลและลงทะเบียน
+          </button>
+          <button
+            type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
+            onClick={async () => {
+              localStorage.removeItem("token");
+              await initLiff();
+            }}
+            style={{
+              backgroundColor: '#dc2626',
+              color: 'white',
+              padding: '0.5rem 1rem',
+              borderRadius: '4px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            ไม่ใช่คุณ
           </button>
         </form>
       )}
