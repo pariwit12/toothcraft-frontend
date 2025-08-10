@@ -45,6 +45,18 @@ export default function PatientDashboard() {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', padding: "1rem" }}>
       <h1>สวัสดี {patient.first_name} {patient.last_name}</h1>
+      <Link to="/patient-checkin" target="_blank" rel="noopener noreferrer">
+        <button
+          style={{
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+        >
+          📷 เข้ารับการรักษา
+        </button>
+      </Link>
       <Link to="/patient-my-appointments">
         <button
           style={{
