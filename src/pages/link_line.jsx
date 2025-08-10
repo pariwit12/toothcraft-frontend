@@ -308,7 +308,7 @@ export default function LinkLine() {
         <p style={{ padding: '1rem', maxWidth: '400px', margin: '0 auto', color: '#15803D', fontWeight: '600' }}>
           ✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ
         </p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ padding: '1rem', display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
           <button
             type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
             onClick={async () => {
