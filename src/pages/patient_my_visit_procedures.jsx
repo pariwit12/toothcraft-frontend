@@ -243,20 +243,24 @@ export default function PatientMyVisitProcedures() {
                   <tbody>
                     {teethInQuadrant.map((tooth) => (
                       <tr key={tooth}>
-                        <td>{tooth}</td>
+                        <td style={{ textAlign: "center" }}>{tooth}</td>
                         <td>{toothDescriptions[tooth] || "-"}</td>
-                        <td>
-                          <button
-                            onClick={() => {
-                              const history = visitProcedures.filter(
-                                (vp) => vp.tooth == tooth
-                              );
-                              setModalData(history);
-                              setShowModal(true);
-                            }}
-                          >
-                            ดูประวัติ
-                          </button>
+                        <td style={{ textAlign: "center" }}>
+                          {visitProcedures.some((vp) => vp.tooth == tooth) ? (
+                            <button
+                              onClick={() => {
+                                const history = visitProcedures.filter(
+                                  (vp) => vp.tooth == tooth
+                                );
+                                setModalData(history);
+                                setShowModal(true);
+                              }}
+                            >
+                              ดูประวัติ
+                            </button>
+                          ) : (
+                            "-"
+                          )}
                         </td>
                       </tr>
                     ))}
