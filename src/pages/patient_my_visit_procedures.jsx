@@ -335,7 +335,10 @@ export default function PatientMyVisitProcedures() {
                       <table border="1" width="100%" style={{ borderCollapse: "collapse" }}>
                         <thead>
                           <tr>
-                            <th width="15%">เวลา</th>
+                            {/* <th width="15%">เวลา</th>
+                            <th width="40%">หัตถการ</th>
+                            <th width="10%">ซี่ฟัน</th>
+                            <th width="25%">หมอ</th> */}
                             <th width="40%">หัตถการ</th>
                             <th width="10%">ซี่ฟัน</th>
                             <th width="25%">หมอ</th>
@@ -346,13 +349,13 @@ export default function PatientMyVisitProcedures() {
                             .sort((a, b) => new Date(b.visits.visit_time) - new Date(a.visits.visit_time))
                             .map((vp) => (
                               <tr key={vp.id}>
-                                <td>
+                                {/* <td>
                                   {new Date(vp.visits.visit_time).toLocaleTimeString("th-TH", {
                                     hour: "2-digit",
                                     minute: "2-digit",
                                     hour12: false,
                                   })}
-                                </td>
+                                </td> */}
                                 <td>{vp.procedures?.name || "-"}</td>
                                 <td>{vp.tooth || "-"}</td>
                                 <td>
