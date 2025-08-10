@@ -21,35 +21,6 @@ export default function LinkLine() {
   const [roleFromToken, setRoleFromToken] = useState('');
 
   useEffect(() => {
-    if (!token) return;
-
-    const fetchTokenData = async () => {
-      try {
-        const res = await axios.get(`${API_URL}/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        setRoleFromToken(res.data.role);
-
-        if (res.data.role === "patient") {
-          setPatient(res.data.data);
-          setPhone(res.data.data.telephone || '');
-          setStatus('verified');
-        }
-      } catch (err) {
-        console.error("Error fetching patient data", err);
-        setRoleFromToken(''); // reset ถ้า error
-        setStatus('error');
-      }
-    };
-
-    fetchTokenData();
-  }, [token]);
-
-  useEffect(() => {
-    if (token && roleFromToken === "patient") return; // ไม่ต้อง init LIFF ถ้าเป็น patient
-
-    // เรียก initLIFF เมื่อยังไม่มี token หรือ role ไม่ใช่ patient
     const initLiff = async () => {
       try {
         const liff = (await import('@line/liff')).default;
@@ -83,8 +54,37 @@ export default function LinkLine() {
       }
     };
 
-    initLiff();
-  }, [token, roleFromToken]);
+    const fetchTokenData = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setRoleFromToken(res.data.role);
+
+        if (res.data.role === "patient") {
+          setPatient(res.data.data);
+          setPhone(res.data.data.telephone || '');
+          setStatus('verified');
+        }
+        else {
+          initLiff();
+        }
+      } catch (err) {
+        console.error("Error fetching patient data", err);
+        setRoleFromToken(''); // reset ถ้า error
+        setStatus('error');
+      }
+    };
+
+    if (token) {
+      fetchTokenData();
+    }
+    else {
+      initLiff();
+    }
+
+  }, []);
 
   useEffect(() => {
     if (status === 'success') {
