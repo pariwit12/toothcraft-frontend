@@ -21,65 +21,70 @@ export default function LinkLine() {
   const [roleFromToken, setRoleFromToken] = useState('');
 
   useEffect(() => {
+    if (!token) return;
 
-    if (token) {
-      const fetchTokenData = async () => {
-        try {
-          const res = await axios.get(`${API_URL}/auth/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+    const fetchTokenData = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-          setRoleFromToken(res.data.role);
-          if (res.data.role === "patient") {
-            setPatient(res.data.data);
-            setPhone(res.data.data.telephone || '');
-            setStatus('verified');
-          }
+        setRoleFromToken(res.data.role);
 
-        } catch (err) {
-          console.error("Error fetching patient data", err);
+        if (res.data.role === "patient") {
+          setPatient(res.data.data);
+          setPhone(res.data.data.telephone || '');
+          setStatus('verified');
         }
-      };
+      } catch (err) {
+        console.error("Error fetching patient data", err);
+        setRoleFromToken(''); // reset ถ้า error
+        setStatus('error');
+      }
+    };
 
-      fetchTokenData();
-    }
+    fetchTokenData();
+  }, [token]);
 
-    if ((token && roleFromToken !== "patient") || !token) {
-      const initLiff = async () => {
-        try {
-          const liff = (await import('@line/liff')).default;
-          await liff.init({ liffId: LIFF_ID });
+  useEffect(() => {
+    if (token && roleFromToken === "patient") return; // ไม่ต้อง init LIFF ถ้าเป็น patient
 
-          if (!liff.isLoggedIn()) {
-            liff.login();
-            return;
-          }
+    // เรียก initLIFF เมื่อยังไม่มี token หรือ role ไม่ใช่ patient
+    const initLiff = async () => {
+      try {
+        const liff = (await import('@line/liff')).default;
+        await liff.init({ liffId: LIFF_ID });
 
-          const profile = await liff.getProfile();
-          const friendship = await liff.getFriendship();
-
-          if (!friendship.friendFlag) {
-            setStatus('need-add-oa');
-            return;
-          }
-
-          // ปกติ liff.getProfile() จะไม่คืน anonymous ID (จะคืนจริงเลยถ้าเป็นเพื่อน)
-          // แต่เพื่อความชัวร์ ควรเช็คว่า profile.userId เริ่มต้นด้วย "U" ซึ่งเป็น prefix ของ LINE userId จริง
-          if (!profile.userId || !profile.userId.startsWith("U")) {
-            setStatus('need-add-oa');
-            return;
-          }
-
-          setLineUserId(profile.userId);
-          setStatus('ready');
-        } catch (error) {
-          console.error('LIFF init error', error);
-          setStatus('error');
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
         }
-      };
-      initLiff();
-    }
-  }, []);
+
+        const profile = await liff.getProfile();
+        const friendship = await liff.getFriendship();
+
+        if (!friendship.friendFlag) {
+          setStatus('need-add-oa');
+          return;
+        }
+
+        // ปกติ liff.getProfile() จะไม่คืน anonymous ID (จะคืนจริงเลยถ้าเป็นเพื่อน)
+        // แต่เพื่อความชัวร์ ควรเช็คว่า profile.userId เริ่มต้นด้วย "U" ซึ่งเป็น prefix ของ LINE userId จริง
+        if (!profile.userId || !profile.userId.startsWith("U")) {
+          setStatus('need-add-oa');
+          return;
+        }
+
+        setLineUserId(profile.userId);
+        setStatus('ready');
+      } catch (error) {
+        console.error('LIFF init error', error);
+        setStatus('error');
+      }
+    };
+
+    initLiff();
+  }, [token, roleFromToken]);
 
   useEffect(() => {
     if (status === 'success') {
