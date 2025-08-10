@@ -119,7 +119,7 @@ export default function PatientMyVisitProcedures() {
                 <tbody>
                   {groupedByDate[date].map((vp) => (
                     <tr key={vp.id}>
-                      <td>
+                      <td style={{ textAlign: "center" }}>
                         {new Date(vp.visits.visit_time).toLocaleTimeString("th-TH", {
                           hour: "2-digit",
                           minute: "2-digit",
@@ -127,7 +127,7 @@ export default function PatientMyVisitProcedures() {
                         })}
                       </td>
                       <td>{vp.procedures?.name || "-"}</td>
-                      <td>{vp.tooth || "-"}</td>
+                      <td style={{ textAlign: "center" }}>{vp.tooth || "-"}</td>
                       <td>
                         {vp.visits.doctors
                           ? `${vp.visits.doctors.first_name} (${vp.visits.doctors.nickname})`
@@ -357,8 +357,8 @@ export default function PatientMyVisitProcedures() {
                                   })}
                                 </td> */}
                                 <td>{vp.procedures?.name || "-"}</td>
-                                <td>{vp.tooth || "-"}</td>
-                                <td>
+                                <td style={{ textAlign: "center" }}>{vp.tooth || "-"}</td>
+                                <td style={{ textAlign: "center" }}>
                                   {vp.visits.doctors
                                     ? `${vp.visits.doctors.first_name} (${vp.visits.doctors.nickname})`
                                     : "-"}
