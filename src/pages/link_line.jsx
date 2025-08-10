@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { fromZonedTime } from 'date-fns-tz';
 
@@ -18,35 +19,10 @@ export default function LinkLine() {
   const [submitting, setSubmitting] = useState(false);
 
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchTokenData = async () => {
-      try {
-        const res = await axios.get(`${API_URL}/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (res.data.role === "patient") {
-          setPatient(res.data.data);
-          setPhone(res.data.data.telephone || '');
-          setStatus('verified');
-        }
-        else {
-          initLiff();
-        }
-      } catch (err) {
-        console.error("Error fetching patient data", err);
-        setStatus('error');
-      }
-    };
-
-    if (token) {
-      fetchTokenData();
-    }
-    else {
-      initLiff();
-    }
-
+    initLiff();
   }, []);
 
   useEffect(() => {
@@ -54,6 +30,26 @@ export default function LinkLine() {
       alert('✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ');
     }
   }, [status]);
+
+  const fetchTokenData = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.data.role === "patient") {
+        setPatient(res.data.data);
+        setPhone(res.data.data.telephone || '');
+        setStatus('verified');
+      }
+      else {
+        setStatus('ready');
+      }
+    } catch (err) {
+      console.error("Error fetching patient data", err);
+      setStatus('error');
+    }
+  };
 
   const initLiff = async () => {
     try {
@@ -81,7 +77,12 @@ export default function LinkLine() {
       }
 
       setLineUserId(profile.userId);
-      setStatus('ready');
+      if (token) {
+        await fetchTokenData();
+      }
+      else {
+        setStatus('ready');
+      }
     } catch (error) {
       console.error('LIFF init error', error);
       setStatus('error');
@@ -480,7 +481,23 @@ export default function LinkLine() {
               cursor: 'pointer',
             }}
           >
-            ไม่ใช่คุณ
+            ไม่ใช่คุณ (กรอกเลขบัตรใหม่)
+          </button>
+          <button
+            type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
+            onClick={() => {
+              navigate("/liff-patient-select");
+            }}
+            style={{
+              backgroundColor: '#dc2626',
+              color: 'white',
+              padding: '0.5rem 1rem',
+              borderRadius: '4px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            ไม่ใช่คุณ (กลับหน้าเลือก User)
           </button>
         </form>
       )}
