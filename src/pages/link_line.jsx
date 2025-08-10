@@ -304,9 +304,43 @@ export default function LinkLine() {
 
   if (status === 'success') {
     return (
-      <p style={{ padding: '1rem', maxWidth: '400px', margin: '0 auto', color: '#15803D', fontWeight: '600' }}>
-        ✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ
-      </p>
+      <>
+        <p style={{ padding: '1rem', maxWidth: '400px', margin: '0 auto', color: '#15803D', fontWeight: '600' }}>
+          ✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+          <button
+            type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
+            onClick={async () => {
+              setStatus('loading');
+              localStorage.removeItem("token");
+              setStatus('ready');
+            }}
+            style={{
+              padding: '0.5rem 1rem',
+              borderRadius: '4px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            ลงทะเบียนเพิ่ม
+          </button>
+          <button
+            type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
+            onClick={() => {
+              navigate("/liff-patient-select");
+            }}
+            style={{
+              padding: '0.5rem 1rem',
+              borderRadius: '4px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            กลับหน้าเลือก User
+          </button>
+        </div>
+      </>
     );
   }
 
@@ -480,7 +514,7 @@ export default function LinkLine() {
                 cursor: 'pointer',
               }}
             >
-              ไม่ใช่คุณ (กรอกเลขบัตรใหม่)
+              กรอกเลขบัตรใหม่
             </button>
             <button
               type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
@@ -496,7 +530,7 @@ export default function LinkLine() {
                 cursor: 'pointer',
               }}
             >
-              ไม่ใช่คุณ (กลับหน้าเลือก User)
+              เลือก User ใหม่
             </button>
           </div>
         </form>
