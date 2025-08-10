@@ -339,8 +339,8 @@ export default function PatientMyVisitProcedures() {
                             <th width="40%">หัตถการ</th>
                             <th width="10%">ซี่ฟัน</th>
                             <th width="25%">หมอ</th> */}
-                            <th width="60%">หัตถการ</th>
-                            <th width="10%">ซี่ฟัน</th>
+                            <th width="57.5%">หัตถการ</th>
+                            <th width="12.5%">ซี่ฟัน</th>
                             <th width="30%">หมอ</th>
                           </tr>
                         </thead>
