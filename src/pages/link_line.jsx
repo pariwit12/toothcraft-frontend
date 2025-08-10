@@ -32,6 +32,7 @@ export default function LinkLine() {
           setRoleFromToken(res.data.role);
           if (res.data.role === "patient") {
             setPatient(res.data.data);
+            setPhone(res.data.telephone || '');
             setStatus('verified');
           }
 
