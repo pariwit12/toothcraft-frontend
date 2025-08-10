@@ -469,7 +469,7 @@ export default function LinkLine() {
             onClick={async () => {
               setStatus('loading');
               localStorage.removeItem("token");
-              await initLiff();
+              setStatus('ready');
             }}
             style={{
               backgroundColor: '#dc2626',
