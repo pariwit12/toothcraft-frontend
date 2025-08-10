@@ -498,6 +498,8 @@ export default function LinkLine() {
             >
               ยืนยันข้อมูลและลงทะเบียน
             </button>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
             <button
               type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
               onClick={async () => {
