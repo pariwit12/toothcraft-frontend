@@ -17,10 +17,9 @@ export default function LinkLine() {
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const token = localStorage.getItem("token");
-  const [roleFromToken, setRoleFromToken] = useState('');
-
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    const [roleFromToken, setRoleFromToken] = useState('');
 
     if (token) {
       const fetchTokenData = async () => {
@@ -44,7 +43,7 @@ export default function LinkLine() {
       fetchTokenData();
     }
 
-    if (roleFromToken !== "patient" || !token) {
+    if ((token && roleFromToken !== "patient") || !token) {
       const initLiff = async () => {
         try {
           const liff = (await import('@line/liff')).default;
