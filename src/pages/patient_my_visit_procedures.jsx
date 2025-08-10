@@ -237,7 +237,7 @@ export default function PatientMyVisitProcedures() {
                     <tr>
                       <th>ซี่ฟัน</th>
                       <th>คำอธิบาย</th>
-                      <th>ดูประวัติ</th>
+                      <th width="20%">ดูประวัติ</th>
                     </tr>
                   </thead>
                   <tbody>
