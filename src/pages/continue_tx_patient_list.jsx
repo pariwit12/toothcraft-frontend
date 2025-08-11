@@ -79,7 +79,7 @@ export default function ContinueTxPatientList() {
 
     try {
       const res = await fetch(`${API_URL}/continue-tx-patient/${id}`, {
-        method: 'DELETE',
+        method: 'PATCH',
         headers: {
           Authorization: `Bearer ${token}`,
         },
