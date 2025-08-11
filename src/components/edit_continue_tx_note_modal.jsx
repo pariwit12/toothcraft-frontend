@@ -15,7 +15,7 @@ export default function EditContinueTxNoteModal({ isOpen, patientObj, onClose, o
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({ continue_tx_note: note }),
+        body: JSON.stringify({ continue_tx_note: note.trim() }),
       });
 
       if (!res.ok) throw new Error('Update failed');
