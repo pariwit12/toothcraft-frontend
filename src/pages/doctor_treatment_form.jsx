@@ -51,6 +51,9 @@ export default function DoctorTreatmentForm() {
   const [selectedIoIdsToUpdateDateEnd, setSelectedIoIdsToUpdateDateEnd] = useState([]);
 
   const [patientIoExams, setPatientIoExams] = useState([]);
+  const [patientContinueTx, setPatientContinueTx] = useState([]);
+  const [activeContinueTx, setActiveContinueTx] = useState([]); // ✅ เก็บเฉพาะ date_end เป็น null
+
 
   const [visitHistoryIoDisplayMode, setVisitHistoryIoDisplayMode] = useState('planOnly'); // หรือ 'planAndName'
 
@@ -67,7 +70,26 @@ export default function DoctorTreatmentForm() {
     fetchIoFindingList();
     fetchLastIoExam();
     fetchPatientIoExam();
+    fetchPatientContinueTx();
   }, []);
+
+  const fetchPatientContinueTx = async () => {
+    try {
+      const res = await fetch(`${API_URL}/continue-tx-patient/patient/${patientId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setPatientContinueTx(data); // เก็บข้อมูลเต็ม
+
+        // ✅ กรองเฉพาะ date_end เป็น null
+        const filtered = data.filter((item) => item.date_end === null);
+        setActiveContinueTx(filtered);
+      }
+    } catch {
+      console.error('ไม่สามารถโหลด continue_tx_patient ของคนไข้');
+    }
+  };
 
   const fetchPatientIoExam = async () => {
     try {
@@ -529,6 +551,17 @@ export default function DoctorTreatmentForm() {
   }, [lastIoExams]);
 
 
+  const activeContinueTxToShow = useMemo(() => {
+    return activeContinueTx.reduce((acc, item) => {
+      const plan = item.continue_tx_list?.name || 'ไม่ระบุแผน';
+      if (!acc[plan]) acc[plan] = [];
+      acc[plan].push(item);
+      return acc;
+    }, {});
+  }, [activeContinueTx]); // คำนวณใหม่เฉพาะเมื่อ activeContinueTx เปลี่ยน
+
+
+
   const toggleIoSelectionToUpdateDateEnd = (id) => {
     setSelectedIoIdsToUpdateDateEnd(prev =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
@@ -542,7 +575,7 @@ export default function DoctorTreatmentForm() {
       (!io.date_end || new Date(io.date_end) > new Date(visit.visit_time))
     );
 
-    if (plans.length === 0) return '-';
+    if (plans.length === 0) return '';
 
     if (mode === 'planOnly') {
       // 👉 Group by plan only
@@ -618,6 +651,88 @@ export default function DoctorTreatmentForm() {
     );
   };
 
+  const getContinueTxForVisit = (visit, mode = 'planAndName') => {
+    const plans = patientContinueTx.filter(io =>
+      new Date(io.date_create) <= new Date(visit.visit_time) &&
+      (!io.date_end || new Date(io.date_end) > new Date(visit.visit_time))
+    );
+
+    if (plans.length === 0) return '';
+
+    if (mode === 'planOnly') {
+      // 👉 Group by plan only
+      const grouped = {};
+
+      plans.forEach(io => {
+        const plan = io.continue_tx_list?.name || 'ไม่ระบุแผน';
+        const tooth = io.tooth || '';
+        const surface = (io.surface || '').replaceAll(',', '');
+        const toothSurface = `${tooth}${surface}`;
+
+        if (!grouped[plan]) grouped[plan] = [];
+
+        grouped[plan].push({ toothSurface });
+      });
+
+      // Sort each plan's toothSurfaces
+      Object.keys(grouped).forEach(plan => {
+        grouped[plan].sort((a, b) =>
+          getToothOrderIndex(a.toothSurface) - getToothOrderIndex(b.toothSurface)
+        );
+      });
+
+      return (
+        <>
+          {Object.entries(grouped).map(([plan, list]) => (
+            <div key={plan}>
+              <strong>- (ต่อเนื่อง) {plan}</strong>: {list.map(i => i.toothSurface).join(', ')}
+            </div>
+          ))}
+        </>
+      );
+    }
+
+    // 👉 Default: planAndName
+    const grouped = {};
+
+    plans.forEach(io => {
+      const plan = io.continue_tx_list?.name || 'ไม่ระบุแผน';
+      const name = 'On-going';
+      const tooth = io.tooth || '';
+      const surface = (io.surface || '').replaceAll(',', '');
+      const toothSurface = `${tooth}${surface}`;
+
+      if (!grouped[plan]) grouped[plan] = {};
+      if (!grouped[plan][name]) grouped[plan][name] = [];
+
+      grouped[plan][name].push({ toothSurface });
+    });
+
+    // Sort each plan/name
+    Object.keys(grouped).forEach(plan => {
+      Object.keys(grouped[plan]).forEach(name => {
+        grouped[plan][name].sort(
+          (a, b) => getToothOrderIndex(a.toothSurface) - getToothOrderIndex(b.toothSurface)
+        );
+      });
+    });
+
+    return (
+      <>
+        {Object.entries(grouped).map(([plan, names]) => (
+          <li key={plan}>
+            <strong>(ต่อเนื่อง) {plan}</strong>
+            {Object.entries(names).map(([name, toothList]) => (
+              <div key={name}>
+                - {name} {toothList.length > 0 && `(${toothList.map(i => i.toothSurface).join(', ')})`}
+              </div>
+            ))}
+          </li>
+        ))}
+      </>
+    );
+  };
+
 
   return (
     <div style={{ padding: '2rem' }}>
@@ -659,10 +774,14 @@ export default function DoctorTreatmentForm() {
 
             {displayMode === 'planOnly' && (() => {
               let textValue = '';
-              Object.entries(groupedByPlan).map(([plan, arr]) => {
-                // สร้าง string รวมจาก tooth + surface
-                textValue += `\n- ${plan}:` + arr.map((item) => ` ${item.tooth}${item.surface}`).join(',');
-              })
+              Object.entries(groupedByPlan).forEach(([plan, arr]) => {
+                textValue += `\n- ${plan}:` + arr.map(item => ` ${item.tooth}${item.surface}`).join(',');
+              });
+
+              // ข้อมูล activeContinueTxToShow
+              Object.entries(activeContinueTxToShow).forEach(([plan, arr]) => {
+                textValue += `\n- (ต่อเนื่อง) ${plan}:` + arr.map(item => ` ${item.tooth || ''}${item.surface || ''}`).join(',');
+              });
 
               return (
                 <div style={{ marginBottom: '1rem' }}>
@@ -681,8 +800,13 @@ export default function DoctorTreatmentForm() {
 
               Object.entries(groupedByPlanAndName).forEach(([plan, items]) => {
                 Object.entries(items).forEach(([name, arr]) => {
-                  textValue += `- ${plan} - ${arr.map(item => item.toothSurface).join(', ')} ${name}\n`;
+                  textValue += `\n- ${plan} - ${arr.map(item => item.toothSurface).join(', ')} ${name}`;
                 });
+              });
+              
+              // ข้อมูล activeContinueTxToShow
+              Object.entries(activeContinueTxToShow).forEach(([plan, arr]) => {
+                textValue += `\n- (ต่อเนื่อง) ${plan}:` + arr.map(item => ` ${item.tooth || ''}${item.surface || ''}`).join(',');
               });
 
               return (
@@ -1465,7 +1589,7 @@ export default function DoctorTreatmentForm() {
                       {formatProcedures(v)}
                     </td>
                     <td style={{ whiteSpace: 'pre-wrap', padding: '0.25rem 0', border: '1px solid #ccc' }}>
-                      {getIoPlansForVisit(v, visitHistoryIoDisplayMode)}
+                      {getIoPlansForVisit(v, visitHistoryIoDisplayMode)}{getContinueTxForVisit(v, visitHistoryIoDisplayMode)}
                     </td>
                     <td style={{ whiteSpace: 'pre-wrap', padding: '0.25rem 0', border: '1px solid #ccc' }}>
                       {v.next_visit || '-'}

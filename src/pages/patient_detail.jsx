@@ -28,6 +28,7 @@ export default function PatientDetail() {
   const [showEditInsuranceModal, setShowEditInsuranceModal] = useState(false);
 
   const [patientIoExams, setPatientIoExams] = useState([]);
+  const [patientContinueTx, setPatientContinueTx] = useState([]);
 
   const [visitHistoryIoDisplayMode, setVisitHistoryIoDisplayMode] = useState('planOnly'); // หรือ 'planAndName'
 
@@ -97,7 +98,22 @@ export default function PatientDetail() {
       });
 
     fetchPatientIoExam();
+    fetchPatientContinueTx();
   }, [id]);
+
+  const fetchPatientContinueTx = async () => {
+    try {
+      const res = await fetch(`${API_URL}/continue-tx-patient/patient/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setPatientContinueTx(data); // เก็บข้อมูลเต็ม
+      }
+    } catch {
+      console.error('ไม่สามารถโหลด continue_tx_patient ของคนไข้');
+    }
+  };
 
   const fetchPatientIoExam = async () => {
     try {
@@ -134,7 +150,7 @@ export default function PatientDetail() {
       (!io.date_end || new Date(io.date_end) > new Date(visit.visit_time))
     );
 
-    if (plans.length === 0) return '-';
+    if (plans.length === 0) return '';
 
     if (mode === 'planOnly') {
       // 👉 Group by plan only
@@ -199,6 +215,88 @@ export default function PatientDetail() {
         {Object.entries(grouped).map(([plan, names]) => (
           <li key={plan}>
             <strong>{plan}</strong>
+            {Object.entries(names).map(([name, toothList]) => (
+              <div key={name}>
+                - {name} {toothList.length > 0 && `(${toothList.map(i => i.toothSurface).join(', ')})`}
+              </div>
+            ))}
+          </li>
+        ))}
+      </>
+    );
+  };
+
+  const getContinueTxForVisit = (visit, mode = 'planAndName') => {
+    const plans = patientContinueTx.filter(io =>
+      new Date(io.date_create) <= new Date(visit.visit_time) &&
+      (!io.date_end || new Date(io.date_end) > new Date(visit.visit_time))
+    );
+
+    if (plans.length === 0) return '';
+
+    if (mode === 'planOnly') {
+      // 👉 Group by plan only
+      const grouped = {};
+
+      plans.forEach(io => {
+        const plan = io.continue_tx_list?.name || 'ไม่ระบุแผน';
+        const tooth = io.tooth || '';
+        const surface = (io.surface || '').replaceAll(',', '');
+        const toothSurface = `${tooth}${surface}`;
+
+        if (!grouped[plan]) grouped[plan] = [];
+
+        grouped[plan].push({ toothSurface });
+      });
+
+      // Sort each plan's toothSurfaces
+      Object.keys(grouped).forEach(plan => {
+        grouped[plan].sort((a, b) =>
+          getToothOrderIndex(a.toothSurface) - getToothOrderIndex(b.toothSurface)
+        );
+      });
+
+      return (
+        <>
+          {Object.entries(grouped).map(([plan, list]) => (
+            <div key={plan}>
+              <strong>- (ต่อเนื่อง) {plan}</strong>: {list.map(i => i.toothSurface).join(', ')}
+            </div>
+          ))}
+        </>
+      );
+    }
+
+    // 👉 Default: planAndName
+    const grouped = {};
+
+    plans.forEach(io => {
+      const plan = io.continue_tx_list?.name || 'ไม่ระบุแผน';
+      const name = 'On-going';
+      const tooth = io.tooth || '';
+      const surface = (io.surface || '').replaceAll(',', '');
+      const toothSurface = `${tooth}${surface}`;
+
+      if (!grouped[plan]) grouped[plan] = {};
+      if (!grouped[plan][name]) grouped[plan][name] = [];
+
+      grouped[plan][name].push({ toothSurface });
+    });
+
+    // Sort each plan/name
+    Object.keys(grouped).forEach(plan => {
+      Object.keys(grouped[plan]).forEach(name => {
+        grouped[plan][name].sort(
+          (a, b) => getToothOrderIndex(a.toothSurface) - getToothOrderIndex(b.toothSurface)
+        );
+      });
+    });
+
+    return (
+      <>
+        {Object.entries(grouped).map(([plan, names]) => (
+          <li key={plan}>
+            <strong>(ต่อเนื่อง) {plan}</strong>
             {Object.entries(names).map(([name, toothList]) => (
               <div key={name}>
                 - {name} {toothList.length > 0 && `(${toothList.map(i => i.toothSurface).join(', ')})`}
@@ -523,7 +621,7 @@ export default function PatientDetail() {
                   <td style={{ whiteSpace: 'pre-wrap' }}>{v.treatment_note || '-'}</td>
                   <td style={{ whiteSpace: 'pre-wrap' }}>{formatProcedures(v)}</td>
                   <td style={{ whiteSpace: 'pre-wrap' }}>
-                    {getIoPlansForVisit(v, visitHistoryIoDisplayMode)}
+                    {getIoPlansForVisit(v, visitHistoryIoDisplayMode)}{getContinueTxForVisit(v, visitHistoryIoDisplayMode)}
                   </td>
                   <td style={{ whiteSpace: 'pre-wrap' }}>{v.next_visit || '-'}</td>
                 </tr>
