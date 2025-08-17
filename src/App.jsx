@@ -44,6 +44,7 @@ import PatientDashboard from './pages/patient_dashboard';
 import PatientMyAppointments from "./pages/patient_my_appointments";
 import PatientMyVisitProcedures from "./pages/patient_my_visit_procedures";
 import PatientOpenCameraCheckIn from "./pages/patient_open_camera_check_in";
+import PatientMyPlan from "./pages/patient_my_plan";
 
 
 import ProtectedRoute from './components/protected_route';
@@ -206,6 +207,7 @@ export default function App() {
         <Route path="/patient-my-appointments" element={<PatientMyAppointments />} />
         <Route path="/patient-my-visit-procedures" element={<PatientMyVisitProcedures />} />
         <Route path="/patient-open-camera-check-in" element={<PatientOpenCameraCheckIn />} />
+        <Route path="/patient-my-plan" element={<PatientMyPlan />} />
 
 
 

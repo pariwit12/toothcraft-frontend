@@ -69,6 +69,18 @@ export default function PatientDashboard() {
           📆 ดูวันนัดของฉัน
         </button>
       </Link>
+      <Link to="/patient-my-plan">
+        <button
+          style={{
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+        >
+          📋 ดูผลการตรวจและแผนการรักษาของฉัน
+        </button>
+      </Link>
       <Link to="/patient-my-visit-procedures">
         <button
           style={{
