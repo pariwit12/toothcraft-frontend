@@ -1,5 +1,5 @@
 // 📁 frontend/src/pages/patient_my_plan.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
