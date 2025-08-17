@@ -69,7 +69,7 @@ export default function PatientMyVisitProcedures() {
 
   return (
     <div style={{ padding: "1rem", maxWidth: "800px", margin: "0 auto" }}>
-      <h2>📋 ประวัติหัตถการรักษาของ {patient.first_name} {patient.last_name}</h2>
+      <h2>📋 ประวัติหัตถการของ {patient.first_name} {patient.last_name}</h2>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
         <button

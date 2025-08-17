@@ -54,7 +54,7 @@ export default function PatientDashboard() {
             cursor: 'pointer',
           }}
         >
-          📷 เข้ารับการรักษา
+          📷 เข้ารับบริการ
         </button>
       </Link>
       <Link to="/patient-my-appointments">
@@ -66,7 +66,7 @@ export default function PatientDashboard() {
             cursor: 'pointer',
           }}
         >
-          📆 ดูวันนัดของฉัน
+          📆 ดูวันนัด
         </button>
       </Link>
       <Link to="/patient-my-plan">
@@ -78,7 +78,7 @@ export default function PatientDashboard() {
             cursor: 'pointer',
           }}
         >
-          📋 ดูผลการตรวจและแผนการรักษาของฉัน
+          📋 ดูผลตรวจและแผนการรักษา
         </button>
       </Link>
       <Link to="/patient-my-visit-procedures">
@@ -90,7 +90,7 @@ export default function PatientDashboard() {
             cursor: 'pointer',
           }}
         >
-          📋 ดูประวัติหัตถการรักษาของฉัน
+          📋 ดูประวัติหัตถการ
         </button>
       </Link>
     </div>
