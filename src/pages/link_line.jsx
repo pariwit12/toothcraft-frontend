@@ -11,7 +11,7 @@ export default function LinkLine() {
   const [idNumber, setIdNumber] = useState('');
   const [phone, setPhone] = useState('');
   const [patient, setPatient] = useState(null);
-  const [status, setStatus] = useState('loading'); // loading, need-add-oa, register-new-hn, ready, error, verified, success
+  const [status, setStatus] = useState('loading'); // loading, need-add-oa, register-new-hn, ready, error-init, error-token, verified, success
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [birthDay, setBirthDay] = useState('');
@@ -48,7 +48,7 @@ export default function LinkLine() {
       }
     } catch (err) {
       console.error("Error fetching patient data", err);
-      setStatus('error');
+      setStatus('error-token');
     }
   };
 
@@ -86,7 +86,7 @@ export default function LinkLine() {
       }
     } catch (error) {
       console.error('LIFF init error', error);
-      setStatus('error');
+      setStatus('error-init');
     }
   };
 
@@ -226,7 +226,9 @@ export default function LinkLine() {
 
   if (status === 'loading') return <p>กำลังโหลด...</p>;
 
-  if (status === 'error') return <p>กรุณาเปิดลิงก์นี้จากแอป Line เท่านั้น</p>;
+  if (status === 'error-init') return <p>กรุณาเปิดลิงก์นี้จากแอป Line เท่านั้น</p>;
+
+  if (status === 'error-token') return <p>error-token</p>;
 
   if (status === 'need-add-oa') {
     return (
