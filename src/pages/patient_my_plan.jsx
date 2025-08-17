@@ -291,7 +291,7 @@ export default function PatientMyPlan() {
         let textValue = '';
 
         Object.entries(groupedByTooth).forEach(([tooth, items]) => {
-          textValue += `\n🚨 ${tooth}`;
+          textValue += `\n\n🚨 ${tooth}`;
 
           Object.entries(items).forEach(([plan, items]) => {
             Object.entries(items).forEach(([name, arr]) => {
