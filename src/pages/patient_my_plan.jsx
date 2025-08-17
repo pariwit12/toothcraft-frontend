@@ -153,9 +153,11 @@ export default function PatientMyPlan() {
       const surface = (item.surface || '').replaceAll(',', '');
       const toothSurface = `${tooth}${surface}`;
 
-      if (!grouped[tooth]) grouped[tooth] = [];
+      if (!grouped[tooth]) grouped[tooth] = {};
+      if (!grouped[tooth][plan]) grouped[tooth][plan] = {};
+      if (!grouped[tooth][plan][name]) grouped[tooth][plan][name] = [];
       
-      grouped[tooth].push({
+      grouped[tooth][plan][name].push({
         id: item.id,
         surface,
         toothSurface,
@@ -163,12 +165,17 @@ export default function PatientMyPlan() {
       });
     });
 
+    // เรียง toothSurface ภายในแต่ละ group
     Object.keys(grouped).forEach(tooth => {
-      grouped[tooth].sort((a, b) => {
-        const sa = a.surface || '';
-        const sb = b.surface || '';
-        return sa.localeCompare(sb);
-      });
+      if (grouped[tooth]) { // เพิ่มการตรวจสอบเพื่อป้องกัน error
+        Object.keys(grouped[tooth]).forEach(plan => {
+          if (grouped[tooth][plan]) { // เพิ่มการตรวจสอบเพื่อป้องกัน error
+            Object.keys(grouped[tooth][plan]).forEach(name => {
+              grouped[tooth][plan][name].sort((a, b) => getToothOrderIndex(a.toothSurface) - getToothOrderIndex(b.toothSurface));
+            });
+          }
+        });
+      }
     });
 
     // จัดเรียงลำดับซี่ฟันตามที่กำหนด
@@ -211,7 +218,7 @@ export default function PatientMyPlan() {
             cursor: 'pointer',
           }}
         >
-          แผนการรักษา
+          แผนรักษา
         </button>
         <button
           onClick={() => setDisplayMode('planAndName')}
@@ -224,7 +231,7 @@ export default function PatientMyPlan() {
             cursor: 'pointer',
           }}
         >
-          แผนการรักษา & ผลการตรวจ
+          แผน & ผลตรวจ
         </button>
       </div>
 
@@ -246,7 +253,7 @@ export default function PatientMyPlan() {
         );
       })()}
 
-      {(displayMode === 'planAndName' || displayMode === 'byTooth') && (() => {
+      {displayMode === 'planAndName' && (() => {
         let textValue = '';
 
         Object.entries(groupedByPlanAndName).forEach(([plan, items]) => {
@@ -258,6 +265,27 @@ export default function PatientMyPlan() {
         // ข้อมูล activeContinueTxToShow
         Object.entries(activeContinueTxToShow).forEach(([plan, arr]) => {
           textValue += `\n- (ต่อเนื่อง) ${plan}:` + arr.map(item => ` ${item.tooth || ''}${item.surface || ''}`).join(',');
+        });
+
+        return (
+          <div style={{ marginBottom: '1rem', whiteSpace: 'pre-wrap' }}>
+            {textValue.trim()}
+          </div>
+        );
+      })()}
+
+      {displayMode === 'byTooth' && (() => {
+        let textValue = '';
+
+        Object.entries(groupedByTooth).forEach(([tooth, items]) => {
+          textValue += `\n🚨 ${tooth}`;
+
+          Object.entries(items).forEach(([plan, items]) => {
+            Object.entries(items).forEach(([name, arr]) => {
+              textValue += `\n- ${plan} (${arr.map(item => item.toothSurface).join(', ')}) - ${name}`;
+            });
+          });
+
         });
 
         return (
