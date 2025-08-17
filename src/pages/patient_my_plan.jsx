@@ -233,6 +233,19 @@ export default function PatientMyPlan() {
         >
           แผน & ผลตรวจ
         </button>
+        <button
+          onClick={() => setDisplayMode('byTooth')}
+          style={{
+            padding: '0.5rem 1rem',
+            background: displayMode === 'byTooth' ? '#007bff' : '#eee',
+            color: displayMode === 'byTooth' ? 'white' : 'black',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          ตามซี่ฟัน
+        </button>
       </div>
 
       {displayMode === 'planOnly' && (() => {
