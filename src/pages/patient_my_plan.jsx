@@ -211,7 +211,7 @@ export default function PatientMyPlan() {
             cursor: 'pointer',
           }}
         >
-          แสดงแผนการรักษา
+          แผนการรักษา
         </button>
         <button
           onClick={() => setDisplayMode('planAndName')}
@@ -224,7 +224,7 @@ export default function PatientMyPlan() {
             cursor: 'pointer',
           }}
         >
-          แสดงแผนการรักษาและผลการตรวจ
+          แผนการรักษา & ผลการตรวจ
         </button>
       </div>
 
