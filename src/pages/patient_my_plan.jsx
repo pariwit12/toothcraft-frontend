@@ -9,7 +9,7 @@ export default function PatientMyPlan() {
   const [activeContinueTx, setActiveContinueTx] = useState([]);
   const [loading, setLoading] = useState(true);
   const [patient, setPatient] = useState(null);
-  const [displayMode, setDisplayMode] = useState('planAndName'); // 'planAndName' | 'planOnly' | 'byTooth'
+  const [displayMode, setDisplayMode] = useState('planOnly'); // 'planAndName' | 'planOnly' | 'byTooth'
   const [format, setFormat] = useState('by-date'); // 'by-date', 'by-tooth'
   const [quadrantToShow, setQuadrantToShow] = useState('Q1'); // 'Q1', 'Q2', 'Q3', 'Q4'
 
@@ -198,6 +198,35 @@ export default function PatientMyPlan() {
   return (
     <div style={{ padding: "1rem", maxWidth: "800px", margin: "0 auto" }}>
       <h2>📋 ผลการตรวจและแผนการรักษาของ {patient.first_name} {patient.last_name}</h2>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
+        <button
+          onClick={() => setDisplayMode('planOnly')}
+          style={{
+            padding: '0.5rem 1rem',
+            background: displayMode === 'planOnly' ? '#007bff' : '#eee',
+            color: displayMode === 'planOnly' ? 'white' : 'black',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          แสดงแผนการรักษา
+        </button>
+        <button
+          onClick={() => setDisplayMode('planAndName')}
+          style={{
+            padding: '0.5rem 1rem',
+            background: displayMode === 'planAndName' ? '#007bff' : '#eee',
+            color: displayMode === 'planAndName' ? 'white' : 'black',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          แสดงแผนการรักษาและผลการตรวจ
+        </button>
+      </div>
 
       {displayMode === 'planOnly' && (() => {
         let textValue = '';
