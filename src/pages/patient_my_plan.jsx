@@ -261,13 +261,8 @@ export default function PatientMyPlan() {
         });
 
         return (
-          <div style={{ marginBottom: '1rem' }}>
-            <textarea
-              value={textValue.trim()}
-              rows={6}
-              style={{ width: '100%' }}
-              readOnly
-            />
+          <div style={{ marginBottom: '1rem', whiteSpace: 'pre-wrap' }}>
+            {textValue.trim()}
           </div>
         );
       })()}
