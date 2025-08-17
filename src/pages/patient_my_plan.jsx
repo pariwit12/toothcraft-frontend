@@ -1,5 +1,5 @@
 // 📁 frontend/src/pages/patient_my_plan.jsx
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from 'react';
 import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -69,8 +69,6 @@ export default function PatientMyPlan() {
     fetchLastIoExamsAndConTx();
   }, []);
 
-  if (loading) return <p>กำลังโหลด...</p>;
-
   const toothOrder = [
     '18','17','16','15','14','13','12','11',
     '21','22','23','24','25','26','27','28',
@@ -87,7 +85,6 @@ export default function PatientMyPlan() {
     const tooth = match ? match[1] : '';
     return toothOrder.indexOf(tooth);
   };
-
 
   const groupedByPlanAndName = useMemo(() => {
     const grouped = {};
@@ -191,7 +188,12 @@ export default function PatientMyPlan() {
       acc[plan].push(item);
       return acc;
     }, {});
-  }, [activeContinueTx]); // คำนวณใหม่เฉพาะเมื่อ activeContinueTx เปลี่ยน
+  }, [activeContinueTx]);
+
+  if (loading) return <p>กำลังโหลด...</p>;
+
+  // Ensure patient data is available before rendering
+  if (!patient) return <p>ไม่พบข้อมูลผู้ป่วย...</p>;
 
   return (
     <div style={{ padding: "1rem", maxWidth: "800px", margin: "0 auto" }}>
@@ -209,8 +211,8 @@ export default function PatientMyPlan() {
         });
 
         return (
-          <div style={{ marginBottom: '1rem' }}>
-              {textValue.trim()}
+          <div style={{ marginBottom: '1rem', whiteSpace: 'pre-wrap' }}>
+            {textValue.trim()}
           </div>
         );
       })()}
