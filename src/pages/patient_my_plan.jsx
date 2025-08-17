@@ -336,7 +336,7 @@ export default function PatientMyPlan() {
         Object.entries(groupedByTooth).forEach(([tooth, items]) => {
           // เพิ่มคำอธิบายสำหรับซี่ฟันที่นี่
           const toothDesc = toothDescriptions[tooth] || 'ไม่ระบุ';
-          textValue += `\n\n🚨 ซี่ที่ ${tooth} (${toothDesc})`;
+          textValue += `\n\n🚨 ซี่ ${tooth} (${toothDesc})`;
 
           Object.entries(items).forEach(([plan, items]) => {
             Object.entries(items).forEach(([name, arr]) => {
@@ -344,6 +344,11 @@ export default function PatientMyPlan() {
             });
           });
 
+        });
+
+        // ข้อมูล activeContinueTxToShow
+        Object.entries(activeContinueTxToShow).forEach(([plan, arr]) => {
+          textValue += `\n\n- (ต่อเนื่อง) ${plan}:` + arr.map(item => ` ${item.tooth || ''}${item.surface || ''}`).join(',');
         });
 
         return (
