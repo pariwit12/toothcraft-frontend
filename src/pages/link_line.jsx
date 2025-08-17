@@ -49,6 +49,7 @@ export default function LinkLine() {
     } catch (err) {
       console.error("Error fetching patient data", err);
       setStatus('error-token');
+      localStorage.removeItem("token");
     }
   };
 
@@ -228,7 +229,7 @@ export default function LinkLine() {
 
   if (status === 'error-init') return <p>กรุณาเปิดลิงก์นี้จากแอป Line เท่านั้น</p>;
 
-  if (status === 'error-token') return <p>error-token</p>;
+  if (status === 'error-token') return <p>กรุณาปิดและแสกน qr code อีกรอบ (error-token)</p>;
 
   if (status === 'need-add-oa') {
     return (
