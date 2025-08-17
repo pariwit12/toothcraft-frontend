@@ -611,6 +611,7 @@ export default function PatientDetail() {
                   )}
                 </th>
                 <th>นัดครั้งหน้า</th>
+                <th>ตัวเลือก</th>
               </tr>
             </thead>
             <tbody>
@@ -624,6 +625,21 @@ export default function PatientDetail() {
                     {getIoPlansForVisit(v, visitHistoryIoDisplayMode)}{getContinueTxForVisit(v, visitHistoryIoDisplayMode)}
                   </td>
                   <td style={{ whiteSpace: 'pre-wrap' }}>{v.next_visit || '-'}</td>
+                  <td style={{ textAlign: 'center' }}>
+                    <button
+                      onClick={() => window.open(`${API_URL}/receipt/${v.id}`, '_blank')}
+                      style={{
+                        padding: '0.5rem 1rem',
+                        borderRadius: '6px',
+                        backgroundColor: '#4CAF50',
+                        color: 'white',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      พิมพ์ใบเสร็จ
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
