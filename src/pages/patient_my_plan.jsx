@@ -9,7 +9,7 @@ export default function PatientMyPlan() {
   const [activeContinueTx, setActiveContinueTx] = useState([]);
   const [loading, setLoading] = useState(true);
   const [patient, setPatient] = useState(null);
-  const [displayMode, setDisplayMode] = useState('planOnly'); // 'planAndName' | 'planOnly' | 'byTooth'
+  const [displayMode, setDisplayMode] = useState('planAndName'); // 'planAndName' | 'planOnly' | 'byTooth'
   const [format, setFormat] = useState('by-date'); // 'by-date', 'by-tooth'
   const [quadrantToShow, setQuadrantToShow] = useState('Q1'); // 'Q1', 'Q2', 'Q3', 'Q4'
 
@@ -213,6 +213,32 @@ export default function PatientMyPlan() {
         return (
           <div style={{ marginBottom: '1rem', whiteSpace: 'pre-wrap' }}>
             {textValue.trim()}
+          </div>
+        );
+      })()}
+
+      {(displayMode === 'planAndName' || displayMode === 'byTooth') && (() => {
+        let textValue = '';
+
+        Object.entries(groupedByPlanAndName).forEach(([plan, items]) => {
+          Object.entries(items).forEach(([name, arr]) => {
+            textValue += `\n- ${plan} - ${arr.map(item => item.toothSurface).join(', ')} ${name}`;
+          });
+        });
+        
+        // ข้อมูล activeContinueTxToShow
+        Object.entries(activeContinueTxToShow).forEach(([plan, arr]) => {
+          textValue += `\n- (ต่อเนื่อง) ${plan}:` + arr.map(item => ` ${item.tooth || ''}${item.surface || ''}`).join(',');
+        });
+
+        return (
+          <div style={{ marginBottom: '1rem' }}>
+            <textarea
+              value={textValue.trim()}
+              rows={6}
+              style={{ width: '100%' }}
+              readOnly
+            />
           </div>
         );
       })()}
