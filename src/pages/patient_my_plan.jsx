@@ -350,7 +350,7 @@ export default function PatientMyPlan() {
         });
 
         // ข้อมูล activeContinueTxToShow
-        if (activeContinueTxToShow.length !== 0) {
+        if (activeContinueTx.length !== 0) {
           textValue += `\n\n🚨 รักษาต่อเนื่อง`;
         }
         Object.entries(activeContinueTxToShow).forEach(([plan, arr]) => {
