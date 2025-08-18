@@ -247,7 +247,7 @@ export default function PatientMyPlan() {
 
   return (
     <div style={{ padding: "1rem", maxWidth: "800px", margin: "0 auto" }}>
-      <h2>📋 ผลตรวจและแผนการรักษาของ {patient.first_name} {patient.last_name}</h2>
+      <h2>📋 ผลตรวจ & แผนการรักษาของ {patient.first_name} {patient.last_name}</h2>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
         <button
@@ -347,8 +347,9 @@ export default function PatientMyPlan() {
         });
 
         // ข้อมูล activeContinueTxToShow
+        if (activeContinueTxToShow) textValue += `\n\n🚨 รักษาต่อเนื่อง`;
         Object.entries(activeContinueTxToShow).forEach(([plan, arr]) => {
-          textValue += `\n\n- (ต่อเนื่อง) ${plan}:` + arr.map(item => ` ${item.tooth || ''}${item.surface || ''}`).join(',');
+          textValue += `\n- (ต่อเนื่อง) ${plan}:` + arr.map(item => ` ${item.tooth || ''}${item.surface || ''}`).join(',');
         });
 
         return (

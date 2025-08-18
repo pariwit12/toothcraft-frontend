@@ -78,7 +78,7 @@ export default function PatientDashboard() {
             cursor: 'pointer',
           }}
         >
-          📋 ดูผลตรวจและแผนการรักษา
+          📋 ดูผลตรวจ & แผนการรักษา
         </button>
       </Link>
       <Link to="/patient-my-visit-procedures">
