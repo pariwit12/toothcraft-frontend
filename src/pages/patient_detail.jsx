@@ -640,7 +640,20 @@ export default function PatientDetail() {
                           cursor: 'pointer'
                         }}
                       >
-                        พิมพ์ใบเสร็จ
+                        ใบเสร็จ
+                      </button>
+                      <button
+                        onClick={() => window.open(`${API_URL}/medical-certificate/${v.id}`, '_blank')}
+                        style={{
+                            padding: '0.5rem 1rem',
+                            borderRadius: '6px',
+                            backgroundColor: '#008CBA',
+                            color: 'white',
+                            border: 'none',
+                            cursor: 'pointer'
+                        }}
+                      >
+                        ใบแพทย์
                       </button>
                     </td>
                   )}
