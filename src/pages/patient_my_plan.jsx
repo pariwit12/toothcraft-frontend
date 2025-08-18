@@ -10,11 +10,6 @@ export default function PatientMyPlan() {
   const [loading, setLoading] = useState(true);
   const [patient, setPatient] = useState(null);
   const [displayMode, setDisplayMode] = useState('planOnly'); // 'planAndName' | 'planOnly' | 'byTooth'
-  const [format, setFormat] = useState('by-date'); // 'by-date', 'by-tooth'
-  const [quadrantToShow, setQuadrantToShow] = useState('Q1'); // 'Q1', 'Q2', 'Q3', 'Q4'
-
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -291,6 +286,14 @@ export default function PatientMyPlan() {
         </button>
       </div>
 
+      {(lastIoExams.length === 0 && activeContinueTx.length === 0) && (() => {
+        return (
+          <div style={{ marginBottom: '1rem', whiteSpace: 'pre-wrap' }}>
+            ไม่พบข้อมูล
+          </div>
+        );
+      })()}
+
       {displayMode === 'planOnly' && (() => {
         let textValue = '';
         Object.entries(groupedByPlan).forEach(([plan, arr]) => {
@@ -347,7 +350,9 @@ export default function PatientMyPlan() {
         });
 
         // ข้อมูล activeContinueTxToShow
-        if (activeContinueTxToShow) textValue += `\n\n🚨 รักษาต่อเนื่อง`;
+        if (activeContinueTxToShow.length !== 0) {
+          textValue += `\n\n🚨 รักษาต่อเนื่อง`;
+        }
         Object.entries(activeContinueTxToShow).forEach(([plan, arr]) => {
           textValue += `\n- (ต่อเนื่อง) ${plan}:` + arr.map(item => ` ${item.tooth || ''}${item.surface || ''}`).join(',');
         });
