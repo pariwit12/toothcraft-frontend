@@ -137,7 +137,7 @@ export default function MoneyReceivedReportFixed() {
 
   useEffect(() => {
     fetchData();
-  }, );
+  }, []);
 
   return (
     <div style={{ padding: '2rem' }}>
