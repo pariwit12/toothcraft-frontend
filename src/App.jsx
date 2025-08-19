@@ -8,6 +8,7 @@ import DashboardPublic from './pages/dashboard_public';
 import PublicRegister from './pages/public_register';
 import LinkLine from './pages/link_line';
 import LiffPatientSelect from './pages/liff_patient_select';
+import LiffNewPatient from './pages/liff_new_patient';
 
 /* Doctor */
 import DashboardDoctor from './pages/dashboard_doctor';
@@ -61,6 +62,7 @@ export default function App() {
         <Route path="/register-public" element={<PublicRegister />} />
         <Route path="/link-line" element={<LinkLine />} />
         <Route path="/liff-patient-select" element={<LiffPatientSelect />} />
+        <Route path="/liff-new-patient" element={<LiffNewPatient />} />
 
 
         {/* Doctor */}
