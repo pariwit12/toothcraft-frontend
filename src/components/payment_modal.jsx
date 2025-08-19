@@ -165,8 +165,7 @@ export default function PaymentModal({
       let remaining = Number(proc.price);
 
       for (const method of methods) {
-        if (remaining <= 0) break;
-        if (method.remaining <= 0) continue;
+        if (method.remaining <= 0 && remaining > 0) continue;
 
         const pay = Math.min(remaining, method.remaining);
         method.remaining -= pay;
@@ -177,6 +176,8 @@ export default function PaymentModal({
         }
 
         paymentsMap.get(method.methodId).push({ procedureId: proc.id, amount: pay });
+
+        if (remaining <= 0) break;
       }
     }
 
