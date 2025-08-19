@@ -427,26 +427,7 @@ export default function DashboardStaff() {
         }}
         onConfirmAndDelete={async () => {
           try {
-            // 📌 1. บันทึก feedback ก่อนลบ
-            const feedbackRes = await fetch(`${API_URL}/feedback-surveys`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({
-                patient_id: selectedPatient?.id,
-                time_sent: new Date().toISOString(),
-              }),
-            });
-
-            if (!feedbackRes.ok) {
-              const errorData = await feedbackRes.json();
-              alert('เกิดข้อผิดพลาดในการสร้าง feedback: ' + errorData.error);
-              return;
-            }
-
-            // 📌 2. ลบ clinic_queue หลังจากบันทึก feedback
+            // ลบ clinic_queue พร้อมบันทึก feedback_survey
             const response = await fetch(`${API_URL}/clinic-queue/${selectedQueue?.id}`, {
               method: 'DELETE',
               headers: {
@@ -456,7 +437,7 @@ export default function DashboardStaff() {
 
             if (!response.ok) {
               const errorData = await response.json();
-              alert('เกิดข้อผิดพลาดในการลบ queue: ' + errorData.error);
+              alert('เกิดข้อผิดพลาดในการลบ: ' + (errorData.message || errorData.error));
               return;
             }
 
@@ -464,8 +445,8 @@ export default function DashboardStaff() {
             setPaymentModalOpen(false);
             window.location.reload();
           } catch (err) {
-            console.error('เกิดข้อผิดพลาดในการลบ clinic_queue:', err);
-            alert('เกิดข้อผิดพลาดในการลบ clinic_queue');
+            console.error('เกิดข้อผิดพลาดในการเชื่อมต่อ:', err);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
           }
         }}
       />
