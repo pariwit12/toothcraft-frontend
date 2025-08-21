@@ -6,6 +6,8 @@ const API_URL = process.env.REACT_APP_API_URL;
 export default function ConfirmCreateSentList() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [quota, setQuota] = useState(null); // 🟢 เพิ่ม state สำหรับเก็บข้อมูลโควต้า
+  const [quotaLoading, setQuotaLoading] = useState(false); // 🟢 เพิ่ม state สำหรับโหลดโควต้า
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
@@ -24,9 +26,25 @@ export default function ConfirmCreateSentList() {
     }
   };
 
+  const fetchLineQuota = async () => {
+    setQuotaLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/line/quota`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setQuota(data);
+    } catch (error) {
+      console.error('ไม่สามารถโหลด Line quota:', error);
+    } finally {
+      setQuotaLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchAppointments();
-  }, [token]);
+    fetchLineQuota();
+  }, []);
 
   const formatDateThai = (dateStr) =>
     new Date(dateStr).toLocaleDateString('th-TH', {
@@ -85,7 +103,7 @@ export default function ConfirmCreateSentList() {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
         <h2 style={{ margin: 0 }}>📨 รายการผู้ป่วยที่ต้องยืนยันการลงวันนัด</h2>
         <button
           onClick={() => navigate('/dashboard/staff')}
@@ -99,6 +117,28 @@ export default function ConfirmCreateSentList() {
         >
           ⬅️ กลับหน้าหลัก
         </button>
+      </div>
+
+      {/* 🟢 แสดงโควต้า Line ที่นี่ */}
+      <div style={{
+        padding: '0.5rem 1rem',
+        backgroundColor: '#e6f7ff',
+        border: '1px solid #91d5ff',
+        borderRadius: '8px',
+        marginBottom: '1rem'
+      }}>
+        <p style={{ margin: 0, fontWeight: 'bold' }}>
+          ✨ ข้อมูล Line OA:
+        </p>
+        {quotaLoading ? (
+          <p style={{ margin: 0 }}>กำลังโหลดข้อมูลโควต้า...</p>
+        ) : quota ? (
+          <p style={{ margin: 0 }}>
+            โควต้าข้อความ Push Message: <span style={{ fontWeight: 'bold' }}>{quota.value}</span> ข้อความ (สถานะ: {quota.type === 'limited' ? 'แบบจำกัด' : 'ไม่จำกัด'})
+          </p>
+        ) : (
+          <p style={{ margin: 0, color: 'red' }}>ไม่สามารถดึงข้อมูลโควต้าได้</p>
+        )}
       </div>
 
       {loading ? (
