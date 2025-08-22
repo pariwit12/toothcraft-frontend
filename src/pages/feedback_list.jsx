@@ -112,6 +112,31 @@ ${formUrl}
     }
   };
 
+  const sendLineMessage = async (feedbackId, message) => {
+    try {
+      const response = await fetch(`${API_URL}/line/feedback-survey-send-line-message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ feedbackId, message }),
+      });
+
+      if (response.ok) {
+        alert('ส่งข้อความ LINE สำเร็จ!');
+        fetchFeedbacks();
+        fetchLineQuota();
+      } else {
+        const errorData = await response.json();
+        alert(`ไม่สามารถส่งข้อความ LINE ได้: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('❌ Error sending LINE message:', error);
+      alert('เกิดข้อผิดพลาดในการส่งข้อความ LINE');
+    }
+  };
+
   return (
     <div style={{ padding: '2rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
@@ -208,6 +233,24 @@ ${formUrl}
                   >
                     ✅ ส่งแล้ว
                   </button>
+
+                  {/* ✅ เพิ่มเงื่อนไขนี้เพื่อตรวจสอบว่ามี line_user_id หรือไม่ */}
+                  {fb.patients?.line_user_id && (
+                    <button
+                      onClick={() => sendLineMessage(fb.id, message)}
+                      style={{
+                        backgroundColor: '#00c300',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      📨 ส่ง LINE
+                    </button>
+                  )}
+
                 </div>
               </li>
             );

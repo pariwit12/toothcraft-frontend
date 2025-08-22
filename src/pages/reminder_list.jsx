@@ -106,6 +106,31 @@ export default function ReminderList() {
     }
   };
 
+  const sendLineMessage = async (appointmentId, message) => {
+    try {
+      const response = await fetch(`${API_URL}/line/reminder-send-line-message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ appointmentId, message }),
+      });
+
+      if (response.ok) {
+        alert('ส่งข้อความ LINE สำเร็จ!');
+        fetchAppointments();
+        fetchLineQuota();
+      } else {
+        const errorData = await response.json();
+        alert(`ไม่สามารถส่งข้อความ LINE ได้: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('❌ Error sending LINE message:', error);
+      alert('เกิดข้อผิดพลาดในการส่งข้อความ LINE');
+    }
+  };
+
   const pendingReminders = appointments.filter(a => !a.reminder_sent);
   const sentReminders = appointments.filter(a => a.reminder_sent);
 
@@ -207,6 +232,25 @@ export default function ReminderList() {
                       >
                         ✅ ส่งแล้ว
                       </button>
+
+                      {/* ✅ เพิ่มเงื่อนไขนี้เพื่อตรวจสอบว่ามี line_user_id หรือไม่ */}
+                      {a.patients?.line_user_id && (
+                        <button
+                          onClick={() => sendLineMessage(a.id, message)}
+                          style={{
+                            backgroundColor: '#00c300',
+                            color: 'white',
+                            border: 'none',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '6px',
+                            marginLeft: '1rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          📨 ส่ง LINE
+                        </button>
+                      )}
+
                     </div>
                   </li>
                 );
