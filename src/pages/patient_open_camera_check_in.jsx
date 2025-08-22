@@ -119,7 +119,7 @@ export default function PatientCheckin() {
 
   return (
     <div style={{ padding: "1rem", maxWidth: "400px", margin: "0 auto" }}>
-      <h1>สแกน QR Code ที่เคาน์เตอร์</h1>
+      <h2>สแกน QR Code ที่เคาน์เตอร์</h2>
 
       {!permissionAsked && (
         <button
