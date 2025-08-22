@@ -114,7 +114,7 @@ ${formUrl}
   return (
     <div style={{ padding: '2rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-        <h2 style={{ margin: 0 }}>📝 รายการแบบประเมินที่ส่งแล้ว</h2>
+        <h2 style={{ margin: 0 }}>📝 ประเมินความพึงพอใจ</h2>
         <button
           onClick={() => navigate('/dashboard/staff')}
           style={{

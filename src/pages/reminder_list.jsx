@@ -107,7 +107,7 @@ export default function ReminderList() {
   return (
     <div style={{ padding: '2rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-        <h2 style={{ margin: 0 }}>🔔 รายการผู้ป่วยที่ต้องแจ้งเตือนนัดพรุ่งนี้</h2>
+        <h2 style={{ margin: 0 }}>🔔 แจ้งเตือนนัด</h2>
         <button
           onClick={() => navigate('/dashboard/staff')}
           style={{
