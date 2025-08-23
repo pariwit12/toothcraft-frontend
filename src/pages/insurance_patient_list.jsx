@@ -12,8 +12,25 @@ export default function InsurancePatientList() {
   const [appointmentPatientId, setAppointmentPatientId] = useState(null);
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [historyPatientObj, setHistoryPatientObj] = useState(null);
+  const [quota, setQuota] = useState(null); // 🟢 เพิ่ม state สำหรับเก็บข้อมูลโควต้า
+  const [quotaLoading, setQuotaLoading] = useState(false); // 🟢 เพิ่ม state สำหรับโหลดโควต้า
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+
+  const fetchLineQuota = async () => {
+    setQuotaLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/line/quota`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setQuota(data);
+    } catch (error) {
+      console.error('ไม่สามารถโหลด Line quota:', error);
+    } finally {
+      setQuotaLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -31,8 +48,48 @@ export default function InsurancePatientList() {
       }
     };
 
-    if (token) fetchPatients();
+    if (token) {
+      fetchPatients();
+      fetchLineQuota();
+    }
   }, [selectedType, token]);
+
+    // ✅ เพิ่มฟังก์ชันสำหรับคัดลอกข้อความ
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text)
+      .then(() => alert('คัดลอกข้อความเรียบร้อยแล้ว'))
+      .catch(() => alert('ไม่สามารถคัดลอกข้อความได้'));
+  };
+
+  // ✅ เพิ่มฟังก์ชันสำหรับสร้างข้อความแจ้งสิทธิ
+  const generateInsuranceMessage = (p) => {
+    const name = `${p.first_name.trim() || ''} ${p.last_name.trim() || ''}`.trim();
+    const insuranceName = INSURANCE_TYPE_BY_ID[p.insurance_type] || 'ไม่ระบุ';
+    const balance = p.insurance_balance?.toLocaleString();
+    
+    const today = new Date();
+    const currentMonth = today.toLocaleString('th-TH', { month: 'numeric', timeZone: 'Asia/Bangkok' });
+    const currentYear = today.toLocaleString('th-TH', { year: 'numeric', timeZone: 'Asia/Bangkok' }).split(' ')[1];
+    let expiryDate = '';
+
+    if (insuranceName === 'บัตรทอง') {
+      if (7 <= parseInt(currentMonth) && parseInt(currentMonth) <= 9) {
+        expiryDate = `หมดเขต: 30 กันยายน ${currentYear}\n`;
+      }
+    } else if (insuranceName === 'ประกันสังคม') {
+      if (10 <= parseInt(currentMonth) && parseInt(currentMonth) <= 12) {
+        expiryDate = `หมดเขต: 31 ธันวาคม ${currentYear}\n`;
+      }
+    }
+
+    return `✨ เรียนคุณ ${name}
+คลินิกทันตกรรม ToothCraft ขอแจ้งสิทธิการรักษาคงเหลือ
+
+สิทธิ: ${insuranceName}
+วงเงินคงเหลือ: ${balance} บาท
+${expiryDate}
+นัดหมายเพื่อรักษาสิทธิได้เลยนะคะ 😊`;
+  };
 
   return (
     <div style={{ padding: '1rem' }}>
@@ -50,6 +107,28 @@ export default function InsurancePatientList() {
         >
           ⬅️ กลับหน้าหลัก
         </button>
+      </div>
+
+      {/* 🟢 แสดงโควต้า Line ที่นี่ */}
+      <div style={{
+        padding: '0.5rem 1rem',
+        backgroundColor: '#e6f7ff',
+        border: '1px solid #91d5ff',
+        borderRadius: '8px',
+        marginBottom: '1rem'
+      }}>
+        <p style={{ margin: 0, fontWeight: 'bold' }}>
+          ✨ ข้อมูล Line OA:
+        </p>
+        {quotaLoading ? (
+          <p style={{ margin: 0 }}>กำลังโหลดข้อมูลโควต้า...</p>
+        ) : quota ? (
+          <p style={{ margin: 0 }}>
+            โควต้าข้อความ Push Message: <span style={{ fontWeight: 'bold' }}>{quota.value}</span> ข้อความ (สถานะ: {quota.type === 'limited' ? 'แบบจำกัด' : 'ไม่จำกัด'})
+          </p>
+        ) : (
+          <p style={{ margin: 0, color: 'red' }}>ไม่สามารถดึงข้อมูลโควต้าได้</p>
+        )}
       </div>
 
       <div style={{ marginBottom: '1rem' }}>
@@ -98,6 +177,15 @@ export default function InsurancePatientList() {
                   setAppointmentModalOpen(true);
                 }}>
                   📅 วันนัด
+                </button>
+                {/* ✅ เพิ่มปุ่มคัดลอกข้อความแจ้งสิทธิ */}
+                <button
+                  onClick={() => {
+                    const message = generateInsuranceMessage(p);
+                    copyToClipboard(message);
+                  }}
+                >
+                  📋 คัดลอกข้อความแจ้งสิทธิ
                 </button>
               </td>
             </tr>
