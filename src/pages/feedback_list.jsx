@@ -170,7 +170,7 @@ ${formUrl}
           <p style={{ margin: 0 }}>กำลังโหลดข้อมูลโควต้า...</p>
         ) : quota ? (
           <p style={{ margin: 0 }}>
-            โควต้าข้อความ Push Message: <span style={{ fontWeight: 'bold' }}>{quota.value}</span> ข้อความ (สถานะ: {quota.type === 'limited' ? 'แบบจำกัด' : 'ไม่จำกัด'})
+            โควต้าข้อความ Push Message: <span style={{ fontWeight: 'bold' }}>{quota.totalUsage}/{quota.value}</span> ข้อความ (สถานะ: {quota.type === 'limited' ? 'แบบจำกัด' : 'ไม่จำกัด'})
           </p>
         ) : (
           <p style={{ margin: 0, color: 'red' }}>ไม่สามารถดึงข้อมูลโควต้าได้</p>
