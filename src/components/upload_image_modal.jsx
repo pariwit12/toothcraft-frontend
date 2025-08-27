@@ -1,4 +1,5 @@
-// filepath: c:\Toothcraft\frontend\src\components\upload_image_modal.jsx
+// 📁 c:\Toothcraft\frontend\src\components\upload_image_modal.jsx
+
 import React, { useState } from 'react';
 import { DateTime } from 'luxon'; // 👈 Import Luxon
 
@@ -13,15 +14,28 @@ export default function UploadImageModal({ patientId, onClose, onUploadSuccess }
   });
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
+  const [errorDate, setErrorDate] = useState('');
+  const [errorFile, setErrorFile] = useState('');
   const token = localStorage.getItem('token');
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      // ✅ เพิ่มการตรวจสอบชนิดไฟล์ที่นี่
+      const allowedTypes = ['image/jpeg', 'image/heic', 'image/heif'];
+      if (!allowedTypes.includes(selectedFile.type)) {
+        setErrorFile('ชนิดไฟล์ไม่ถูกต้อง อนุญาตเฉพาะไฟล์ JPEG หรือ HEIC');
+        setFile(null); // ทำให้ค่า file เป็น null เพื่อให้ปุ่มอัปโหลดถูก disable
+      } else {
+        setFile(selectedFile);
+        setErrorFile(''); // ล้างข้อความ error ถ้าไฟล์ถูกต้อง
+      }
+    }
   };
 
   const handleUpload = async () => {
     if (!file) {
-      setError('กรุณาเลือกไฟล์ก่อนอัปโหลด');
+      setErrorFile('กรุณาเลือกไฟล์ก่อนอัปโหลด');
       return;
     }
 
@@ -34,7 +48,7 @@ export default function UploadImageModal({ patientId, onClose, onUploadSuccess }
 
     // ✅ ส่ง taken_time เฉพาะเมื่อ isBackdate เป็น true
     if (isBackdate) {
-      formData.append('taken_time', DateTime.fromFormat(takenTime, 'yyyy-MM-dd').toISO()); // 👈 ปรับ format
+      formData.append('taken_time', DateTime.fromFormat(takenTime, 'yyyy-MM-dd').toISO());
     }
 
     try {
@@ -84,7 +98,8 @@ export default function UploadImageModal({ patientId, onClose, onUploadSuccess }
         <h3>อัปโหลดภาพ X-Ray</h3>
         <div style={styles.formGroup}>
           <label>เลือกไฟล์ภาพ:</label>
-          <input type="file" accept="image/*" onChange={handleFileChange} />
+          {/* ✅ ปรับ accept เพื่อให้เบราว์เซอร์ช่วยกรองไฟล์เบื้องต้น */}
+          <input type="file" accept=".jpg,.jpeg,.heic" onChange={handleFileChange} />
         </div>
 
         <div style={styles.formGroup}>
@@ -92,7 +107,16 @@ export default function UploadImageModal({ patientId, onClose, onUploadSuccess }
             <input
               type="checkbox"
               checked={isBackdate}
-              onChange={(e) => setIsBackdate(e.target.checked)}
+              onChange={(e) => {
+                setIsBackdate(e.target.checked);
+                if (errorDate) {
+                  setTakenTime(() => { // 👈 ปรับค่าเริ่มต้น
+                    const yesterday = DateTime.now().setZone('Asia/Bangkok').minus({ days: 1 }).toFormat('yyyy-MM-dd');
+                    return yesterday;
+                  });
+                  setErrorDate(''); // ล้าง error เมื่อเปลี่ยนสถานะ Checkbox เป็นปัจจุบัน
+                }
+              }}
             />
             อัปโหลดย้อนหลัง
           </label>
@@ -109,10 +133,10 @@ export default function UploadImageModal({ patientId, onClose, onUploadSuccess }
                 const newDate = e.target.value;
                 if (isDateValid(newDate)) {
                   setTakenTime(newDate);
-                  setError(''); // ลบ error ถ้ามี
+                  setErrorDate('');
                 } else {
                   setTakenTime(newDate);
-                  setError('กรุณาเลือกวันที่ให้ถูกต้อง (อดีตเท่านั้น)'); // ตั้งค่า error
+                  setErrorDate('กรุณาเลือกวันที่ให้ถูกต้อง (อดีตเท่านั้น)');
                 }
               }}
               style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
@@ -121,13 +145,15 @@ export default function UploadImageModal({ patientId, onClose, onUploadSuccess }
         )}
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
+        {errorDate && <p style={{ color: 'red' }}>{errorDate}</p>}
+        {errorFile && <p style={{ color: 'red' }}>{errorFile}</p>}
         <div style={styles.buttonGroup}>
           <button onClick={onClose} disabled={isUploading}>
             ยกเลิก
           </button>
           <button
             onClick={handleUpload}
-            disabled={isUploading || error !== ''} // Disable ปุ่มถ้ามี error
+            disabled={isUploading || !!errorDate || !!errorFile || !file} // ปรับ disabled เพื่อป้องกันการกดปุ่มถ้าไม่มีไฟล์หรือมี error
           >
             {isUploading ? 'กำลังอัปโหลด...' : 'อัปโหลด'}
           </button>
