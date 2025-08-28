@@ -31,6 +31,7 @@ export default function PatientDetail() {
   const [showUploadImageModal, setShowUploadImageModal] = useState(false);
 
   const [showFullImageModal, setShowFullImageModal] = useState(false);
+  const [selectedImageId, setSelectedImageId] = useState('');
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
   const [patientIoExams, setPatientIoExams] = useState([]);
@@ -449,6 +450,7 @@ export default function PatientDetail() {
                 <div key={image.id} style={{ border: '1px solid #ddd', padding: '0.5rem', borderRadius: '8px', textAlign: 'center' }}>
                   <button
                     onClick={() => {
+                      setSelectedImageId(image.id);
                       setSelectedImageUrl(image.url);
                       setShowFullImageModal(true);
                     }}
@@ -742,7 +744,12 @@ export default function PatientDetail() {
         />
       )}
       {showFullImageModal && (
-        <FullImageModal imageUrl={selectedImageUrl} onClose={() => setShowFullImageModal(false)} />
+        <FullImageModal
+          imageId={selectedImageId}
+          imageUrl={selectedImageUrl}
+          onClose={() => setShowFullImageModal(false)}
+          onDeleteSuccess={() => fetchPatientImages()}
+        />
       )}
     </>
   );
