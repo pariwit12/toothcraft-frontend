@@ -21,8 +21,6 @@ import DoctorTodaySummary from './pages/doctor_today_summary';
 import DashboardStaff from './pages/dashboard_staff';
 import PatientDetail from './pages/patient_detail';
 import MoneyReceivedReportFixed from './pages/money_received_report_fixed';
-import AppointmentCalendar from './pages/appointment_calendar';
-import AppointmentInDay from './pages/appointment_in_day';
 import ReminderList from './pages/reminder_list';
 import FeedbackList from './pages/feedback_list';
 import ClinicOverview from './pages/clinic_overview';
@@ -39,6 +37,8 @@ import DfSummaryReport from './pages/df_summary_report';
 /* Staff || Admin || Doctor */
 import SearchPatient from './pages/search_patient';
 import ContinueTxPatientList from './pages/continue_tx_patient_list';
+import AppointmentCalendar from './pages/appointment_calendar';
+import AppointmentInDay from './pages/appointment_in_day';
 
 /* Patient */
 import PatientDashboard from './pages/patient_dashboard';
@@ -127,22 +127,6 @@ export default function App() {
           }
         />
         <Route
-          path="/appointments-calendar"
-          element={
-            <ProtectedRoute>            
-              <AppointmentCalendar />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/appointments/in-day"
-          element={
-            <ProtectedRoute>
-              <AppointmentInDay />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/reminder-list"
           element={
             <ProtectedRoute>
@@ -202,6 +186,22 @@ export default function App() {
           }
         />
         <Route path="/continue-tx-patient-list" element={<ContinueTxPatientList />} />
+        <Route
+          path="/appointments-calendar"
+          element={
+            <ProtectedRoute>            
+              <AppointmentCalendar />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/appointments/in-day"
+          element={
+            <ProtectedRoute>
+              <AppointmentInDay />
+            </ProtectedRoute>
+          }
+        />
 
 
         {/* Patient */}

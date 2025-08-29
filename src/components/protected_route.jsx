@@ -30,9 +30,7 @@ export default function ProtectedRoute({ children }) {
     (
       path.startsWith('/dashboard/staff') ||
       path.startsWith('/register') ||
-      path.startsWith('/daily-report-fixed') ||
-      path.startsWith('/appointments-calendar') ||
-      path.startsWith('/appointments/in-day')
+      path.startsWith('/daily-report-fixed')
     ) && !allowStaffOrAdmin
   ) {
     return <Navigate to="/" replace />;
@@ -67,7 +65,9 @@ export default function ProtectedRoute({ children }) {
   if (
     (
       path.startsWith('/search') ||
-      path.startsWith('/patient_detail')
+      path.startsWith('/patient_detail') ||
+      path.startsWith('/appointments-calendar') ||
+      path.startsWith('/appointments/in-day')
     ) && !allowStaffOrAdminOrDoctor
   ) {
     return <Navigate to="/" replace />;

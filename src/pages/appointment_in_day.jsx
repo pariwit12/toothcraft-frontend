@@ -4,6 +4,8 @@ import AppointmentModal from '../components/appointment_modal';
 import EditAppointmentModal from '../components/edit_appointment_modal';
 import AddDoctorModal from '../components/add_doctor_modal';
 import EditDoctorScheduleModal from '../components/edit_doctor_schedule_modal';
+import AppointmentPatientModal from '../components/appointment_patient_modal';
+import PatientHistoryModal from '../components/patient_history_modal';
 const API_URL = process.env.REACT_APP_API_URL;
 
 
@@ -27,6 +29,11 @@ export default function AppointmentInDay() {
   const [editScheduleModalOpen, setEditScheduleModalOpen] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [doctorForSchedule, setDoctorForSchedule] = useState(null);
+
+  const [appointmentModalOpen, setAppointmentModalOpen] = useState(false);
+  const [appointmentPatientId, setAppointmentPatientId] = useState(null);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [historyPatientObj, setHistoryPatientObj] = useState(null);
 
 
   const [role, setRole] = useState(null);
@@ -172,8 +179,14 @@ export default function AppointmentInDay() {
                         <th style={{ border: '1px solid #ccc', padding: '4px' }}>เวลา</th>
                         <th style={{ border: '1px solid #ccc', padding: '4px' }}>คนไข้</th>
                         <th style={{ border: '1px solid #ccc', padding: '4px' }}>หมายเหตุ</th>
-                        <th style={{ border: '1px solid #ccc', padding: '4px' }}>แก้ไข</th>
-                        <th style={{ border: '1px solid #ccc', padding: '4px' }}>ลบ</th>
+                        <th style={{ border: '1px solid #ccc', padding: '4px' }}>ประวัติ</th>
+                        <th style={{ border: '1px solid #ccc', padding: '4px' }}>วันนัด</th>
+                        {(role === 'admin' || role === 'staff') && (
+                          <>
+                            <th style={{ border: '1px solid #ccc', padding: '4px' }}>แก้ไข</th>
+                            <th style={{ border: '1px solid #ccc', padding: '4px' }}>ลบ</th>
+                          </>
+                        )}
                       </tr>
                     </thead>
                     <tbody>
@@ -188,40 +201,79 @@ export default function AppointmentInDay() {
                           <tr key={apt.id}>
                             <td style={{ border: '1px solid #ccc', padding: '4px', whiteSpace: 'nowrap' }}>{timeStr}</td>
                             <td style={{ border: '1px solid #ccc', padding: '4px' }}>
-                              {apt.patient ? `HN: ${apt.patient.id} - ${apt.patient.first_name} ${apt.patient.last_name}` : '-'}
+                              {apt.patients ? `HN: ${apt.patients.id} - ${apt.patients.first_name} ${apt.patients.last_name}` : '-'}
                             </td>
                             <td style={{ border: '1px solid #ccc', padding: '4px' }}>{apt.note || '-'}</td>
-                            <td style={{ border: '1px solid #ccc', padding: '4px', textAlign: 'center' }}>
-                              <button
-                                style={{ backgroundColor: '#3498db', color: 'white', border: 'none', padding: '4px 8px', cursor: 'pointer' }}
-                                onClick={() => {
-                                  setSelectedAppointment(apt);
-                                  setSelectedDoctor({
-                                    ...doctor,
-                                    working_times: doctorGroup.schedules.map((sch) => ({
-                                      start: new Date(sch.start_time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }),
-                                      end: new Date(sch.end_time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }),
-                                    })),
-                                  });
-                                  setEditModalOpen(true);
-                                }}
-                              >
-                                แก้ไข
-                              </button>
+                            <td style={{ border: '1px solid #ccc', padding: '4px' }}>
+                              {apt.patients ?
+                                <div>
+                                  <button onClick={() => {
+                                    // สร้าง object ใหม่ที่รวม key เดิมทั้งหมดของ apt
+                                    // และเพิ่ม key ใหม่ `doctors` ที่มีค่าเท่ากับ apt.doctor
+                                    const newApt = { ...apt, patient_id: apt.patients.id }; 
+                                    // หรือถ้าอยากลบ key เก่าออกด้วย:
+                                    // const { doctor, ...rest } = apt;
+                                    // const newApt = { ...rest, doctors: doctor };
+                                    
+                                    setHistoryPatientObj(newApt);
+                                    setHistoryModalOpen(true);
+                                  }}>
+                                    🧾 ประวัติ
+                                  </button>
+                                </div>
+                                :
+                                '-'
+                              }
                             </td>
-                            <td style={{ border: '1px solid #ccc', padding: '4px', textAlign: 'center' }}>
-                              <button
-                                style={{ backgroundColor: '#e74c3c', color: 'white', border: 'none', padding: '4px 8px', cursor: 'pointer' }}
-                                onClick={() => handleDeleteAppointment(apt.id)}
-                              >
-                                ลบ
-                              </button>
+                            <td style={{ border: '1px solid #ccc', padding: '4px' }}>
+                              {apt.patients ?
+                                <div>
+                                  <button onClick={() => {
+                                    setAppointmentPatientId(apt.patients.id);
+                                    setAppointmentModalOpen(true);
+                                  }}>
+                                    📅 วันนัด
+                                  </button>
+                                </div>
+                                :
+                                '-'
+                              }
                             </td>
+                            {(role === 'admin' || role === 'staff') && (
+                              <>
+                                <td style={{ border: '1px solid #ccc', padding: '4px', textAlign: 'center' }}>
+                                  <button
+                                    style={{ backgroundColor: '#3498db', color: 'white', border: 'none', padding: '4px 8px', cursor: 'pointer' }}
+                                    onClick={() => {
+                                      setSelectedAppointment(apt);
+                                      setSelectedDoctor({
+                                        ...doctor,
+                                        working_times: doctorGroup.schedules.map((sch) => ({
+                                          start: new Date(sch.start_time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }),
+                                          end: new Date(sch.end_time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }),
+                                        })),
+                                      });
+                                      setEditModalOpen(true);
+                                    }}
+                                  >
+                                    แก้ไข
+                                  </button>
+                                </td>
+                                <td style={{ border: '1px solid #ccc', padding: '4px', textAlign: 'center' }}>
+                                  <button
+                                    style={{ backgroundColor: '#e74c3c', color: 'white', border: 'none', padding: '4px 8px', cursor: 'pointer' }}
+                                    onClick={() => handleDeleteAppointment(apt.id)}
+                                  >
+                                    ลบ
+                                  </button>
+                                </td>
+                              </>
+                            )}
                           </tr>
                         );
                       })}
                       <tr>
-                        <td colSpan={5} style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>
+                        <td colSpan={7} style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>
                           <span style={{ marginRight: 10 }}>➕ เพิ่มนัดใหม่</span>
                           <button
                             onClick={() => {
@@ -302,6 +354,17 @@ export default function AppointmentInDay() {
           }}
         />
       )}
+      {appointmentModalOpen && (
+        <AppointmentPatientModal
+          patientId={appointmentPatientId}
+          onClose={() => setAppointmentModalOpen(false)}
+        />
+      )}
+      <PatientHistoryModal
+        isOpen={historyModalOpen}
+        patientObj={historyPatientObj}
+        onClose={() => setHistoryModalOpen(false)}
+      />
     </div>
   );
 }

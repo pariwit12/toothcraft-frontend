@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import EnterRoomModal from '../components/enter_room_modal';
+import AppointmentPatientModal from '../components/appointment_patient_modal';
+import PatientHistoryModal from '../components/patient_history_modal';
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function DashboardDoctor() {
@@ -11,6 +13,12 @@ export default function DashboardDoctor() {
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentRoom, setCurrentRoom] = useState('');
+  
+  const [appointmentModalOpen, setAppointmentModalOpen] = useState(false);
+  const [appointmentPatientId, setAppointmentPatientId] = useState(null);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [historyPatientObj, setHistoryPatientObj] = useState(null);
+
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
@@ -74,6 +82,9 @@ export default function DashboardDoctor() {
           ห้องที่คุณหมออยู่: <strong>{currentRoom || 'ยังไม่เลือกห้อง'}</strong>
         </span> */}
         <button onClick={() => setIsModalOpen(true)}>🏥 ห้องตรวจ</button>
+        <Link to="/appointments-calendar">
+          <button>📆 ตารางนัด</button>
+        </Link>
         <Link to="/search">
           <button>🔎 ค้นหาผู้ป่วย</button>
         </Link>
@@ -115,6 +126,8 @@ export default function DashboardDoctor() {
                 ชื่อผู้ป่วย
               </th>
               <th style={{ border: '1px solid #ccc', padding: '8px' }}>หมายเหตุ</th>
+              <th style={{ border: '1px solid #ccc', padding: '4px' }}>ประวัติ</th>
+              <th style={{ border: '1px solid #ccc', padding: '4px' }}>วันนัด</th>
             </tr>
           </thead>
           <tbody>
@@ -133,6 +146,34 @@ export default function DashboardDoctor() {
                 </td>
                 <td style={{ border: '1px solid #ccc', padding: '8px' }}>
                   {appt.note || '-'}
+                </td>
+                <td style={{ border: '1px solid #ccc', padding: '4px' }}>
+                  {appt.patients ?
+                    <div>
+                      <button onClick={() => {
+                        setHistoryPatientObj(appt);
+                        setHistoryModalOpen(true);
+                      }}>
+                        🧾 ประวัติ
+                      </button>
+                    </div>
+                    :
+                    '-'
+                  }
+                </td>
+                <td style={{ border: '1px solid #ccc', padding: '4px' }}>
+                  {appt.patients ?
+                    <div>
+                      <button onClick={() => {
+                        setAppointmentPatientId(appt.patient_id);
+                        setAppointmentModalOpen(true);
+                      }}>
+                        📅 วันนัด
+                      </button>
+                    </div>
+                    :
+                    '-'
+                  }
                 </td>
               </tr>
             ))}
@@ -180,6 +221,17 @@ export default function DashboardDoctor() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmRoom}
+      />
+      {appointmentModalOpen && (
+        <AppointmentPatientModal
+          patientId={appointmentPatientId}
+          onClose={() => setAppointmentModalOpen(false)}
+        />
+      )}
+      <PatientHistoryModal
+        isOpen={historyModalOpen}
+        patientObj={historyPatientObj}
+        onClose={() => setHistoryModalOpen(false)}
       />
     </div>
   );

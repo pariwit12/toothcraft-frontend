@@ -12,17 +12,18 @@ export default function AppointmentCalendar() {
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [role, setRole] = useState(null);
+  const [doctorId, setDoctorId] = useState(null);
   const [modalOpen, setModalOpen] = useState(false); // ✅ state สำหรับ modal
   const [selectedDate, setSelectedDate] = useState(''); // ✅ วันที่ที่เลือก
   const token = localStorage.getItem('token');
 
   useEffect(() => {
     if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        setRole(payload.role);
-      } catch (err) {
-        console.error('ไม่สามารถ decode token ได้:', err);
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      setRole(payload.role);
+      const id = payload.id;
+      if (id) {
+          setDoctorId(id);
       }
     }
   }, [token]);
@@ -38,22 +39,35 @@ export default function AppointmentCalendar() {
   }, []);
 
   const refreshSchedules = async () => {
+    if (!token) return;
+
     try {
-      const res = await fetch(`${API_URL}/doctor-schedules/in-month?month=${currentMonth}&year=${currentYear}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await res.json();
-      setDoctorSchedules(data);
+      if (role === 'admin' || role === 'staff') {
+        const res = await fetch(`${API_URL}/doctor-schedules/in-month?month=${currentMonth}&year=${currentYear}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        setDoctorSchedules(data);
+      }
+      if (role === 'doctor' && doctorId) {
+        const res = await fetch(`${API_URL}/doctor-schedules/in-month-by-doctor?month=${currentMonth}&year=${currentYear}&doctor_id=${doctorId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        setDoctorSchedules(data);
+      }
     } catch (error) {
       console.error('โหลดข้อมูลตารางหมอไม่สำเร็จ:', error);
     }
   };
 
   useEffect(() => {
-    if (token) refreshSchedules();
-  }, [currentMonth, currentYear, token]);
+    refreshSchedules();
+  }, [currentMonth, currentYear, token, role, doctorId]); // เพิ่ม role และ doctorId เป็น dependency
 
   const renderDoctorNamesForDate = (dateNum) => {
     const pad = (num) => String(num).padStart(2, '0');
@@ -139,9 +153,16 @@ export default function AppointmentCalendar() {
       </div>
 
       <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <button onClick={() => navigate('/dashboard/staff')}>
-          🔙 กลับหน้าหลัก
-        </button>
+        {(role === 'admin' || role === 'staff') && (
+          <button onClick={() => navigate('/dashboard/staff')}>
+            🔙 กลับหน้าหลัก
+          </button>
+        )}
+        {role === 'doctor' && (
+          <button onClick={() => navigate('/dashboard/doctor')}>
+            🔙 กลับหน้าหลัก
+          </button>
+        )}
       </div>
 
       {showMonthPicker && (
@@ -271,7 +292,10 @@ export default function AppointmentCalendar() {
                             onClick={() => {
                               const pad = (num) => String(num).padStart(2, '0');
                               const dateStr = `${currentYear}-${pad(currentMonth + 1)}-${pad(dateNum)}`;
-                              navigate(`/appointments/in-day?date=${dateStr}`);
+                              if (role === 'doctor')
+                                navigate(`/appointments/in-day?date=${dateStr}&doctor_id=${doctorId}`);
+                              if (role === 'admin' || role === 'staff')
+                                navigate(`/appointments/in-day?date=${dateStr}`);
                             }}
                           >
                             📅 ดูตารางนัด
