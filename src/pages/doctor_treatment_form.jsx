@@ -65,6 +65,8 @@ export default function DoctorTreatmentForm() {
   const [selectedImageId, setSelectedImageId] = useState('');
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
+  const [showXray, setShowXray] = useState('Show'); // หรือ 'Hide'
+
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -1398,28 +1400,60 @@ export default function DoctorTreatmentForm() {
             {/* 👇 7. เพิ่มส่วนแสดงผลรูปภาพ */}
             <div style={{ marginBottom: '2rem' }}>
               <h3>คลังภาพ X-Ray</h3>
-              {patientImages.length > 0 ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '1rem' }}>
-                  {patientImages.map(image => (
-                    <div key={image.id} style={{ border: '1px solid #ddd', padding: '0.5rem', borderRadius: '8px', textAlign: 'center' }}>
-                      <button
-                        onClick={() => {
-                          setSelectedImageId(image.id);
-                          setSelectedImageUrl(image.url);
-                          setShowFullImageModal(true);
-                        }}
-                        style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
-                      >
-                        <img src={image.url} alt={`ImageId ${image.id}`} style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '4px' }} />
-                      </button>
-                      <small>
-                        {new Date(image.takenAt).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' })}
-                      </small>
+              {showXray === 'Hide' && (
+                <button
+                  onClick={() => {
+                    setShowXray('Show');
+                  }}
+                  style={{
+                    marginLeft: '1rem',
+                    border: 'none',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                  }}
+                >🔍 แสดงภาพ X-ray</button>
+              )}
+              {showXray === 'Show' && (
+                <button
+                  onClick={() => {
+                    setShowXray('Hide');
+                  }}
+                  style={{
+                    marginLeft: '1rem',
+                    border: 'none',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                  }}
+                >❌ ซ่อนภาพ X-ray</button>
+              )}
+              {showXray === 'Show' && (
+                <>
+                  {patientImages.length > 0 ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '1rem' }}>
+                      {patientImages.map(image => (
+                        <div key={image.id} style={{ border: '1px solid #ddd', padding: '0.5rem', borderRadius: '8px', textAlign: 'center' }}>
+                          <button
+                            onClick={() => {
+                              setSelectedImageId(image.id);
+                              setSelectedImageUrl(image.url);
+                              setShowFullImageModal(true);
+                            }}
+                            style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
+                          >
+                            <img src={image.url} alt={`ImageId ${image.id}`} style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '4px' }} />
+                          </button>
+                          <small>
+                            {new Date(image.takenAt).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' })}
+                          </small>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p>ยังไม่มีภาพ X-Ray</p>
+                  ) : (
+                    <p>ยังไม่มีภาพ X-Ray</p>
+                  )}
+                </>
               )}
             </div>
 
