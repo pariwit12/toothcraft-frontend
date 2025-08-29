@@ -794,10 +794,7 @@ export default function DoctorTreatmentForm() {
               style={{ width: '100%' }}
             />
 
-            <label style={{ marginTop: '1rem', display: 'block' }}>
-              <p>แผนการรักษา:</p>
-              <p style={{ marginRight: '1rem' }}>***แก้ไขแผนการรักษาได้ที่เมนูแผนการรักษาด้านขวา***</p>
-            </label>
+            <label style={{ marginTop: '1rem', display: 'block' }}>แผนการรักษา (***แก้ไขแผนการรักษาได้ที่เมนูแผนการรักษาด้านขวา***):</label>
 
             {displayMode === 'planOnly' && (() => {
               let textValue = '';
