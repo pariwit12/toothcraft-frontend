@@ -1398,7 +1398,7 @@ export default function DoctorTreatmentForm() {
           {/* ส่วนที่อยู่ชิดล่าง */}
           <div>
             {/* 👇 7. เพิ่มส่วนแสดงผลรูปภาพ */}
-            <div style={{ marginBottom: '2rem' }}>
+            <div style={{ marginBottom: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <h3>คลังภาพ X-Ray</h3>
                 {showXray === 'Hide' && (
