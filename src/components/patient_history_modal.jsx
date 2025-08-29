@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { formatAge, formatDate, formatProcedures } from '../utils/format';
+import FullImageModal from '../components/full_image_modal';
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function PatientHistoryModal({ isOpen, patientObj, onClose }) {
@@ -21,6 +22,12 @@ export default function PatientHistoryModal({ isOpen, patientObj, onClose }) {
   const [patientContinueTx, setPatientContinueTx] = useState([]);
 
   const [visitHistoryIoDisplayMode, setVisitHistoryIoDisplayMode] = useState('planOnly'); // หรือ 'planAndName'
+  
+  const [patientImages, setPatientImages] = useState([]);
+  
+  const [showFullImageModal, setShowFullImageModal] = useState(false);
+  const [selectedImageId, setSelectedImageId] = useState('');
+  const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
   const [errorMsg, setErrorMsg] = useState('');
   const token = localStorage.getItem('token');
@@ -60,10 +67,24 @@ export default function PatientHistoryModal({ isOpen, patientObj, onClose }) {
     fetchVisitHistory();
     fetchPatientIoExam();
     fetchPatientContinueTx();
+    fetchPatientImages();
   }, [isOpen, patientObj]);
 
   if (!isOpen || !patientObj) return null;
 
+
+  const fetchPatientImages = async () => {
+    try {
+      const res = await fetch(`${API_URL}/gcs/patient/${patientObj.patient_id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('ไม่สามารถโหลดรูปภาพได้');
+      const data = await res.json();
+      setPatientImages(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const fetchPatientContinueTx = async () => {
     try {
@@ -309,6 +330,34 @@ export default function PatientHistoryModal({ isOpen, patientObj, onClose }) {
         <p><b>อายุ:</b> {formatAge(patientObj.patients?.birth_day)}</p>
         <p><b>เบอร์โทร:</b> {patientObj.patients?.telephone || '-'}</p>
 
+        {/* 👇 7. เพิ่มส่วนแสดงผลรูปภาพ */}
+        <div style={{ marginBottom: '2rem' }}>
+          <h3>คลังภาพ X-Ray</h3>
+          {patientImages.length > 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '1rem' }}>
+              {patientImages.map(image => (
+                <div key={image.id} style={{ border: '1px solid #ddd', padding: '0.5rem', borderRadius: '8px', textAlign: 'center' }}>
+                  <button
+                    onClick={() => {
+                      setSelectedImageId(image.id);
+                      setSelectedImageUrl(image.url);
+                      setShowFullImageModal(true);
+                    }}
+                    style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
+                  >
+                    <img src={image.url} alt={`ImageId ${image.id}`} style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '4px' }} />
+                  </button>
+                  <small>
+                    {new Date(image.takenAt).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' })}
+                  </small>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>ยังไม่มีภาพ X-Ray</p>
+          )}
+        </div>
+
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <h3>ประวัติการรักษา</h3>
           {showHistoryFilter === 'Hide' && (
@@ -522,6 +571,14 @@ export default function PatientHistoryModal({ isOpen, patientObj, onClose }) {
           </table>
         )}
       </div>
+      {showFullImageModal && (
+        <FullImageModal
+          imageId={selectedImageId}
+          imageUrl={selectedImageUrl}
+          onClose={() => setShowFullImageModal(false)}
+          onDeleteSuccess={() => fetchPatientImages()}
+        />
+      )}
     </div>
   );
 }
