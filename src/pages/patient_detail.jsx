@@ -444,36 +444,38 @@ export default function PatientDetail() {
         )}
 
         {/* 👇 7. เพิ่มส่วนแสดงผลรูปภาพ */}
-        <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center' }}>
-          <h3>คลังภาพ X-Ray</h3>
-          {showXray === 'Hide' && (
-            <button
-              onClick={() => {
-                setShowXray('Show');
-              }}
-              style={{
-                marginLeft: '1rem',
-                border: 'none',
-                padding: '0.5rem 1rem',
-                borderRadius: '6px',
-                cursor: 'pointer',
-              }}
-            >🔍 แสดงภาพ X-ray</button>
-          )}
-          {showXray === 'Show' && (
-            <button
-              onClick={() => {
-                setShowXray('Hide');
-              }}
-              style={{
-                marginLeft: '1rem',
-                border: 'none',
-                padding: '0.5rem 1rem',
-                borderRadius: '6px',
-                cursor: 'pointer',
-              }}
-            >❌ ซ่อนภาพ X-ray</button>
-          )}
+        <div style={{ marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <h3>คลังภาพ X-Ray</h3>
+            {showXray === 'Hide' && (
+              <button
+                onClick={() => {
+                  setShowXray('Show');
+                }}
+                style={{
+                  marginLeft: '1rem',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                }}
+              >🔍 แสดงภาพ X-ray</button>
+            )}
+            {showXray === 'Show' && (
+              <button
+                onClick={() => {
+                  setShowXray('Hide');
+                }}
+                style={{
+                  marginLeft: '1rem',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                }}
+              >❌ ซ่อนภาพ X-ray</button>
+            )}
+          </div>
           {showXray === 'Show' && (
             <>
               {patientImages.length > 0 ? (
