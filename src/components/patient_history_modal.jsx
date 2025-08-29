@@ -70,6 +70,16 @@ export default function PatientHistoryModal({ isOpen, patientObj, onClose }) {
     fetchPatientIoExam();
     fetchPatientContinueTx();
     fetchPatientImages();
+    
+    setShowXray('Show');
+    setShowHistoryFilter('Hide');
+    setFilterDoctor([]);
+    setFilterProcedure([]);
+    setFilterTooth([]);
+    setSearchNote('');
+    setSearchNextVisit('');
+    setErrorMsg('');
+    
   }, [isOpen, patientObj]);
 
   if (!isOpen || !patientObj) return null;
