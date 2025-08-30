@@ -492,9 +492,11 @@ export default function PatientDetail() {
                       >
                         <img src={image.url} alt={`ImageId ${image.id}`} style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '4px' }} />
                       </button>
-                      <small>
-                        {new Date(image.takenAt).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' })}
-                      </small>
+                      <div>
+                        <small>
+                          {new Date(image.takenAt).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' })}
+                        </small>
+                      </div>
                     </div>
                   ))}
                 </div>
