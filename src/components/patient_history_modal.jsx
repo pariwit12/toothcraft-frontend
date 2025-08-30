@@ -608,8 +608,15 @@ export default function PatientHistoryModal({ isOpen, patientObj, onClose }) {
                   <td style={{ whiteSpace: 'pre-wrap' }}>{v.treatment_note || '-'}</td>
                   <td style={{ whiteSpace: 'pre-wrap' }}>{formatProcedures(v)}</td>
                   <td style={{ whiteSpace: 'pre-wrap' }}>
-                    {getIoPlansForVisit(v, visitHistoryIoDisplayMode)}{getContinueTxForVisit(v, visitHistoryIoDisplayMode)}
+                    {
+                      getIoPlansForVisit(v, visitHistoryIoDisplayMode) === '' && getContinueTxForVisit(v, visitHistoryIoDisplayMode) === ''
+                        ? '-'
+                        : <>{getIoPlansForVisit(v, visitHistoryIoDisplayMode)}{getContinueTxForVisit(v, visitHistoryIoDisplayMode)}</>
+                    }
                   </td>
+                  {/* <td style={{ whiteSpace: 'pre-wrap' }}>
+                    {getIoPlansForVisit(v, visitHistoryIoDisplayMode)}{getContinueTxForVisit(v, visitHistoryIoDisplayMode)}
+                  </td> */}
                   <td style={{ whiteSpace: 'pre-wrap' }}>{v.next_visit || '-'}</td>
                 </tr>
               ))}

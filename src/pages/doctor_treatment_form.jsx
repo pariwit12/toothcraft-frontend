@@ -807,6 +807,10 @@ export default function DoctorTreatmentForm() {
                 textValue += `\n- (ต่อเนื่อง) ${plan}:` + arr.map(item => ` ${item.tooth || ''}${item.surface || ''}`).join(',');
               });
 
+              if(textValue === '') {
+                textValue = '-';
+              }
+
               return (
                 <div style={{ marginBottom: '1rem' }}>
                   <textarea
@@ -832,6 +836,10 @@ export default function DoctorTreatmentForm() {
               Object.entries(activeContinueTxToShow).forEach(([plan, arr]) => {
                 textValue += `\n- (ต่อเนื่อง) ${plan}:` + arr.map(item => ` ${item.tooth || ''}${item.surface || ''}`).join(',');
               });
+
+              if(textValue === '') {
+                textValue = '-';
+              }
 
               return (
                 <div style={{ marginBottom: '1rem' }}>
@@ -1676,8 +1684,15 @@ export default function DoctorTreatmentForm() {
                       {formatProcedures(v)}
                     </td>
                     <td style={{ whiteSpace: 'pre-wrap', padding: '0.25rem 0', border: '1px solid #ccc' }}>
-                      {getIoPlansForVisit(v, visitHistoryIoDisplayMode)}{getContinueTxForVisit(v, visitHistoryIoDisplayMode)}
+                      {
+                        getIoPlansForVisit(v, visitHistoryIoDisplayMode) === '' && getContinueTxForVisit(v, visitHistoryIoDisplayMode) === ''
+                          ? '-'
+                          : <>{getIoPlansForVisit(v, visitHistoryIoDisplayMode)}{getContinueTxForVisit(v, visitHistoryIoDisplayMode)}</>
+                      }
                     </td>
+                    {/* <td style={{ whiteSpace: 'pre-wrap', padding: '0.25rem 0', border: '1px solid #ccc' }}>
+                      {getIoPlansForVisit(v, visitHistoryIoDisplayMode)}{getContinueTxForVisit(v, visitHistoryIoDisplayMode)}
+                    </td> */}
                     <td style={{ whiteSpace: 'pre-wrap', padding: '0.25rem 0', border: '1px solid #ccc' }}>
                       {v.next_visit || '-'}
                     </td>
