@@ -287,19 +287,21 @@ export default function AppointmentCalendar() {
 
                         {/* เพิ่มปุ่มลิงก์ดูตารางนัด */}
                         <div style={{ marginTop: '0.25rem' }}>
-                          <button
-                            style={{ fontSize: '0.75rem', padding: '2px 6px', cursor: 'pointer' }}
-                            onClick={() => {
-                              const pad = (num) => String(num).padStart(2, '0');
-                              const dateStr = `${currentYear}-${pad(currentMonth + 1)}-${pad(dateNum)}`;
-                              if (role === 'doctor')
-                                navigate(`/appointments/in-day?date=${dateStr}&doctor_id=${doctorId}`);
-                              if (role === 'admin' || role === 'staff')
-                                navigate(`/appointments/in-day?date=${dateStr}`);
-                            }}
-                          >
-                            📅 ดูตารางนัด
-                          </button>
+                          {renderDoctorNamesForDate(dateNum).props.children.length > 0 && (
+                            <button
+                              style={{ fontSize: '0.75rem', padding: '2px 6px', cursor: 'pointer' }}
+                              onClick={() => {
+                                const pad = (num) => String(num).padStart(2, '0');
+                                const dateStr = `${currentYear}-${pad(currentMonth + 1)}-${pad(dateNum)}`;
+                                if (role === 'doctor')
+                                  navigate(`/appointments/in-day?date=${dateStr}&doctor_id=${doctorId}`);
+                                if (role === 'admin' || role === 'staff')
+                                  navigate(`/appointments/in-day?date=${dateStr}`);
+                              }}
+                            >
+                              📅 ดูตารางนัด
+                            </button>
+                          )}
                         </div>
 
                         {role === 'admin' && (
