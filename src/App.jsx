@@ -33,6 +33,7 @@ import DoctorList from './pages/doctor_list';
 /* Admin */
 import MoneyReceivedReport from './pages/money_received_report';
 import DfSummaryReport from './pages/df_summary_report';
+import DoctorStaffList from './pages/doctor_staff_list';
 
 /* Staff || Admin || Doctor */
 import SearchPatient from './pages/search_patient';
@@ -174,6 +175,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/doctor-staff-list" element={<DoctorStaffList />} />
 
         
         {/* Staff || Admin || Doctor */}

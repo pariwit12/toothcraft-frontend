@@ -267,9 +267,24 @@ export default function DashboardStaff() {
                 borderRadius: '6px',
                 border: 'none',
                 cursor: 'pointer',
+                marginRight: '1rem',
               }}
             >
               📈 สรุป DF
+            </button>
+          </Link>
+          <Link to="/doctor-staff-list">
+            <button
+              style={{
+                backgroundColor: '#2e617dff',
+                color: 'white',
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              🧍‍♂️ ข้อมูลพนักงาน
             </button>
           </Link>
         </div>
