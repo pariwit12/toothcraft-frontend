@@ -68,6 +68,8 @@ export default function DoctorTreatmentForm() {
   const [showXray, setShowXray] = useState('Show'); // หรือ 'Hide'
 
 
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const decoded = jwtDecode(token);
@@ -348,6 +350,10 @@ export default function DoctorTreatmentForm() {
     } catch (err) {
       console.error(err);
       setMessage('เชื่อมต่อไม่สำเร็จ');
+      setIsReferOpen(false);
+    } finally {
+      // ✅ เปลี่ยน state กลับเป็น false เสมอ ไม่ว่าจะสำเร็จหรือเกิด error
+      setIsSubmitting(false);
     }
   };
 
@@ -417,6 +423,8 @@ export default function DoctorTreatmentForm() {
 
     if (ioFindingListToInsert.length === 0) {
       alert('ยังไม่มีรายการผลการตรวจ');
+      // ✅ เปลี่ยน state กลับเป็น false เสมอ ไม่ว่าจะสำเร็จหรือเกิด error
+      setIsSubmitting(false);
       return;
     }
 
@@ -424,6 +432,8 @@ export default function DoctorTreatmentForm() {
     const missingTooth = ioFindingListToInsert.some((item) => !item.tooth || item.tooth.trim() === '');
     if (missingTooth) {
       alert('กรุณาเลือกซี่ฟันให้ครบทุกผลการตรวจ');
+      // ✅ เปลี่ยน state กลับเป็น false เสมอ ไม่ว่าจะสำเร็จหรือเกิด error
+      setIsSubmitting(false);
       return;
     }
 
@@ -458,6 +468,9 @@ export default function DoctorTreatmentForm() {
     } catch (err) {
       console.error('เกิดข้อผิดพลาด:', err);
       setMessage('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์');
+    } finally {
+      // ✅ เปลี่ยน state กลับเป็น false เสมอ ไม่ว่าจะสำเร็จหรือเกิด error
+      setIsSubmitting(false);
     }
   };
 
@@ -996,17 +1009,24 @@ export default function DoctorTreatmentForm() {
                   alert('กรุณาบันทึกผลการตรวจให้เรียบร้อยก่อนบันทึกการรักษา');
                   return;
                 }
-                
+
                 // 🔒 ตรวจสอบการเลือกซี่ฟันให้ครบทุกหัตถการ
                 const missingTooth = procedures.some((p) => !p.tooth || p.tooth.trim() === '');
                 if (missingTooth) {
                   alert('กรุณาเลือกซี่ฟันให้ครบทุกหัตถการ');
                   return;
                 }
+
+                // 👇 เพิ่มการตรวจสอบ isSubmitting ที่นี่
+                if (isSubmitting) return; 
+
+                setIsSubmitting(true);
                 setIsReferOpen(true);
+                setIsSubmitting(false); // ปลดล็อกหลังจากเปิด modal แล้ว
               }}
+              disabled={isSubmitting} // ปิดใช้งานปุ่มขณะกำลังส่ง
             >
-              💾 บันทึก
+              {isSubmitting ? 'กำลังบันทึก...' : '💾 บันทึก'}
             </button>{' '}
             <button onClick={() => navigate('/dashboard/doctor/room')}>ยกเลิก</button>
           </div>
@@ -1387,7 +1407,13 @@ export default function DoctorTreatmentForm() {
             {ioFindingListToInsert.length > 0 && (
               <div style={{ marginTop: '1rem' }}>
                 <button
-                  onClick={handleSaveIoFindings}
+                  onClick={async () => {
+                    // 👇 เพิ่มการตรวจสอบ isSubmitting ที่นี่
+                    if (isSubmitting) return; 
+
+                    setIsSubmitting(true);
+                    handleSaveIoFindings();
+                  }}
                   style={{
                     background: '#28a745',
                     color: 'white',
@@ -1396,8 +1422,9 @@ export default function DoctorTreatmentForm() {
                     borderRadius: '5px',
                     cursor: 'pointer'
                   }}
+                  disabled={isSubmitting} // ปิดใช้งานปุ่มขณะกำลังส่ง
                 >
-                  💾 บันทึกผลการตรวจ
+                  {isSubmitting ? 'กำลังบันทึก...' : '💾 บันทึกผลการตรวจ'}
                 </button>
               </div>
             )}

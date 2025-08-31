@@ -5,16 +5,21 @@ export default function ReferModal({ isOpen, onClose, onConfirm, queueId }) {
   const [room, setRoom] = useState('');
   const [note, setNote] = useState('');
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       setRoom('');
       setNote('');
+      setIsSubmitting(false);
     }
   }, [isOpen]);
 
   const handleSubmit = () => {
     if (!room) {
       alert('กรุณาเลือกห้องก่อนส่งต่อ');
+      // ✅ เปลี่ยน state กลับเป็น false เสมอ ไม่ว่าจะสำเร็จหรือเกิด error
+      setIsSubmitting(false);
       return;
     }
 
@@ -29,7 +34,7 @@ export default function ReferModal({ isOpen, onClose, onConfirm, queueId }) {
         <h3>ส่งต่อผู้ป่วย</h3>
 
         <label>เลือกห้อง:
-          <select value={room} onChange={(e) => setRoom(e.target.value)} style={styles.select}>
+          <select value={room} onChange={(e) => setRoom(e.target.value)} style={styles.select} disabled={isSubmitting}>
             <option value="">-- กรุณาเลือก --</option>
             <option value="1">ห้องตรวจ 1</option>
             <option value="2">ห้องตรวจ 2</option>
@@ -44,12 +49,30 @@ export default function ReferModal({ isOpen, onClose, onConfirm, queueId }) {
             value={note}
             onChange={(e) => setNote(e.target.value)}
             style={{ width: '100%', padding: '0.5rem' }}
+            disabled={isSubmitting} // ปิดใช้งานปุ่มขณะกำลังส่ง
           />
         </label>
 
         <div style={{ marginTop: '1rem' }}>
-          <button onClick={handleSubmit}>✅ ยืนยัน</button>
-          <button onClick={onClose} style={{ marginLeft: '1rem' }}>❌ ยกเลิก</button>
+          <button
+            onClick={async () => {
+              // 👇 เพิ่มการตรวจสอบ isSubmitting ที่นี่
+              if (isSubmitting) return; 
+              
+              setIsSubmitting(true);
+              handleSubmit();
+            }}
+            disabled={isSubmitting} // ปิดใช้งานปุ่มขณะกำลังส่ง
+          >
+            {isSubmitting ? 'กำลังบันทึก...' : '✅ ยืนยัน'}
+          </button>
+          <button
+            onClick={onClose}
+            style={{ marginLeft: '1rem' }} 
+            disabled={isSubmitting} // ปิดใช้งานปุ่มขณะกำลังส่ง
+          >
+            ❌ ยกเลิก
+          </button>
         </div>
       </div>
     </div>
