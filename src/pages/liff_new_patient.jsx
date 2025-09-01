@@ -278,7 +278,46 @@ export default function LinkLine() {
 
   return (
     <div style={{ padding: '1rem', maxWidth: '400px', margin: '0 auto' }}>
-      <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>ลงทะเบียน ToothCraft</h2>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+        {status === 'register-new-hn' && (
+          <>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>ลงทะเบียน ToothCraft</h2>
+            <button
+              onClick={async () => {
+                setStatus('link-old-patient');
+              }}
+              style={{
+                marginLeft: '1rem',
+                border: 'none',
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                cursor: 'pointer',
+              }}
+            >
+              🔄 เชื่อมข้อมูล (คนไข้เก่า)
+            </button>
+          </>
+        )}
+        {status === 'link-old-patient' && (
+          <>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>เชื่อมข้อมูล (คนไข้เก่า)</h2>
+            <button
+              onClick={async () => {
+                setStatus('register-new-hn');
+              }}
+              style={{
+                marginLeft: '1rem',
+                border: 'none',
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                cursor: 'pointer',
+              }}
+            >
+              🔄 ลงทะเบียนใหม่
+            </button>
+          </>
+        )}
+      </div>
 
       {status === 'register-new-hn' && (
         <form onSubmit={handleCreateSubmit}>
