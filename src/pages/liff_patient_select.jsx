@@ -155,7 +155,7 @@ export default function LiffPatientSelect() {
         <p style={{ marginRight: '1rem', }}>หากไม่พบข้อมูล กรุณาคลิก</p>
         <button
           onClick={() => {
-            navigate("liff-new-patient");
+            navigate("/liff-new-patient");
           }}
           style={{
             border: 'none',
