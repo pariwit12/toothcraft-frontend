@@ -354,7 +354,7 @@ export default function LinkLine() {
               cursor: 'pointer',
             }}
           >
-            กลับหน้าเลือก User
+            เข้าสู่ระบบ
           </button>
         </div>
       </>
