@@ -1,6 +1,7 @@
 // 📁 frontend/src/pages/liff_patient_select.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = process.env.REACT_APP_API_URL;
 const LIFF_ID = '2007782065-3M56JnV7';
@@ -8,6 +9,8 @@ const LIFF_ID = '2007782065-3M56JnV7';
 export default function LiffPatientSelect() {
   const [patients, setPatients] = useState([]);
   const [status, setStatus] = useState("loading"); // loading, need-add-oa, ready, error
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const initLiff = async () => {
@@ -149,6 +152,19 @@ export default function LiffPatientSelect() {
     return (
       <div style={{ padding: "1rem" }}>
         <h2>เลือกรายชื่อคนไข้</h2>
+        <p>หากไม่พบข้อมูล กรุณาคลิก</p>
+        <button
+          onClick={() => navigate('liff-new-patient')}
+          style={{
+            marginLeft: '1rem',
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+        >
+          ลงทะเบียน/เชื่อมบัญชี (ถ้าเคยมาแล้ว)
+        </button>
         {patients.length === 0 ? (
           <p>ไม่พบข้อมูลคนไข้ที่เชื่อมกับ LINE นี้</p>
         ) : (

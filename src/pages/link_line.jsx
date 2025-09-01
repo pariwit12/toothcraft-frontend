@@ -11,6 +11,7 @@ export default function LinkLine() {
   const [idNumber, setIdNumber] = useState('');
   const [phone, setPhone] = useState('');
   const [patient, setPatient] = useState(null);
+  const [patients, setPatients] = useState([]); // 👈 เพิ่ม state เก็บรายชื่อคนไข้ที่ค้นเจอ
   const [status, setStatus] = useState('loading'); // loading, need-add-oa, register-new-hn, ready, error-init, error-token, verified, success
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -44,6 +45,13 @@ export default function LinkLine() {
         setStatus('verified');
       }
       else {
+        // เรียก API backend เพื่อดึง patient
+        const res = await axios.post(`${API_URL}/public/search-patient-by-LIFF`, {
+          line_user_id: lineUserId
+        });
+
+        setPatients(res.data);
+        
         setStatus('ready');
       }
     } catch (err) {
@@ -83,6 +91,13 @@ export default function LinkLine() {
         await fetchTokenData();
       }
       else {
+        // เรียก API backend เพื่อดึง patient
+        const res = await axios.post(`${API_URL}/public/search-patient-by-LIFF`, {
+          line_user_id: profile.userId
+        });
+
+        setPatients(res.data);
+        
         setStatus('ready');
       }
     } catch (error) {
@@ -316,7 +331,7 @@ export default function LinkLine() {
           <button
             type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
             onClick={async () => {
-              setStatus('ready');
+              initLiff();
             }}
             style={{
               padding: '0.5rem 1rem',
@@ -327,20 +342,6 @@ export default function LinkLine() {
           >
             ลงทะเบียนเพิ่ม
           </button>
-          <button
-            type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
-            onClick={() => {
-              navigate("/liff-patient-select");
-            }}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '4px',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            กลับหน้าเลือก User
-          </button>
         </div>
       </>
     );
@@ -348,45 +349,107 @@ export default function LinkLine() {
 
   return (
     <div style={{ padding: '1rem', maxWidth: '400px', margin: '0 auto' }}>
-      <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>ลงทะเบียน ToothCraft</h2>
+      <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>เข้ารับบริการ ToothCraft</h2>
 
       {status === 'ready' && (
         <>
-          <label style={{ display: 'block', marginBottom: '0.5rem' }}>เลขบัตรประชาชน</label>
-          <input
-            type="text"
-            style={{ border: '1px solid #ccc', padding: '0.5rem', width: '100%', marginBottom: '1rem' }}
-            value={idNumber}
-            onChange={(e) => setIdNumber(e.target.value)}
-            required
-          />
-          <button
-            onClick={handleVerifyId}
-            style={{
-              backgroundColor: '#2563eb',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              borderRadius: '4px',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            ตรวจสอบ
-          </button>
-          <button
-            onClick={() => setStatus('register-new-hn')}
-            style={{
-              backgroundColor: '#10b981',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              borderRadius: '4px',
-              border: 'none',
-              cursor: 'pointer',
-              marginLeft: '1rem',
-            }}
-          >
-            คนไข้ใหม่
-          </button>
+          {patients.length === 0 ? (
+            <>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>เลขบัตรประชาชน</label>
+              <input
+                type="text"
+                style={{ border: '1px solid #ccc', padding: '0.5rem', width: '100%', marginBottom: '1rem' }}
+                value={idNumber}
+                onChange={(e) => setIdNumber(e.target.value)}
+                required
+              />
+              <button
+                onClick={handleVerifyId}
+                style={{
+                  backgroundColor: '#2563eb',
+                  color: 'white',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                ตรวจสอบ
+              </button>
+              <button
+                onClick={() => setStatus('register-new-hn')}
+                style={{
+                  backgroundColor: '#10b981',
+                  color: 'white',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  marginLeft: '1rem',
+                }}
+              >
+                คนไข้ใหม่
+              </button>
+            </>
+          )
+          : (
+            <div>
+              <button
+                onClick={() => setPatients([])}
+                style={{
+                  backgroundColor: '#2563eb',
+                  color: 'white',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                กรอกเลขบัตรใหม่
+              </button>
+              <button
+                onClick={() => setStatus('register-new-hn')}
+                style={{
+                  backgroundColor: '#10b981',
+                  color: 'white',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  marginLeft: '1rem',
+                }}
+              >
+                คนไข้ใหม่
+              </button>
+              {patients.map((p) => (
+                <p style={{ marginTop: '1rem' }}>
+                  ✅ พบข้อมูลคนไข้<br />
+                  <strong>
+                    ชื่อ: {p.first_name} {p.last_name}<br />
+                    เลขบัตรประชาชน: {p.id_number}<br />
+                  </strong>
+                  <button
+                    key={p.id}
+                    style={{
+                      marginTop: '0.5rem',
+                      border: 'none',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                      setIdNumber(p.id_number);
+                      setPatient(p);
+                      setPhone(p.telephone || '');
+                      setStatus('verified');
+                    }}
+                  >
+                    เข้ารับบริการ ({p.first_name})
+                  </button>
+                </p>
+              ))}
+            </div>
+          )}
         </>
       )}
 
@@ -507,6 +570,7 @@ export default function LinkLine() {
               onClick={async () => {
                 setStatus('loading');
                 localStorage.removeItem("token");
+                setPatients([]);
                 setStatus('ready');
               }}
               style={{
@@ -523,7 +587,7 @@ export default function LinkLine() {
             <button
               type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
               onClick={() => {
-                navigate("/liff-patient-select");
+                initLiff();
               }}
               style={{
                 backgroundColor: '#dc2626',

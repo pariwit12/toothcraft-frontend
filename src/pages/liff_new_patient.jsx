@@ -8,8 +8,9 @@ const LIFF_ID = '2007782065-D8wOJW3e';
 export default function LinkLine() {
   const [lineUserId, setLineUserId] = useState(null);
   const [idNumber, setIdNumber] = useState('');
+  const [patient, setPatient] = useState(null);
   const [phone, setPhone] = useState('');
-  const [status, setStatus] = useState('loading'); // link-old-patient, loading, need-add-oa, register-new-hn, error-init, success
+  const [status, setStatus] = useState('loading'); // link-old-patient, loading, need-add-oa, register-new-hn, error-init, success, verified
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [birthDay, setBirthDay] = useState('');
@@ -131,6 +132,47 @@ export default function LinkLine() {
 
     setSubmitting(false);
 
+  };
+
+  const handleVerifyId = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/public/search-patients-by-id-number/${idNumber.trim()}`);
+      setPatient(res.data);
+      setStatus('verified');
+    } catch (err) {
+      console.error(err);
+      if (err.response) {
+        const { status, data } = err.response;
+        if (status === 400 || status === 404) {
+          alert(`❌ ${data.error}`);
+        } else {
+          alert('❌ เกิดข้อผิดพลาดที่ไม่คาดคิด กรุณาลองใหม่อีกครั้ง');
+        }
+      } else {
+        alert('❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+      }
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!lineUserId || !patient?.id_number || !phone) return;
+
+    if (phone !== patient.telephone) {
+      return alert('❌ เบอร์โทรศัพท์ไม่ตรงกับข้อมูลในระบบ');
+    }
+
+    try {
+      await axios.post(`${API_URL}/public/link-line-old-patient-rich-menu`, {
+        id_number: patient.id_number,
+        line_user_id: lineUserId,
+      });
+
+      setStatus('success');
+    } catch (err) {
+      console.error(err);
+      alert('❌ เกิดข้อผิดพลาดในการลงทะเบียน');
+    }
   };
 
   const inputStyle = {
@@ -298,9 +340,9 @@ export default function LinkLine() {
             </button>
           </>
         )}
-        {status === 'link-old-patient' && (
+        {(status === 'link-old-patient' || status === 'verified') && (
           <>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>เชื่อมข้อมูล</h2>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>เชื่อมข้อมูล (คนไข้เก่า)</h2>
             <button
               onClick={async () => {
                 setStatus('register-new-hn');
@@ -381,6 +423,86 @@ export default function LinkLine() {
               style={buttonStyle(submitting)}
             >
               {submitting ? 'กำลังลงทะเบียน...' : '✅ ยืนยันลงทะเบียน'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {status === 'link-old-patient' && (
+        <>
+          <label style={{ display: 'block', marginBottom: '0.5rem' }}>เลขบัตรประชาชน</label>
+          <input
+            type="text"
+            style={{ border: '1px solid #ccc', padding: '0.5rem', width: '100%', marginBottom: '1rem' }}
+            value={idNumber}
+            onChange={(e) => setIdNumber(e.target.value)}
+            required
+          />
+          <button
+            onClick={handleVerifyId}
+            style={{
+              backgroundColor: '#2563eb',
+              color: 'white',
+              padding: '0.5rem 1rem',
+              borderRadius: '4px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            ตรวจสอบ
+          </button>
+        </>
+      )}
+
+      {status === 'verified' && patient && (
+        <form onSubmit={handleSubmit}>
+          <p style={{ marginTop: '1rem' }}>
+            ✅ พบข้อมูลคนไข้<br />
+            <strong>
+              ชื่อ: {patient.first_name} {patient.last_name}<br />
+              เลขบัตรประชาชน: {patient.id_number}
+            </strong>
+          </p>
+
+          <label style={{ display: 'block', marginTop: '1rem', marginBottom: '0.5rem' }}>เบอร์โทรศัพท์ (กรุณากรอกเบอร์โทรศัพท์ล่าสุดเพื่อยืนยันตัวตน)</label>
+          <input
+            type="text"
+            style={{ border: '1px solid #ccc', padding: '0.5rem', width: '100%', marginBottom: '1rem' }}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+            <button
+              type="submit"
+              style={{
+                backgroundColor: '#16A34A',
+                color: 'white',
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              ยืนยันข้อมูล
+            </button>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginTop: '2rem' }}>
+            <button
+              type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
+              onClick={async () => {
+                setStatus('link-old-patient');
+              }}
+              style={{
+                backgroundColor: '#dc2626',
+                color: 'white',
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              กรอกเลขบัตรใหม่
             </button>
           </div>
         </form>
