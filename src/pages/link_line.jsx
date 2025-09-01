@@ -325,6 +325,7 @@ export default function LinkLine() {
     return (
       <>
         <p style={{ padding: '1rem', maxWidth: '400px', margin: '0 auto', color: '#15803D', fontWeight: '600' }}>
+          <br/><br/><br/><br/><br/>
           ✅ ลงทะเบียนเรียบร้อยแล้ว ขอบคุณค่ะ
         </p>
         <div style={{ padding: '1rem', display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
