@@ -342,6 +342,20 @@ export default function LinkLine() {
           >
             ลงทะเบียนเพิ่ม
           </button>
+          <button
+            type="button"  // เปลี่ยนจาก default submit เป็น button ธรรมดา
+            onClick={() => {
+              navigate("/liff-patient-select");
+            }}
+            style={{
+              padding: '0.5rem 1rem',
+              borderRadius: '4px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            กลับหน้าเลือก User
+          </button>
         </div>
       </>
     );
