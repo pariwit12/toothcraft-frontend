@@ -152,18 +152,17 @@ export default function LiffPatientSelect() {
     return (
       <div style={{ padding: "1rem" }}>
         <h2>เลือกรายชื่อคนไข้</h2>
-        <p>หากไม่พบข้อมูล กรุณาคลิก</p>
+        <p style={{ marginRight: '1rem', }}>หากไม่พบข้อมูล กรุณาคลิก</p>
         <button
           onClick={() => navigate('liff-new-patient')}
           style={{
-            marginLeft: '1rem',
             border: 'none',
             padding: '0.5rem 1rem',
             borderRadius: '6px',
             cursor: 'pointer',
           }}
         >
-          ลงทะเบียน/เชื่อมบัญชี (ถ้าเคยมาแล้ว)
+          ลงทะเบียน/เชื่อมบัญชี
         </button>
         {patients.length === 0 ? (
           <p>ไม่พบข้อมูลคนไข้ที่เชื่อมกับ LINE นี้</p>
