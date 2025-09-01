@@ -613,7 +613,7 @@ export default function LinkLine() {
                 cursor: 'pointer',
               }}
             >
-              เลือก User ใหม่
+              เลือกผู้เข้ารับบริการใหม่
             </button>
           </div>
         </form>
