@@ -9,7 +9,7 @@ export default function LinkLine() {
   const [lineUserId, setLineUserId] = useState(null);
   const [idNumber, setIdNumber] = useState('');
   const [phone, setPhone] = useState('');
-  const [status, setStatus] = useState('loading'); // loading, need-add-oa, register-new-hn, error-init, success
+  const [status, setStatus] = useState('loading'); // link-old-patient, loading, need-add-oa, register-new-hn, error-init, success
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [birthDay, setBirthDay] = useState('');
@@ -294,13 +294,13 @@ export default function LinkLine() {
                 cursor: 'pointer',
               }}
             >
-              🔄 เชื่อมข้อมูล (คนไข้เก่า)
+              🔄 คนไข้เก่า
             </button>
           </>
         )}
         {status === 'link-old-patient' && (
           <>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>เชื่อมข้อมูล (คนไข้เก่า)</h2>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>เชื่อมข้อมูล</h2>
             <button
               onClick={async () => {
                 setStatus('register-new-hn');
