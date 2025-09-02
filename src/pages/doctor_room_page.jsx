@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import { formatAge, formatTime } from '../utils/format';
 import ReferModal from '../components/refer_modal';
 import PatientHistoryModal from '../components/patient_history_modal';
@@ -13,8 +14,28 @@ export default function DoctorRoomPage() {
   const [isReferModalOpen, setIsReferModalOpen] = useState(false);
   const [referQueueId, setReferQueueId] = useState(null);
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const [doctorData, setDoctorData] = useState(null);
 
   const selectedRoom = sessionStorage.getItem('selectedRoom') || '';
+
+  useEffect(() => {
+    if (!decoded.id) return;
+    const fetchDoctorData = async () => {
+      try {
+        const res = await fetch(`${API_URL}/doctors/${decoded.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลแพทย์ได้');
+        const data = await res.json();
+        setDoctorData(data);
+      } catch (err) {
+        console.error('เกิดข้อผิดพลาดในการโหลดข้อมูลแพทย์:', err);
+      }
+    };
+    fetchDoctorData();
+  }, [decoded]);
 
   useEffect(() => {
     if (!selectedRoom) {
@@ -104,7 +125,7 @@ export default function DoctorRoomPage() {
 
   return (
     <div>
-      <h1>ห้องตรวจ {selectedRoom}</h1>
+      <h1>ห้องตรวจ {selectedRoom}{doctorData && (<> - {doctorData.first_name} {doctorData.last_name} ({doctorData.nickname})</>)}</h1>
 
       <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem' }}>
         <div

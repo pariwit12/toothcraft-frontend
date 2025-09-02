@@ -18,21 +18,44 @@ export default function DashboardStaff() {
   const [appointmentPatientId, setAppointmentPatientId] = useState(null);
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [historyPatientObj, setHistoryPatientObj] = useState(null);
+
+  const [userId, setUserId] = useState(null);
+  const [staffData, setStaffData] = useState(null);
   const [role, setRole] = useState(null); // ✅ เพิ่ม state เก็บ role
   const token = localStorage.getItem('token');
+
   const [showExtra, setShowExtra] = useState(false);
 
-  // ✅ ดึง role จาก token JWT
+  // ✅ ดึง role, userId จาก token JWT
   useEffect(() => {
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         setRole(payload.role);
+        setUserId(payload.id);
       } catch (err) {
         console.error('ไม่สามารถ decode token ได้:', err);
       }
     }
   }, [token]);
+
+  useEffect(() => {
+    if (!userId || !token) return;
+    const fetchStaff = async () => {
+      try {
+        const res = await fetch(`${API_URL}/staff/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลพนักงานได้');
+        const data = await res.json();
+        setStaffData(data);
+        setRole(data.role); // อัปเดต role จากข้อมูล staff จริง
+      } catch (err) {
+        console.error('เกิดข้อผิดพลาดในการโหลดข้อมูลพนักงาน:', err);
+      }
+    };
+    fetchStaff();
+  }, [userId]);
 
   // โหลดข้อมูล clinic_queue ห้อง "0" (คนไข้ใหม่) และ "cashier" (รอชำระเงิน)
   useEffect(() => {
@@ -172,7 +195,7 @@ export default function DashboardStaff() {
 
   return (
     <div>
-      <h1>แดชบอร์ดของ Staff</h1>
+      <h1>แดชบอร์ดของ Staff{staffData && (<> - คุณ{staffData.first_name} {staffData.last_name} ({staffData.nickname})</>)}</h1>
       <p>ยินดีต้อนรับสู่ระบบ ToothCraft สำหรับพนักงาน</p>
       <div style={{display: 'flex', flexWrap: 'wrap', gap: '1rem'}}>
         <Link to="/register-with-line">

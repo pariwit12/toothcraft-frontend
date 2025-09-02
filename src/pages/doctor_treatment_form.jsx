@@ -5,6 +5,7 @@ import ReferModal from '../components/refer_modal';
 import ToothSelectModal from '../components/tooth_select_modal';
 import { jwtDecode } from 'jwt-decode';
 import FullImageModal from '../components/full_image_modal';
+import { use } from 'react';
 const API_URL = process.env.REACT_APP_API_URL;
 
 export default function DoctorTreatmentForm() {
@@ -73,6 +74,24 @@ export default function DoctorTreatmentForm() {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const decoded = jwtDecode(token);
+  const [doctorData, setDoctorData] = useState(null);
+
+  useEffect(() => {
+    if (!decoded.id) return;
+    const fetchDoctorData = async () => {
+      try {
+        const res = await fetch(`${API_URL}/doctors/${decoded.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลแพทย์ได้');
+        const data = await res.json();
+        setDoctorData(data);
+      } catch (err) {
+        console.error('เกิดข้อผิดพลาดในการโหลดข้อมูลแพทย์:', err);
+      }
+    };
+    fetchDoctorData();
+  }, [decoded]);
 
   useEffect(() => {
     fetchProcedures();
@@ -775,7 +794,7 @@ export default function DoctorTreatmentForm() {
     <div style={{ padding: '2rem' }}>
       <div style={{ display: 'flex', alignItems: 'stretch' }}>
         <div style={{ flex: 1, maxWidth: '50%', display: 'flex', flexDirection: 'column' }}>
-          <h2>บันทึกการรักษา</h2>
+          <h2>บันทึกการรักษา{doctorData && (<> (หมอ: {doctorData.first_name} {doctorData.last_name} - {doctorData.nickname})</>)}</h2>
 
           {patient ? (
             <div>

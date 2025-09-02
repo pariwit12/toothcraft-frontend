@@ -8,6 +8,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 export default function DashboardDoctor() {
   const [doctorId, setDoctorId] = useState(null);
+  const [doctorData, setDoctorData] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -38,9 +39,28 @@ export default function DashboardDoctor() {
   }, [token]);
 
   useEffect(() => {
+    if (!token || !doctorId) return;
+    const fetchDoctorData = async () => {
+      try {
+        const res = await fetch(`${API_URL}/doctors/${doctorId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลแพทย์ได้');
+        const data = await res.json();
+        setDoctorData(data);
+      } catch (err) {
+        console.error('เกิดข้อผิดพลาดในการโหลดข้อมูลแพทย์:', err);
+      }
+    };
+    fetchDoctorData();
+  }, [doctorId]);
+
+  useEffect(() => {
     if (!doctorId) {
-    return;
-  }
+      return;
+    }
 
     setLoading(true);
     setError('');
@@ -74,7 +94,7 @@ export default function DashboardDoctor() {
   return (
     <div style={{ padding: '2rem' }}>
       {/* Header */}
-      <h1>แดชบอร์ดของ Doctor</h1>
+      <h1>แดชบอร์ดของ Doctor {doctorData && (<>- {doctorData.first_name} {doctorData.last_name} ({doctorData.nickname})</>)}</h1>
       <p>ยินดีต้อนรับสู่ระบบ ToothCraft สำหรับคุณหมอ</p>
 
       <div style={{ margin: '1.5rem 0', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
