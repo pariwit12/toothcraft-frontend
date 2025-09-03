@@ -108,7 +108,7 @@ export default function DoctorTreatmentForm() {
       }
     };
     checkHaveTodayVisitByDoctor();
-  }, [decoded]);
+  }, [token]);
 
   useEffect(() => {
     fetchProcedures();
