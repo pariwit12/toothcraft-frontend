@@ -1557,6 +1557,9 @@ export default function DoctorTreatmentForm() {
                   )}
                 </>
               )}
+              {showXray === 'Refreshing' && (
+                <p>กำลังรีเฟรชข้อมูลภาพ X-ray...</p>
+              )}
             </div>
 
 
