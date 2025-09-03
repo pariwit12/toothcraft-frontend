@@ -1504,7 +1504,7 @@ export default function DoctorTreatmentForm() {
                       onClick={async () => {
                         setShowXray('Refreshing');
                         await Promise.all([
-                          new Promise(resolve => setTimeout(resolve, 2000)), // อย่างน้อย 2 วินาที
+                          new Promise(resolve => setTimeout(resolve, 1500)), // อย่างน้อย 1.5 วินาที
                           fetchPatientImages()
                         ]);
                         setShowXray('Show');
