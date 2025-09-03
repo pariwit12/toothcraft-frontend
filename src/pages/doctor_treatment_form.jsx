@@ -1511,7 +1511,7 @@ export default function DoctorTreatmentForm() {
                         borderRadius: '6px',
                         cursor: 'pointer',
                       }}
-                    >🔄 รีเฟรชข้อมูลภาพ X-ray</button>
+                    >🔄 รีเฟรชภาพ X-ray</button>
                   </>
                 )}
               </div>
