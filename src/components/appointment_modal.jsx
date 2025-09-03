@@ -39,7 +39,8 @@ export default function AppointmentModal({ doctor, date, onClose, onSaved }) {
     for (const period of workingPeriods) {
       const startMin = timeStrToMinutes(period.start);
       const endMin = timeStrToMinutes(period.end);
-      const latestAllowable = endMin - 30;
+      const latestAllowable = endMin;
+      // const latestAllowable = endMin - 15; // เวลาสุดท้ายที่สามารถนัดได้ (เผื่อเวลา 15 นาที)
 
       if (latestAllowable <= startMin) {
         timesSet.add(minutesToTimeStr(startMin));
