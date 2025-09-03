@@ -35,7 +35,7 @@ export default function DoctorRoomPage() {
       }
     };
     fetchDoctorData();
-  }, [decoded]);
+  }, [token]);
 
   useEffect(() => {
     if (!selectedRoom) {

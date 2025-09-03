@@ -1487,18 +1487,32 @@ export default function DoctorTreatmentForm() {
                   >🔍 แสดงภาพ X-ray</button>
                 )}
                 {showXray === 'Show' && (
-                  <button
-                    onClick={() => {
-                      setShowXray('Hide');
-                    }}
-                    style={{
-                      marginLeft: '1rem',
-                      border: 'none',
-                      padding: '0.5rem 1rem',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                    }}
-                  >❌ ซ่อนภาพ X-ray</button>
+                  <>
+                    <button
+                      onClick={() => {
+                        setShowXray('Hide');
+                      }}
+                      style={{
+                        marginLeft: '1rem',
+                        border: 'none',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                      }}
+                    >❌ ซ่อนภาพ X-ray</button>
+                    <button
+                      onClick={() => {
+                        fetchPatientImages();
+                      }}
+                      style={{
+                        marginLeft: '1rem',
+                        border: 'none',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                      }}
+                    >🔄 รีเฟรชข้อมูลภาพ X-ray</button>
+                  </>
                 )}
               </div>
               {showXray === 'Show' && (
