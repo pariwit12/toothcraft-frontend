@@ -91,6 +91,23 @@ export default function DoctorTreatmentForm() {
       }
     };
     fetchDoctorData();
+    const checkHaveTodayVisitByDoctor = async () => {
+      try {
+        const res = await fetch(`${API_URL}/visits/check-have-today-visit-by-doctor?patient_id=${patientId}&doctor_id=${decoded.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (res.ok && data.hasVisit) {
+          alert('คุณได้บันทึกการรักษาคนไข้รายนี้ในวันนี้แล้ว โปรดแก้ไขหรือเพิ่มเติมข้อมูลแทนการสร้างใหม่');
+          navigate('/doctor-today-summary');
+        }
+      } catch (err) {
+        console.error('เกิดข้อผิดพลาดในการตรวจสอบการบันทึกการรักษา:', err);
+        alert('ไม่สามารถตรวจสอบการบันทึกการรักษาได้');
+        navigate('/dashboard/doctor/room');
+      }
+    };
+    checkHaveTodayVisitByDoctor();
   }, [decoded]);
 
   useEffect(() => {
