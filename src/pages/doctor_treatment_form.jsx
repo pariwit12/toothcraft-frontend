@@ -66,7 +66,7 @@ export default function DoctorTreatmentForm() {
   const [selectedImageId, setSelectedImageId] = useState('');
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
-  const [showXray, setShowXray] = useState('Show'); // หรือ 'Hide'
+  const [showXray, setShowXray] = useState('Show'); // หรือ 'Hide', 'Refreshing'
 
 
 
@@ -1501,7 +1501,20 @@ export default function DoctorTreatmentForm() {
                       }}
                     >❌ ซ่อนภาพ X-ray</button>
                     <button
-                      onClick={() => {
+                      onClick={async () => {
+                        setShowXray('Refreshing');
+                        await Promise.all([
+                          new Promise(resolve => setTimeout(resolve, 2000)), // อย่างน้อย 2 วินาที
+                          fetchPatientImages()
+                        ]);
+                        setShowXray('Show');
+                      }}
+                      disabled={showXray === 'Refreshing'}
+                      title="รีเฟรชข้อมูลภาพ X-ray"                  // เพิ่ม คำอธิบายเมื่อเอาเมาส์ไปวาง (tooltip) ไว้ที่ปุ่มนี้
+                      aria-label="รีเฟรชข้อมูลภาพ X-ray"             // เพิ่ม attribute สำหรับผู้ใช้ที่ใช้ screen reader
+                      tabIndex={0}                                // ทำให้ปุ่มนี้สามารถโฟกัสได้ด้วยการกด Tab
+                      onKeyDown={(e) => {                         // เป็น Event Listener ที่จะทำงานเมื่อมีการกดปุ่มใด ๆ บนคีย์บอร์ดในขณะที่ปุ่มนี้ถูกเลือกอยู่ (focused)
+                        if (e.key === 'Enter' || e.key === ' ')   // ตรวจสอบว่าปุ่มที่ผู้ใช้กดคือปุ่ม Enter หรือปุ่ม Spacebar หรือไม่
                         fetchPatientImages();
                       }}
                       style={{
@@ -1511,7 +1524,7 @@ export default function DoctorTreatmentForm() {
                         borderRadius: '6px',
                         cursor: 'pointer',
                       }}
-                    >🔄 รีเฟรชภาพ X-ray</button>
+                    >🔄 รีเฟรช</button>
                   </>
                 )}
               </div>
