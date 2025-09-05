@@ -206,12 +206,17 @@ export default function DfSummaryReport() {
                       </thead>
                       <tbody>
                         {doc.dailySummary.map((day, i) => {
+                          // ตรวจสอบว่าวันนี้เป็นวันทำงานของหมอไหม (มีในตารางทำงาน)
                           const isWorkingDay = doc.workingDates.some((wd) => {
                             const wdDateStr = new Date(wd.start_time).toLocaleDateString('en-CA', {
                               timeZone: 'Asia/Bangkok',
                             });
-                            return wdDateStr === day.date;
+                            return wdDateStr === day.date; // ตั้งค่า isWorkingDay เป็น true ถ้าวันนี้มีในตารางทำงาน และ false ถ้าไม่มี
                           });
+
+                          // เติมค่าเริ่มต้นใน input ถ้ายังไม่มี
+                          if (insuranceInputs[`${doc.doctorId}_${day.date}`] === undefined)
+                          handleInsuranceChange(doc.doctorId, day.date, day.guaranteeIncome);
 
                           return (
                             <tr
