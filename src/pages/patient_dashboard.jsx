@@ -52,7 +52,7 @@ export default function PatientDashboard() {
           <p>วงเงินคงเหลือ: {patient.insurance_balance}</p>
         )}
         <p>หมายเหตุ: สิทธิการรักษาที่แสดงเป็นการสรุปจากข้อมูลที่คลินิกทันตกรรมทู้ธคราฟมีเท่านั้น</p>
-        <hr />
+        <hr style={{ width: '100%' }} />
       </div>
       <Link to="/patient-open-camera-check-in">
         <button
@@ -103,7 +103,7 @@ export default function PatientDashboard() {
         </button>
       </Link>
       <div>
-        <hr />
+        <hr style={{ width: '100%' }} />
         <p>เลขประจำตัว: {patient.id}</p>
         <p>เลขบัตรประชาชน: {patient.id_number}</p>
         <p>วันเกิด: {patient.birth_day ? new Date(patient.birth_day).toLocaleDateString('th-TH') : 'ไม่มีข้อมูล'}</p>
