@@ -54,58 +54,56 @@ export default function PatientDashboard() {
         <p>หมายเหตุ: สิทธิการรักษาที่แสดงเป็นการสรุปจากข้อมูลที่คลินิกทันตกรรมทู้ธคราฟมีเท่านั้น</p>
         <hr />
       </div>
+      <Link to="/patient-open-camera-check-in">
+        <button
+          style={{
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+        >
+          📷 เข้ารับบริการ
+        </button>
+      </Link>
+      <Link to="/patient-my-appointments">
+        <button
+          style={{
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+        >
+          📆 ดูวันนัด
+        </button>
+      </Link>
+      <Link to="/patient-my-plan">
+        <button
+          style={{
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+        >
+          📋 ดูผลตรวจ & แผนการรักษา
+        </button>
+      </Link>
+      <Link to="/patient-my-visit-procedures">
+        <button
+          style={{
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+        >
+          📋 ดูประวัติหัตถการ
+        </button>
+      </Link>
       <div>
-        <Link to="/patient-open-camera-check-in">
-          <button
-            style={{
-              border: 'none',
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              cursor: 'pointer',
-            }}
-          >
-            📷 เข้ารับบริการ
-          </button>
-        </Link>
-        <Link to="/patient-my-appointments">
-          <button
-            style={{
-              border: 'none',
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              cursor: 'pointer',
-            }}
-          >
-            📆 ดูวันนัด
-          </button>
-        </Link>
-        <Link to="/patient-my-plan">
-          <button
-            style={{
-              border: 'none',
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              cursor: 'pointer',
-            }}
-          >
-            📋 ดูผลตรวจ & แผนการรักษา
-          </button>
-        </Link>
-        <Link to="/patient-my-visit-procedures">
-          <button
-            style={{
-              border: 'none',
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              cursor: 'pointer',
-            }}
-          >
-            📋 ดูประวัติหัตถการ
-          </button>
-        </Link>
         <hr />
-      </div>
-      <div>
         <p>เลขประจำตัว: {patient.id}</p>
         <p>เลขบัตรประชาชน: {patient.id_number}</p>
         <p>วันเกิด: {patient.birth_day ? new Date(patient.birth_day).toLocaleDateString('th-TH') : 'ไม่มีข้อมูล'}</p>
