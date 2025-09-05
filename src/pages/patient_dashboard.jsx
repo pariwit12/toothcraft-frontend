@@ -45,66 +45,71 @@ export default function PatientDashboard() {
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', padding: "1rem" }}>
-      <h1>สวัสดี {patient.first_name} {patient.last_name}</h1>
-      <Link to="/patient-open-camera-check-in">
-        <button
-          style={{
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '6px',
-            cursor: 'pointer',
-          }}
-        >
-          📷 เข้ารับบริการ
-        </button>
-      </Link>
-      <Link to="/patient-my-appointments">
-        <button
-          style={{
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '6px',
-            cursor: 'pointer',
-          }}
-        >
-          📆 ดูวันนัด
-        </button>
-      </Link>
-      <Link to="/patient-my-plan">
-        <button
-          style={{
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '6px',
-            cursor: 'pointer',
-          }}
-        >
-          📋 ดูผลตรวจ & แผนการรักษา
-        </button>
-      </Link>
-      <Link to="/patient-my-visit-procedures">
-        <button
-          style={{
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '6px',
-            cursor: 'pointer',
-          }}
-        >
-          📋 ดูประวัติหัตถการ
-        </button>
-      </Link>
-      <hr />
       <div>
-        <p>เลขประจำตัว: {patient.id}</p>
-        <p>เลขบัตรประชาชน: {patient.id_number}</p>
-        <p>วันเกิด: {patient.birth_day ? new Date(patient.birth_day).toLocaleDateString('th-TH') : 'ไม่มีข้อมูล'}</p>
-        <p>เบอร์โทรศัพท์: {patient.telephone ? patient.telephone : 'ไม่มีข้อมูล'}</p>
+        <h1>สวัสดี {patient.first_name} {patient.last_name}</h1>
         <p>สิทธิการรักษา: {patient.insurance_type ? INSURANCE_TYPE_BY_ID[patient.insurance_type] : 'ไม่มีข้อมูล'}</p>
         {['บัตรทอง', 'ประกันสังคม'].includes(INSURANCE_TYPE_BY_ID[patient.insurance_type]) && (
           <p>วงเงินคงเหลือ: {patient.insurance_balance}</p>
         )}
         <p>หมายเหตุ: สิทธิการรักษาที่แสดงเป็นการสรุปจากข้อมูลที่คลินิกทันตกรรมทู้ธคราฟมีเท่านั้น</p>
+        <hr />
+      </div>
+      <div>
+        <Link to="/patient-open-camera-check-in">
+          <button
+            style={{
+              border: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: '6px',
+              cursor: 'pointer',
+            }}
+          >
+            📷 เข้ารับบริการ
+          </button>
+        </Link>
+        <Link to="/patient-my-appointments">
+          <button
+            style={{
+              border: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: '6px',
+              cursor: 'pointer',
+            }}
+          >
+            📆 ดูวันนัด
+          </button>
+        </Link>
+        <Link to="/patient-my-plan">
+          <button
+            style={{
+              border: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: '6px',
+              cursor: 'pointer',
+            }}
+          >
+            📋 ดูผลตรวจ & แผนการรักษา
+          </button>
+        </Link>
+        <Link to="/patient-my-visit-procedures">
+          <button
+            style={{
+              border: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: '6px',
+              cursor: 'pointer',
+            }}
+          >
+            📋 ดูประวัติหัตถการ
+          </button>
+        </Link>
+        <hr />
+      </div>
+      <div>
+        <p>เลขประจำตัว: {patient.id}</p>
+        <p>เลขบัตรประชาชน: {patient.id_number}</p>
+        <p>วันเกิด: {patient.birth_day ? new Date(patient.birth_day).toLocaleDateString('th-TH') : 'ไม่มีข้อมูล'}</p>
+        <p>เบอร์โทรศัพท์: {patient.telephone ? patient.telephone : 'ไม่มีข้อมูล'}</p>
       </div>
     </div>
   );
