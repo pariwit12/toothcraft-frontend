@@ -45,14 +45,14 @@ export default function PatientDashboard() {
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', padding: "1rem" }}>
-      <div>
+      <div style={{ width: '100%' }}>
         <h1>สวัสดี {patient.first_name} {patient.last_name}</h1>
         <p>สิทธิการรักษา: {patient.insurance_type ? INSURANCE_TYPE_BY_ID[patient.insurance_type] : 'ไม่มีข้อมูล'}</p>
         {['บัตรทอง', 'ประกันสังคม'].includes(INSURANCE_TYPE_BY_ID[patient.insurance_type]) && (
           <p>วงเงินคงเหลือ: {patient.insurance_balance}</p>
         )}
         <p>หมายเหตุ: สิทธิการรักษาที่แสดงเป็นการสรุปจากข้อมูลที่คลินิกทันตกรรมทู้ธคราฟมีเท่านั้น</p>
-        <hr style={{ width: '100%' }} />
+        <hr />
       </div>
       <Link to="/patient-open-camera-check-in">
         <button
@@ -102,8 +102,8 @@ export default function PatientDashboard() {
           📋 ดูประวัติหัตถการ
         </button>
       </Link>
-      <div>
-        <hr style={{ width: '100%' }} />
+      <div style={{ width: '100%' }}>
+        <hr />
         <p>เลขประจำตัว: {patient.id}</p>
         <p>เลขบัตรประชาชน: {patient.id_number}</p>
         <p>วันเกิด: {patient.birth_day ? new Date(patient.birth_day).toLocaleDateString('th-TH') : 'ไม่มีข้อมูล'}</p>
