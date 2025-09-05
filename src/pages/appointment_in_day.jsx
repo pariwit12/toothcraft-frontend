@@ -143,8 +143,8 @@ export default function AppointmentInDay() {
                     {doctorGroup.schedules.map((sch) => (
                       <li key={sch.id} style={{ marginBottom: '0.25rem' }}>
                         <span style={{ display: 'inline-flex', alignItems: 'center' }}>
-                          {new Date(sch.start_time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} -
-                          {new Date(sch.end_time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(sch.start_time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} - {new Date(sch.end_time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                          {sch.guarantee_income ? ` | ประกัน: ${sch.guarantee_income} บาท` : ''}
                           {role === 'admin' && (
                             <>
                               <button

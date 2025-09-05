@@ -29,6 +29,8 @@ export default function EditDoctorScheduleModal({ is_open, on_close, schedule, o
     })
   );
 
+  const [guaranteeIncome, setGuaranteeIncome] = useState(schedule.guarantee_income || '');
+
   const token = localStorage.getItem('token');
 
   const handle_save = async () => {
@@ -61,6 +63,7 @@ export default function EditDoctorScheduleModal({ is_open, on_close, schedule, o
           doctor_id: schedule.doctor_id,
           start_time: new_start,
           end_time: new_end,
+          guarantee_income: guaranteeIncome ? Number(guaranteeIncome) : null,
         }),
       });
 
@@ -155,6 +158,21 @@ export default function EditDoctorScheduleModal({ is_open, on_close, schedule, o
             </option>
           ))}
         </select>
+
+        <label>ประกัน: </label>
+        <input
+          type="number"
+          value={guaranteeIncome}
+          onChange={(e) => setGuaranteeIncome(e.target.value)}
+          style={{
+            width: '80px',
+            padding: '4px 6px',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+          }}
+        />
+
+        <br /><br />
 
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <button onClick={handle_delete} style={{ backgroundColor: 'red', color: 'white' }}>

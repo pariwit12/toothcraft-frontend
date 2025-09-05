@@ -20,6 +20,7 @@ export default function AddDoctorModal({ isOpen, onClose, selectedDate, onDoctor
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [guaranteeIncome, setGuaranteeIncome] = useState(null);
 
   const token = localStorage.getItem('token');
 
@@ -69,6 +70,7 @@ export default function AddDoctorModal({ isOpen, onClose, selectedDate, onDoctor
       doctor_id: selectedDoctor.value,
       start_time: newStart,
       end_time: newEnd,
+      guarantee_income: guaranteeIncome ? Number(guaranteeIncome) : null,
     };
 
     try {
@@ -139,6 +141,21 @@ export default function AddDoctorModal({ isOpen, onClose, selectedDate, onDoctor
           ))}
         </select>
 
+        <label>ประกัน: </label>
+        <input
+          type="number"
+          value={guaranteeIncome}
+          onChange={(e) => setGuaranteeIncome(e.target.value)}
+          style={{
+            width: '80px',
+            padding: '4px 6px',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+          }}
+        />
+
+        <br /><br />
+        
         <div style={{ textAlign: 'right' }}>
           <button onClick={onClose} style={{ marginRight: '0.5rem' }}>ยกเลิก</button>
           <button onClick={handleSubmit}>บันทึก</button>
