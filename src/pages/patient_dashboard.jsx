@@ -8,6 +8,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 export default function PatientDashboard() {
   const [patient, setPatient] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showPatientData, setShowPatientData] = useState('Hide'); // 'Show'
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -45,15 +46,7 @@ export default function PatientDashboard() {
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', padding: "1rem" }}>
-      <div style={{ width: '100%' }}>
-        <h1>สวัสดี {patient.first_name} {patient.last_name}</h1>
-        <p>สิทธิการรักษา: {patient.insurance_type ? INSURANCE_TYPE_BY_ID[patient.insurance_type] : 'ไม่มีข้อมูล'}</p>
-        {['บัตรทอง', 'ประกันสังคม'].includes(INSURANCE_TYPE_BY_ID[patient.insurance_type]) && (
-          <p>วงเงินคงเหลือ: {patient.insurance_balance}</p>
-        )}
-        <p>หมายเหตุ: สิทธิการรักษาที่แสดงเป็นการสรุปจากข้อมูลที่คลินิกทันตกรรมทู้ธคราฟมีเท่านั้น</p>
-        <hr />
-      </div>
+      <h1>สวัสดี {patient.first_name} {patient.last_name}</h1>
       <Link to="/patient-open-camera-check-in">
         <button
           style={{
@@ -104,10 +97,43 @@ export default function PatientDashboard() {
       </Link>
       <div style={{ width: '100%' }}>
         <hr />
-        <p>เลขประจำตัว: {patient.id}</p>
-        <p>เลขบัตรประชาชน: {patient.id_number}</p>
-        <p>วันเกิด: {patient.birth_day ? new Date(patient.birth_day).toLocaleDateString('th-TH') : 'ไม่มีข้อมูล'}</p>
-        <p>เบอร์โทรศัพท์: {patient.telephone ? patient.telephone : 'ไม่มีข้อมูล'}</p>
+        <p>สิทธิการรักษา: {patient.insurance_type ? INSURANCE_TYPE_BY_ID[patient.insurance_type] : 'ไม่มีข้อมูล'}</p>
+        {['บัตรทอง', 'ประกันสังคม'].includes(INSURANCE_TYPE_BY_ID[patient.insurance_type]) && (
+          <p>วงเงินคงเหลือ: {patient.insurance_balance}</p>
+        )}
+        <p>หมายเหตุ: สิทธิการรักษาที่แสดงเป็นการสรุปจากข้อมูลที่คลินิกทันตกรรมทู้ธคราฟมีเท่านั้น</p>
+        {showPatientData === 'Hide' && (
+          <button
+            onClick={setShowPatientData('Show')}
+            style={{
+              border: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: '6px',
+              cursor: 'pointer',
+            }}
+          >
+            📋 แสดงข้อมูลส่วนตัว
+          </button>
+        )}
+        {showPatientData === 'Show' && (
+          <>
+            <button
+              onClick={setShowPatientData('Hide')}
+              style={{
+                border: 'none',
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                cursor: 'pointer',
+              }}
+            >
+              ❌ ซ่อนข้อมูลส่วนตัว
+            </button>
+            <p>เลขประจำตัว: {patient.id}</p>
+            <p>เลขบัตรประชาชน: {patient.id_number}</p>
+            <p>วันเกิด: {patient.birth_day ? new Date(patient.birth_day).toLocaleDateString('th-TH') : 'ไม่มีข้อมูล'}</p>
+            <p>เบอร์โทรศัพท์: {patient.telephone ? patient.telephone : 'ไม่มีข้อมูล'}</p>
+          </>
+        )}
       </div>
     </div>
   );
