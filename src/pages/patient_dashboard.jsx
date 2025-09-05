@@ -51,11 +51,10 @@ export default function PatientDashboard() {
       <p>วันเกิด: {patient.birth_day ? Date(patient.birth_day).toLocaleDateString('th-TH') : 'ไม่มีข้อมูล'}</p>
       <p>เบอร์โทรศัพท์: {patient.telephone ? patient.telephone : 'ไม่มีข้อมูล'}</p>
       <p>สิทธิการรักษา: {patient.insurance_type ? INSURANCE_TYPE_BY_ID[patient.insurance_type] : 'ไม่มีข้อมูล'}</p>
-      {/* {['บัตรทอง', 'ประกันสังคม'].includes(INSURANCE_TYPE_BY_ID[patient.insurance_type]) && (
+      {['บัตรทอง', 'ประกันสังคม'].includes(INSURANCE_TYPE_BY_ID[patient.insurance_type]) && (
         <p>วงเงินคงเหลือ: {patient.insurance_balance}</p>
-      )} */}
+      )}
       <p>หมายเหตุ: สิทธิการรักษาที่แสดงเป็นการสรุปจากข้อมูลที่คลินิกทันตกรรมทู้ธคราฟมีเท่านั้น</p>
-      <hr />
       <Link to="/patient-open-camera-check-in">
         <button
           style={{
