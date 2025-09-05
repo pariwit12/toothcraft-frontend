@@ -47,9 +47,9 @@ export default function PatientDashboard() {
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', padding: "1rem" }}>
       <h1>สวัสดี {patient.first_name} {patient.last_name}</h1>
       <p>เลขประจำตัว: {patient.id}</p>
-      <p>เลขบัตรประชาชน: {patient.citizen_id}</p>
+      <p>เลขบัตรประชาชน: {patient.id_number}</p>
       <p>วันเกิด: {patient.birth_day ? Date(patient.birth_day).toLocaleDateString('th-TH') : 'ไม่มีข้อมูล'}</p>
-      <p>เบอร์โทรศัพท์: {patient.phone_number ? patient.phone_number : 'ไม่มีข้อมูล'}</p>
+      <p>เบอร์โทรศัพท์: {patient.telephone ? patient.telephone : 'ไม่มีข้อมูล'}</p>
       <p>สิทธิการรักษา: {patient.insurance_type ? INSURANCE_TYPE_BY_ID[patient.insurance_type] : 'ไม่มีข้อมูล'}</p>
       {['บัตรทอง', 'ประกันสังคม'].includes(INSURANCE_TYPE_BY_ID[patient.insurance_type]) && (
         <p>วงเงินคงเหลือ: {patient.insurance_balance}</p>
