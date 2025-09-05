@@ -104,7 +104,7 @@ export default function PatientDashboard() {
         <p>หมายเหตุ: สิทธิการรักษาที่แสดงเป็นการสรุปจากข้อมูลที่คลินิกทันตกรรมทู้ธคราฟมีเท่านั้น</p>
         {showPatientData === 'Hide' && (
           <button
-            onClick={setShowPatientData('Show')}
+            onClick={() => setShowPatientData('Show')}
             style={{
               border: 'none',
               padding: '0.5rem 1rem',
@@ -118,7 +118,7 @@ export default function PatientDashboard() {
         {showPatientData === 'Show' && (
           <>
             <button
-              onClick={setShowPatientData('Hide')}
+              onClick={() => setShowPatientData('Hide')}
               style={{
                 border: 'none',
                 padding: '0.5rem 1rem',
