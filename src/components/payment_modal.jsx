@@ -285,7 +285,7 @@ export default function PaymentModal({
                         />
                       </td>
                       <td>{proc.procedures?.name || '-'}</td>
-                      <td>{proc.tooth || '-'}</td>
+                      <td>{proc.tooth || '-'}{proc.surface && (<>({proc.surface.replaceAll(',', '')})</>)}</td>
                       <td>{proc.price} บาท</td>
                     </tr>
                   ))

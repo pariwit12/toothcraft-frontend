@@ -91,10 +91,10 @@ export default function VisitTodaySummary() {
                     '-'
                   ) : (
                     v.visit_procedures.map((vp, idx) => {
-                      const status = vp.paid ? '' : ' - ❌ ยังไม่ชำระ';
+                      const status = vp.paid ? '' : ' - ❌ยังไม่ชำระ';
                       return (
                         <div key={idx}>
-                          {'- ' + (vp.procedures?.name || 'ไม่พบชื่อ')} #{vp.tooth} ({vp.price})
+                          {'- ' + (vp.procedures?.name || 'ไม่พบชื่อ')} #{vp.tooth}{vp.surface ? `(${vp.surface.replaceAll(',', '')})` : '' } : ฿{vp.price}
                           {status}
                         </div>
                       );

@@ -127,7 +127,10 @@ export default function PatientMyVisitProcedures() {
                         })}
                       </td>
                       <td>{vp.procedures?.name || "-"}</td>
-                      <td style={{ textAlign: "center" }}>{vp.tooth || "-"}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {vp.tooth || "-"}
+                        {vp.surface && (<>({vp.surface.replaceAll(',', '')})</>)}
+                      </td>
                       <td>
                         {vp.visits.doctors
                           ? `${vp.visits.doctors.first_name} (${vp.visits.doctors.nickname})`
@@ -358,7 +361,10 @@ export default function PatientMyVisitProcedures() {
                                   })}
                                 </td>
                                 <td>{vp.procedures?.name || "-"}</td>
-                                <td style={{ textAlign: "center" }}>{vp.tooth || "-"}</td>
+                                <td style={{ textAlign: "center" }}>
+                                  {vp.tooth || "-"}
+                                  {vp.surface && (<>({vp.surface.replaceAll(',', '')})</>)}
+                                </td>
                                 <td>
                                   {vp.visits.doctors
                                     ? `${vp.visits.doctors.first_name} (${vp.visits.doctors.nickname})`

@@ -368,6 +368,7 @@ export default function DfSummaryReport() {
                           </td>
                           <td style={{ padding: '0.4rem 0.8rem' }}>
                             {item.visit_procedures?.tooth || '-'}
+                            {item.visit_procedures.surface && (<>({item.visit_procedures.surface.replaceAll(',', '')})</>)}
                           </td>
                           <td style={{ padding: '0.4rem 0.8rem', textAlign: 'right' }}>
                             {Number(item.amount).toLocaleString()}

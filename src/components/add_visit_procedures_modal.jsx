@@ -34,6 +34,7 @@ export default function AddVisitProceduresModal({ isOpen, onClose, visitId, onSu
       {
         procedure_id: p.id,
         tooth: '',
+        surface: '',
         price: p.default_price || '',
         paid: false,
       },
@@ -107,7 +108,7 @@ export default function AddVisitProceduresModal({ isOpen, onClose, visitId, onSu
       zIndex: 9999,
     }}>
       <div style={{
-        background: 'white', padding: '1.5rem', borderRadius: '8px', width: '80%', maxHeight: '90%', overflowY: 'auto',
+        background: 'white', padding: '1.5rem', borderRadius: '8px', width: '95%', maxHeight: '90%', overflowY: 'auto',
         display: 'flex', gap: '1rem'
       }}>
         {/* เลือกหัตถการ - ฝั่งซ้าย */}
@@ -202,6 +203,44 @@ export default function AddVisitProceduresModal({ isOpen, onClose, visitId, onSu
                       >
                         {proc.tooth || 'เลือก'}
                       </button>
+                    </div>
+                    
+                    {/* ✅ ปุ่มเลือกด้านฟัน */}
+                    <div style={{ display: 'flex', gap: '0.25rem' }}>
+                      {['O', 'M', 'D', 'I', 'B', 'Li'].map((side) => {
+                        const current = procedures[index].surface?.split(',') || [];
+                        const isSelected = current.includes(side);
+
+                        return (
+                          <button
+                            key={side}
+                            onClick={() => {
+                              const updated = [...procedures];
+                              const current = updated[index].surface?.split(',') || [];
+                              const has = current.includes(side);
+                              let newSurface = has
+                                ? current.filter((s) => s !== side)
+                                : [...current, side];
+
+                              const order = ['O', 'M', 'D', 'I', 'B', 'Li'];
+                              newSurface = order.filter((o) => newSurface.includes(o));
+                              updated[index].surface = newSurface.join(',');
+                              setProcedures(updated);
+                            }}
+                            style={{
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              border: '1px solid #aaa',
+                              background: isSelected ? '#007bff' : '#f0f0f0',
+                              color: isSelected ? '#fff' : '#000',
+                              fontWeight: 'bold',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {side}
+                          </button>
+                        );
+                      })}
                     </div>
 
                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: '120px' }}>

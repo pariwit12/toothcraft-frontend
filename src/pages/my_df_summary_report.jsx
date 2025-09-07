@@ -121,7 +121,10 @@ export default function MyDfSummaryReport() {
                     <td style={{ padding: '0.5rem' }}>{item.visit_procedures?.visits?.patient_id || '-'}</td>
                     <td style={{ padding: '0.5rem' }}>{`${item.visit_procedures?.visits?.patients?.first_name || ''} ${item.visit_procedures?.visits?.patients?.last_name || ''}`.trim()}</td>
                     <td style={{ padding: '0.5rem' }}>{item.visit_procedures?.procedures?.name || '-'}</td>
-                    <td style={{ padding: '0.5rem' }}>{item.visit_procedures?.tooth || '-'}</td>
+                    <td style={{ padding: '0.5rem' }}>
+                      {item.visit_procedures?.tooth || '-'}
+                      {item.visit_procedures.surface && (<>({item.visit_procedures.surface.replaceAll(',', '')})</>)}
+                    </td>
                     <td style={{ padding: '0.5rem', textAlign: 'right' }}>{Number(item.amount).toLocaleString()}</td>
                     <td style={{ padding: '0.5rem' }}>{item.payment_methods?.method || '-'}</td>
                     <td style={{ padding: '0.5rem' }}>{item.fee_percent ? `${item.fee_percent}%` : '-'}</td>

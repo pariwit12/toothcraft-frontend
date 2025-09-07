@@ -344,9 +344,14 @@ export default function PatientDetail() {
     if (!visit.visit_procedures || visit.visit_procedures.length === 0) return '-';
     return visit.visit_procedures.map((vp, idx) => {
       const procName = vp.procedures?.name || 'ไม่มีชื่อหัตถการ';
-      const tooth = vp.tooth ? `#${vp.tooth}` : '';
-      const price = vp.price ? `(${vp.price})` : '';
-      const paidStatus = vp.paid ? '' : 'ยังไม่ชำระ';
+      const tooth = vp.tooth ?
+        vp.surface ?
+          `#${vp.tooth}(${vp.surface.replaceAll(',', '')})`
+          : `#${vp.tooth}`
+        : ''
+      ;
+      const price = vp.price ? `: ฿${vp.price}` : '';
+      const paidStatus = vp.paid ? '' : '❌ยังไม่ชำระ';
 
       const displayText = [procName, tooth, price].filter(Boolean).join(' ');
       const statusText = paidStatus ? ` - ${paidStatus}` : '';

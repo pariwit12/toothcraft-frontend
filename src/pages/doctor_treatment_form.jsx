@@ -91,6 +91,7 @@ export default function DoctorTreatmentForm() {
       }
     };
     fetchDoctorData();
+
     const checkHaveTodayVisitByDoctor = async () => {
       try {
         const res = await fetch(`${API_URL}/visits/check-have-today-visit-by-doctor?patient_id=${patientId}&doctor_id=${decoded.id}`, {
@@ -98,8 +99,9 @@ export default function DoctorTreatmentForm() {
         });
         const data = await res.json();
         if (res.ok && data.hasVisit) {
-          alert('คุณได้บันทึกการรักษาคนไข้รายนี้ในวันนี้แล้ว โปรดแก้ไขหรือเพิ่มเติมข้อมูลแทนการสร้างใหม่');
           navigate('/doctor-today-summary');
+          alert('คุณได้บันทึกการรักษาคนไข้รายนี้ในวันนี้แล้ว โปรดแก้ไขหรือเพิ่มเติมข้อมูลแทนการสร้างใหม่');
+          return;
         }
       } catch (err) {
         console.error('เกิดข้อผิดพลาดในการตรวจสอบการบันทึกการรักษา:', err);
@@ -275,6 +277,7 @@ export default function DoctorTreatmentForm() {
       {
         procedure_id: p.id,
         tooth: '',
+        surface: '',
         price: p.default_price || '',
         paid: false,
       },
@@ -292,12 +295,17 @@ export default function DoctorTreatmentForm() {
     if (!visit.visit_procedures?.length) return '-';
     return visit.visit_procedures.map((vp, idx) => {
       const procName = vp.procedures?.name || 'ไม่มีชื่อหัตถการ';
-      const tooth = vp.tooth ? `#${vp.tooth}` : '';
-      const price = vp.price ? `(${vp.price})` : '';
-      const paidStatus = vp.paid ? '' : ' - ยังไม่ชำระ';
+      const tooth = vp.tooth ?
+        vp.surface ?
+          ` #${vp.tooth}(${vp.surface.replaceAll(',', '')})`
+          : ` #${vp.tooth}`
+        : ''
+      ;
+      const price = vp.price ? ` : ฿${vp.price}` : '';
+      const paidStatus = vp.paid ? '' : ' - ❌ยังไม่ชำระ';
       return (
         <React.Fragment key={idx}>
-          {`- ${procName} ${tooth} ${price}${paidStatus}`}
+          {`- ${procName}${tooth}${price}${paidStatus}`}
           {idx !== visit.visit_procedures.length - 1 && <br />}
         </React.Fragment>
       );
@@ -997,6 +1005,44 @@ export default function DoctorTreatmentForm() {
                         >
                           {proc.tooth || 'เลือก'}
                         </button>
+                      </div>
+
+                      {/* ✅ ปุ่มเลือกด้านฟัน */}
+                      <div style={{ display: 'flex', gap: '0.25rem' }}>
+                        {['O', 'M', 'D', 'I', 'B', 'Li'].map((side) => {
+                          const current = procedures[index].surface?.split(',') || [];
+                          const isSelected = current.includes(side);
+
+                          return (
+                            <button
+                              key={side}
+                              onClick={() => {
+                                const updated = [...procedures];
+                                const current = updated[index].surface?.split(',') || [];
+                                const has = current.includes(side);
+                                let newSurface = has
+                                  ? current.filter((s) => s !== side)
+                                  : [...current, side];
+
+                                const order = ['O', 'M', 'D', 'I', 'B', 'Li'];
+                                newSurface = order.filter((o) => newSurface.includes(o));
+                                updated[index].surface = newSurface.join(',');
+                                setProcedures(updated);
+                              }}
+                              style={{
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                border: '1px solid #aaa',
+                                background: isSelected ? '#007bff' : '#f0f0f0',
+                                color: isSelected ? '#fff' : '#000',
+                                fontWeight: 'bold',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              {side}
+                            </button>
+                          );
+                        })}
                       </div>
 
                       <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

@@ -182,7 +182,10 @@ export default function MoneyReceivedReportFixed() {
                 <td>{item.visit_procedures.visits.patients.id}</td>
                 <td>{item.visit_procedures.visits.patients.first_name} {item.visit_procedures.visits.patients.last_name}</td>
                 <td>{item.visit_procedures.procedures.name}</td>
-                <td>{item.visit_procedures.tooth || '-'}</td>
+                <td>
+                  {item.visit_procedures?.tooth || '-'}
+                  {item.visit_procedures.surface && (<>({item.visit_procedures.surface.replaceAll(',', '')})</>)}
+                </td>
                 <td>{Number(item.amount).toLocaleString()} บาท</td>
                 <td>{item.payment_methods?.method || '-'}</td>
                 <td>{item.visit_procedures.visits.doctors
