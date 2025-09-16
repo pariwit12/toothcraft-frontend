@@ -98,10 +98,9 @@ export default function DoctorTreatmentForm() {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
-        if (res.ok && data.hasVisit) {
-          navigate('/doctor-today-summary');
+        if (res.ok && (data.hasVisit === true)) {
           alert('คุณได้บันทึกการรักษาคนไข้รายนี้ในวันนี้แล้ว โปรดแก้ไขหรือเพิ่มเติมข้อมูลแทนการสร้างใหม่');
-          return;
+          navigate('/doctor-today-summary');
         }
       } catch (err) {
         console.error('เกิดข้อผิดพลาดในการตรวจสอบการบันทึกการรักษา:', err);
