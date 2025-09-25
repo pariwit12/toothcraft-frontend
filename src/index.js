@@ -17,7 +17,17 @@ root.render(
 
 // สำหรับ PWA
 // ✅ Register Service Worker (online-first)
-serviceWorkerRegistration.register();
+serviceWorkerRegistration.register({
+  onUpdate: (registration) => {
+    // แจ้งผู้ใช้ว่าแอปมีเวอร์ชันใหม่
+    if (window.confirm("มีเวอร์ชันใหม่ของแอป ต้องการโหลดใหม่หรือไม่?")) {
+      if (registration.waiting) {
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+      window.location.reload();
+    }
+  }
+});
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
