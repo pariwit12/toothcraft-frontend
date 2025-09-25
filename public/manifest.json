@@ -8,14 +8,14 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logoToothcraft.ico",
+      "src": "logo192.png",
       "sizes": "192x192",
-      "type": "image/x-icon"
+      "type": "image/png"
     },
     {
-      "src": "logoToothcraft.ico",
+      "src": "logo512.png",
       "sizes": "512x512",
-      "type": "image/x-icon"
+      "type": "image/png"
     }
   ],
   "start_url": ".",
