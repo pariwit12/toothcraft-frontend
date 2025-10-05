@@ -420,7 +420,7 @@ export default function LinkLine() {
                   cursor: 'pointer',
                 }}
               >
-                กรอกเลขบัตรใหม่
+                ลงทะเบียนเพิ่ม (ตรวจสอบบัตรประชาชน)
               </button>
               <button
                 onClick={() => setStatus('register-new-hn')}
@@ -434,7 +434,7 @@ export default function LinkLine() {
                   marginLeft: '1rem',
                 }}
               >
-                คนไข้ใหม่
+                ลงทะเบียนเพิ่ม (คนไข้ใหม่ ไม่ผ่านเคาน์เตอร์)
               </button>
               {patients.map((p) => (
                 <p style={{ marginTop: '1rem' }}>
